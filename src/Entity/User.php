@@ -14,6 +14,7 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ORM\HasLifecycleCallbacks]
+#[ORM\UniqueConstraint(name: 'uniq_user_email', columns: ['email'])]
 class User
 {
     #[ORM\Column(type: Types::STRING, length: 20, enumType: UserStatus::class)]
