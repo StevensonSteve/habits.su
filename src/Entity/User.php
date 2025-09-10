@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Enum\UserStatus;
 use App\Repository\UserRepository;
 use DateTimeImmutable;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Bridge\Doctrine\Types\UuidType;
@@ -15,7 +16,7 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\HasLifecycleCallbacks]
 class User
 {
-    #[ORM\Column(length: 20, enumType: UserStatus::class)]
+    #[ORM\Column(type: Types::STRING, length: 20, enumType: UserStatus::class)]
     private UserStatus $status = UserStatus::PENDING;
 
     #[ORM\Column]
