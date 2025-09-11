@@ -7,30 +7,28 @@ use App\Repository\UserRepository;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\Table(name: '`user`')]
+#[ORM\Table(name: 'users')]
+#[ORM\UniqueConstraint(name: 'unique_users_email', columns: ['email'])]
 #[ORM\HasLifecycleCallbacks]
-#[ORM\UniqueConstraint(name: 'uniq_user_email', columns: ['email'])]
 class User
 {
     #[ORM\Column(type: Types::STRING, length: 20, enumType: UserStatus::class)]
     private UserStatus $status = UserStatus::PENDING;
 
-    #[ORM\Column]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private DateTimeImmutable $createdAt;
 
-    #[ORM\Column]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private DateTimeImmutable $updatedAt;
 
     public function __construct(
         #[ORM\Id]
-        #[ORM\Column(type: UuidType::NAME, unique: true)]
-        #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-        #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
+        #[ORM\Column(type: UuidType::NAME)]
+        #[ORM\GeneratedValue(strategy: 'NONE')]
         private Uuid $id,
         #[ORM\Column(length: 180)]
         private string $email,
