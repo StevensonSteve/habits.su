@@ -7,7 +7,7 @@ services:
     working_dir: /var/www
     volumes:
       - ${CODE_DIR}:/var/www
-      - ./php-fpm/php.ini:/usr/local/etc/php/conf.d/custom.ini
+      - ./docker/php-fpm/php.ini:/usr/local/etc/php/conf.d/custom.ini
     networks:
       - symfony-network
     environment:
