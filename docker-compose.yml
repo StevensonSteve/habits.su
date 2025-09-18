@@ -1,0 +1,83 @@
+version: '3.8'
+
+services:
+  php-fpm:
+    build: ./docker/php-fpm
+    container_name: ${COMPOSE_PROJECT_NAME}-php-fpm
+    working_dir: /var/www
+    volumes:
+      - ${CODE_DIR}:/var/www
+      - ./php-fpm/php.ini:/usr/local/etc/php/conf.d/custom.ini
+    networks:
+      - symfony-network
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}
+      - RABBITMQ_DSN=amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:${RABBITMQ_PORT}/%2f
+      - REDIS_URL=redis://redis:${REDIS_PORT}
+      - APP_ENV=${APP_ENV}
+      - APP_DEBUG=${APP_DEBUG}
+    depends_on:
+      - postgres
+      - rabbitmq
+      - redis
+
+  nginx:
+    build: ./docker/nginx
+    container_name: ${COMPOSE_PROJECT_NAME}-nginx
+    ports:
+      - "${NGINX_HTTP_PORT}:80"
+      - "${NGINX_HTTPS_PORT}:443"
+    volumes:
+      - ${CODE_DIR}:/var/www
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./docker/nginx/sites:/etc/nginx/conf.d
+    networks:
+      - symfony-network
+    depends_on:
+      - php-fpm
+
+  postgres:
+    build: ./docker/postgres
+    container_name: ${COMPOSE_PROJECT_NAME}-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - symfony-network
+
+  rabbitmq:
+    build: ./docker/rabbitmq
+    container_name: ${COMPOSE_PROJECT_NAME}-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    ports:
+      - "${RABBITMQ_PORT}:5672"
+      - "${RABBITMQ_MANAGEMENT_PORT}:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - symfony-network
+
+  redis:
+    build: ./docker/redis
+    container_name: ${COMPOSE_PROJECT_NAME}-redis
+    ports:
+      - "${REDIS_PORT}:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - symfony-network
+
+networks:
+  symfony-network:
+
+volumes:
+  postgres_data:
+  rabbitmq_data:
+  redis_data:
