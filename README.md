@@ -1,13 +1,3 @@
-## Project structure:
-```
-docker-symfony/
-├── docker/
-│   ├── docker-compose.yml
-│   └── ...
-└── code(Symfony)/
-    ├── src/
-    └── ...
-```
 ## Docker
 ```sh 
 #Создайте .env файл
