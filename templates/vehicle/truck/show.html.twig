@@ -1,0 +1,86 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Truck{% endblock %}
+
+{% block body %}
+    <h1>Truck</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>CreatedAt</th>
+                <td>{{ truck.createdAt ? truck.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>UpdatedAt</th>
+                <td>{{ truck.updatedAt ? truck.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Id</th>
+                <td>{{ truck.id }}</td>
+            </tr>
+            <tr>
+                <th>Vin</th>
+                <td>{{ truck.vin }}</td>
+            </tr>
+            <tr>
+                <th>Brand</th>
+                <td>{{ truck.brand }}</td>
+            </tr>
+            <tr>
+                <th>Model</th>
+                <td>{{ truck.model }}</td>
+            </tr>
+            <tr>
+                <th>ManufactureDate</th>
+                <td>{{ truck.manufactureDate ? truck.manufactureDate|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>MileageInitial</th>
+                <td>{{ truck.mileageInitial }}</td>
+            </tr>
+            <tr>
+                <th>EngineType</th>
+                <td>{{ truck.engineType.value }}</td>
+            </tr>
+            <tr>
+                <th>EngineCapacity</th>
+                <td>{{ truck.engineCapacity }}</td>
+            </tr>
+            <tr>
+                <th>EngineVolume</th>
+                <td>{{ truck.engineVolume }}</td>
+            </tr>
+            <tr>
+                <th>PurchaseDate</th>
+                <td>{{ truck.purchaseDate ? truck.purchaseDate|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Color</th>
+                <td>{{ truck.color }}</td>
+            </tr>
+            <tr>
+                <th>LicensePlate</th>
+                <td>{{ truck.licensePlate }}</td>
+            </tr>
+            <tr>
+                <th>MaxWeight</th>
+                <td>{{ truck.maxWeight }}</td>
+            </tr>
+            <tr>
+                <th>EmptyWeight</th>
+                <td>{{ truck.emptyWeight }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ truck.description }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_vehicle_truck_index') }}">back to list</a>
+
+    <a href="{{ path('app_vehicle_truck_edit', {'id': truck.id}) }}">edit</a>
+
+    {{ include('vehicle/truck/_delete_form.html.twig') }}
+{% endblock %}
