@@ -12,7 +12,7 @@ enum EngineType: string
 
     public function getLabel(): string
     {
-        return match($this) {
+        return match ($this) {
             self::DIESEL => 'Дизельный',
             self::PETROL => 'Бензиновый',
             self::ELECTRIC => 'Электрический',

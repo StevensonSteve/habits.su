@@ -11,8 +11,11 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 final class TruckControllerTest extends WebTestCase
 {
     private KernelBrowser $client;
+
     private EntityManagerInterface $manager;
+
     private EntityRepository $truckRepository;
+
     private string $path = '/vehicle/truck/';
 
     protected function setUp(): void

@@ -19,30 +19,43 @@ class Truck
 {
     #[ORM\Column(type: Types::STRING, length: 17)]
     private ?string $vin = null;
+
     #[ORM\Column(type: Types::STRING, length: 50)]
     private ?string $brand = null;
+
     #[ORM\Column(type: Types::STRING, length: 50)]
     private ?string $model = null;
+
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private ?DateTimeImmutable $manufactureDate = null;
+
     #[ORM\Column(type: Types::INTEGER)]
     private ?int $mileageInitial = null;
+
     #[ORM\Column(enumType: EngineType::class)]
     private ?EngineType $engineType = null;
+
     #[ORM\Column(type: Types::SMALLINT)]
     private ?int $engineCapacity = null;
+
     #[ORM\Column(type: Types::DECIMAL, precision: 4, scale: 2)]
     private ?string $engineVolume = null;
+
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private ?DateTimeImmutable $purchaseDate = null;
+
     #[ORM\Column(type: Types::STRING, length: 30, nullable: true)]
     private ?string $color = null;
+
     #[ORM\Column(type: Types::STRING, length: 15)]
     private ?string $licensePlate = null;
+
     #[ORM\Column(type: Types::INTEGER)]
     private ?int $maxWeight = null;
+
     #[ORM\Column(type: Types::INTEGER)]
     private ?int $emptyWeight = null;
+
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
@@ -211,7 +224,6 @@ class Truck
     {
         return $this->updatedAt;
     }
-
 
     public function getCreatedAt(): DateTimeImmutable
     {

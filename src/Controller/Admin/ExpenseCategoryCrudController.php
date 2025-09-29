@@ -19,7 +19,7 @@ class ExpenseCategoryCrudController extends AbstractCrudController
     {
         return new ExpenseCategory(
             Uuid::v7(),
-            ''
+            '',
         );
     }
 

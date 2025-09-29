@@ -72,7 +72,7 @@ final class TruckController extends AbstractController
     #[Route('/{id}', name: 'app_vehicle_truck_delete', methods: ['POST'])]
     public function delete(Request $request, Truck $truck, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$truck->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $truck->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($truck);
             $entityManager->flush();
         }

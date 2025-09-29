@@ -72,7 +72,7 @@ final class ExpenseCategoryController extends AbstractController
     #[Route('/{id}', name: 'app_expense_category_delete', methods: ['POST'])]
     public function delete(Request $request, ExpenseCategory $expenseCategory, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$expenseCategory->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $expenseCategory->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($expenseCategory);
             $entityManager->flush();
         }
