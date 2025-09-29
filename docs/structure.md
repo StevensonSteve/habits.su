@@ -133,12 +133,12 @@ client:
 
 shipment:
 - id
-- client_id // (FK client.id) ManyToOne
-- shipment_number // Уникальный номер рейса
+- client_order_id // (FK client_order.id) ManyToOne
+- shipment_number // Уникальный номер рейса (id уже есть?)
 - status // ENUM('planned', 'in_progress', 'completed', 'cancelled')
 - total_distance // Общее расстояние рейса в км
-- total_weight // Общий вес груза в кг
-- total_volume // Общий объем груза в м³
+- total_weight // Общий вес груза в кг (не выглядит нужным)
+- total_volume // Общий объем груза в м³ (не выглядит нужным)
 - planned_start_date // Планируемая дата начала
 - planned_end_date // Планируемая дата окончания
 - actual_start_date // Фактическая дата начала
@@ -183,7 +183,7 @@ route_point:
 
 cargo:
 - id
-- shipment_id // (FK shipment.id) ManyToOne
+- shipment_id // (FK shipment.id) ManyToOne (надо ли оно или млжно через 2 модели доставать)
 - route_point_id // (FK route_point.id) ManyToOne - точка загрузки/выгрузки
 - description // Описание груза
 - cargo_type // Тип груза
@@ -200,7 +200,7 @@ cargo:
 client_order:
 - id
 - client_id // (FK client.id) ManyToOne
-- order_number // Номер заказа
+- order_number // Номер заказа (id уже есть?)
 - order_date // Дата заказа
 - status // ENUM('new', 'confirmed', 'in_progress', 'completed', 'cancelled')
 - total_amount // Общая сумма заказа
