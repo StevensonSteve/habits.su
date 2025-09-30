@@ -1,0 +1,6 @@
+engine_type:
+    diesel: Diesel
+    petrol: Petrol
+    electric: Electric
+    gas: Gas
+    hybrid: Hybrid

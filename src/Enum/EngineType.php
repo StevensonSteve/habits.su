@@ -10,14 +10,13 @@ enum EngineType: string
     case GAS = 'gas';
     case HYBRID = 'hybrid';
 
-    public function getLabel(): string
+    public static function getCases(): array
     {
-        return match ($this) {
-            self::DIESEL => 'Дизельный',
-            self::PETROL => 'Бензиновый',
-            self::ELECTRIC => 'Электрический',
-            self::GAS => 'Газовый',
-            self::HYBRID => 'Гибридный',
-        };
+        return self::cases();
+    }
+
+    public static function getValues(): array
+    {
+        return array_column(self::cases(), 'value');
     }
 }

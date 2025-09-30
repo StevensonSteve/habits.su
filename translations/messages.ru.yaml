@@ -1,0 +1,6 @@
+engine_type:
+    diesel: Дизельный
+    petrol: Бензиновый
+    electric: Электрический
+    gas: Газовый
+    hybrid: Гибридный

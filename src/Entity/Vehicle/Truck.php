@@ -8,55 +8,89 @@ use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: TruckRepository::class)]
 #[ORM\Table(name: 'trucks')]
 #[ORM\UniqueConstraint(name: 'uniq_truck_vin', columns: ['vin'])]
 #[ORM\UniqueConstraint(name: 'uniq_truck_license_plate', columns: ['license_plate'])]
 #[ORM\HasLifecycleCallbacks]
+#[UniqueEntity('vin', message: 'VIN номер должен быть уникальным')]
+#[UniqueEntity('licensePlate', message: 'Гос. номер должен быть уникальным')]
 class Truck
 {
     #[ORM\Column(type: Types::STRING, length: 17)]
+    #[Assert\NotBlank(message: 'VIN номер обязателен')]
+    #[Assert\Length(max: 17, maxMessage: 'VIN номер не может быть длиннее {{ limit }} символов')]
+    #[Assert\Regex(
+        pattern: '/^[A-HJ-NPR-Z0-9]{17}$/',
+        message: 'VIN номер должен содержать 17 символов (буквы и цифры)',
+    )]
     private ?string $vin = null;
 
     #[ORM\Column(type: Types::STRING, length: 50)]
+    #[Assert\NotBlank(message: 'Марка обязательна')]
+    #[Assert\Length(max: 50, maxMessage: 'Марка не может быть длиннее {{ limit }} символов')]
     private ?string $brand = null;
 
     #[ORM\Column(type: Types::STRING, length: 50)]
+    #[Assert\NotBlank(message: 'Модель обязательна')]
+    #[Assert\Length(max: 50, maxMessage: 'Модель не может быть длиннее {{ limit }} символов')]
     private ?string $model = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    #[Assert\NotBlank(message: 'Дата производства обязательна')]
+    #[Assert\LessThanOrEqual('today', message: 'Дата производства не может быть в будущем')]
     private ?DateTimeImmutable $manufactureDate = null;
 
     #[ORM\Column(type: Types::INTEGER)]
+    #[Assert\NotBlank(message: 'Начальный пробег обязателен')]
+    #[Assert\PositiveOrZero(message: 'Пробег не может быть отрицательным')]
     private ?int $mileageInitial = null;
 
     #[ORM\Column(enumType: EngineType::class)]
+    #[Assert\NotNull(message: 'Тип двигателя обязателен')]
     private ?EngineType $engineType = null;
 
     #[ORM\Column(type: Types::SMALLINT)]
+    #[Assert\NotBlank(message: 'Мощность двигателя обязательна')]
+    #[Assert\Positive(message: 'Мощность должна быть положительным числом')]
+    #[Assert\LessThanOrEqual(2000, message: 'Мощность не может превышать 2000 л.с.')]
     private ?int $engineCapacity = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 4, scale: 2)]
+    #[Assert\NotBlank(message: 'Объем двигателя обязателен')]
+    #[Assert\Positive(message: 'Объем должен быть положительным числом')]
+    #[Assert\LessThanOrEqual(20, message: 'Объем не может превышать 20 литров')]
     private ?string $engineVolume = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    #[Assert\NotBlank(message: 'Дата покупки обязательна')]
     private ?DateTimeImmutable $purchaseDate = null;
 
     #[ORM\Column(type: Types::STRING, length: 30, nullable: true)]
+    #[Assert\Length(max: 30, maxMessage: 'Цвет не может быть длиннее {{ limit }} символов')]
     private ?string $color = null;
 
     #[ORM\Column(type: Types::STRING, length: 15)]
+    #[Assert\NotBlank(message: 'Гос. номер обязателен')]
+    #[Assert\Length(max: 15, maxMessage: 'Гос. номер не может быть длиннее {{ limit }} символов')]
     private ?string $licensePlate = null;
 
     #[ORM\Column(type: Types::INTEGER)]
+    #[Assert\NotBlank(message: 'Макс. масса обязательна')]
+    #[Assert\Positive(message: 'Масса должна быть положительным числом')]
     private ?int $maxWeight = null;
 
     #[ORM\Column(type: Types::INTEGER)]
+    #[Assert\NotBlank(message: 'Снаряженная масса обязательна')]
+    #[Assert\Positive(message: 'Масса должна быть положительным числом')]
     private ?int $emptyWeight = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Assert\Length(max: 1000, maxMessage: 'Описание не может быть длиннее {{ limit }} символов')]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]

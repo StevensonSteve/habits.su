@@ -9,6 +9,8 @@ use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+use function Symfony\Component\Translation\t;
+
 class TruckType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -24,7 +26,7 @@ class TruckType extends AbstractType
             ->add('engineType', EnumType::class, [
                 'class' => EngineType::class,
                 'choice_label' => function (EngineType $engineType) {
-                    return $engineType->getLabel();
+                    return fn(string $engineType) => t("engine_type.{$engineType}");
                 },
                 'placeholder' => 'Выберите тип двигателя',
             ])
