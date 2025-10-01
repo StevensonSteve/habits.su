@@ -25,10 +25,10 @@ class TruckCrudController extends AbstractCrudController
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
-            ->setPageTitle('index', 'Грузовики')
-            ->setPageTitle('detail', 'Просмотр грузовика')
-            ->setPageTitle('new', 'Добавить грузовик')
-            ->setPageTitle('edit', 'Редактировать грузовик')
+            ->setPageTitle(Crud::PAGE_INDEX, 'Список грузовиков')
+            ->setPageTitle(Crud::PAGE_DETAIL, 'Просмотр информации грузовика')
+            ->setPageTitle(Crud::PAGE_NEW, 'Добавить грузовик')
+            ->setPageTitle(Crud::PAGE_EDIT, 'Редактировать информацию грузовика')
             ->setDefaultSort([
                 'createdAt' => 'DESC',
             ]);
@@ -36,7 +36,12 @@ class TruckCrudController extends AbstractCrudController
 
     public function configureActions(Actions $actions): Actions
     {
+        $exportAction = Action::new('export', 'Export CSV', 'fa fa-download')
+            ->linkToRoute('truck_custom_export')
+            ->createAsGlobalAction();
+
         return $actions
+            ->add(Crud::PAGE_INDEX, $exportAction)
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
             ->update(Crud::PAGE_INDEX, Action::DETAIL, function (Action $action) {
                 return $action->setIcon('fa fa-eye');
