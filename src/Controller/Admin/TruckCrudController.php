@@ -61,22 +61,15 @@ class TruckCrudController extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
-        return [ // toDo настроить для кажой страници отдельно
+        return [
             IdField::new('id')
                 ->hideOnForm()
                 ->hideOnIndex(),
 
-            TextField::new('vin', 'VIN')
-                ->setMaxLength(17), // toDo валидация раскидана по файлам
-
-            TextField::new('brand', 'Марка')
-                ->setMaxLength(50),
-
-            TextField::new('model', 'Модель')
-                ->setMaxLength(50),
-
-            TextField::new('licensePlate', 'Гос. номер')
-                ->setMaxLength(15),
+            TextField::new('vin', 'VIN'),
+            TextField::new('brand', 'Марка'),
+            TextField::new('model', 'Модель'),
+            TextField::new('licensePlate', 'Гос. номер'),
 
             DateField::new('manufactureDate', 'Дата производства'),
             DateField::new('purchaseDate', 'Дата покупки'),
@@ -108,7 +101,6 @@ class TruckCrudController extends AbstractCrudController
             IntegerField::new('maxWeight', 'Макс. масса (кг)'),
 
             TextField::new('color', 'Цвет')
-                ->setMaxLength(30)
                 ->hideOnIndex(),
 
             TextareaField::new('description', 'Описание')
