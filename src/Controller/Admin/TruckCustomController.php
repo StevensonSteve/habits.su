@@ -9,11 +9,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-//#[AdminRoute('/truck-custom', name: 'truck_custom')]
+#[AdminRoute('/report/truck', name: 'truck_custom')]
 class TruckCustomController extends AbstractController
 {
-    #[Route('/admin/truck-custom', name: 'truck_custom_export')]
-    //    #[AdminRoute('/export', name: 'export')]
+    #[AdminRoute('/export', name: 'export')]
+//    #[Route('/admin/truck/export', name: 'admin_truck_custom_export', priority: 1)]
+//      toDo решить проблему конфликтов urls можно с priority: 1 #[Route перебивает AdminRoute
     public function exportTrucks(EntityManagerInterface $entityManager): Response
     {
         $trucks = $entityManager->getRepository(Truck::class)->findAll();

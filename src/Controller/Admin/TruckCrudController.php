@@ -37,7 +37,7 @@ class TruckCrudController extends AbstractCrudController
     public function configureActions(Actions $actions): Actions
     {
         $exportAction = Action::new('export', 'Export CSV', 'fa fa-download')
-            ->linkToRoute('truck_custom_export')
+            ->linkToRoute('admin_truck_custom_export')
             ->createAsGlobalAction();
 
         return $actions
