@@ -1,5 +1,10 @@
 FROM php:8.4-fpm-alpine
 
+ARG USER_ID=1000
+ARG USER_NAME=www-user
+ARG GROUP_ID=1000
+ARG GROUP_NAME=www-user
+
 RUN apk update && apk add --no-cache \
     git curl libpng-dev libwebp-dev libjpeg-turbo-dev freetype-dev \
     libzip-dev postgresql-dev icu-dev oniguruma-dev rabbitmq-c-dev \
@@ -12,16 +17,16 @@ RUN pecl install redis amqp && docker-php-ext-enable redis amqp
 
 RUN apk add --no-cache bash nano vim
 
-SHELL ["/bin/bash", "-c"]
-
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-RUN addgroup -g 1000 www-user && \
-    adduser -u 1000 -G www-user -D www-user && \
-    chown -R www-user:www-user /var/www
+RUN addgroup -g ${GROUP_ID} ${GROUP_NAME} && \
+    adduser -u ${USER_ID} -G ${GROUP_NAME} -D ${USER_NAME} && \
+    chown -R ${USER_NAME}:${GROUP_NAME} /var/www
 
 RUN git config --global --add safe.directory /var/www
 
 WORKDIR /var/www
+
+USER ${USER_NAME}
 
 CMD ["php-fpm"]
