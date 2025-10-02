@@ -22,35 +22,32 @@ use Symfony\Component\Uid\Uuid;
 class Client
 {
     #[ORM\Column(length: 255)]
-    public ?string $name = null;
+    public string $name;
 
     #[ORM\Column(length: 255)]
-    public ?string $contactPerson = null;
+    public string $contactPerson;
 
     #[ORM\Column(length: 50)]
-    public ?string $phone = null;
+    public string $phone;
 
     #[ORM\Column(length: 255)]
-    public ?string $email = null;
+    public string $email;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     public ?string $address = null;
 
     #[ORM\Column(length: 20)]
-    public ?string $taxNumber = null;
+    public string $taxNumber;
 
     #[ORM\Column(length: 500, nullable: true)]
     public ?string $paymentTerms = null;
 
     #[ORM\Column]
-    public ?\DateTimeImmutable $createdAt = null;
+    public DateTimeImmutable $createdAt;
 
     #[ORM\Column]
-    public ?\DateTimeImmutable $updatedAt = null;
+    public DateTimeImmutable $updatedAt;
 
-    /**
-     * @var Collection<int, Order>
-     */
     #[ORM\OneToMany(targetEntity: Order::class, mappedBy: 'client', orphanRemoval: true)]
     private Collection $orders;
 
@@ -58,13 +55,16 @@ class Client
         #[ORM\Id]
         #[ORM\Column(type: UuidType::NAME)]
         #[ORM\GeneratedValue(strategy: 'NONE')]
-        public Uuid $id {
-            get => $this->id;
-        },
+        private Uuid $id,
     ) {
         $this->createdAt = new DateTimeImmutable();
         $this->updatedAt = clone $this->createdAt;
         $this->orders = new ArrayCollection();
+    }
+
+    public function getId(): Uuid
+    {
+        return $this->id;
     }
 
     #[ORM\PreUpdate]
@@ -73,33 +73,26 @@ class Client
         $this->updatedAt = new DateTimeImmutable();
     }
 
-    /**
-     * @return Collection<int, Order>
-     */
     public function getOrders(): Collection
     {
         return $this->orders;
     }
 
-    public function addOrder(Order $order): static
+    public function addOrder(Order $order): void
     {
-        if (! $this->orders->contains($order)) {
+        if (!$this->orders->contains($order)) {
             $this->orders->add($order);
-            $order->setClient($this);
+            $order->client = $this;
         }
-
-        return $this;
     }
 
-    public function removeOrder(Order $order): static
+    public function removeOrder(Order $order): void
     {
         if ($this->orders->removeElement($order)) {
             // set the owning side to null (unless already changed)
-            if ($order->getClient() === $this) {
-                $order->setClient(null);
+            if ($order->client === $this) {
+                $order->client = null;
             }
         }
-
-        return $this;
     }
 }

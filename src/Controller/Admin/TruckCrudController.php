@@ -83,7 +83,7 @@ class TruckCrudController extends AbstractCrudController
                 ->setChoices(
                     array_combine(
                         array_map(
-                            fn(EngineType $type) => t("engine_type.{$type->value}"),
+                            fn(EngineType $type) => t("engineType.{$type->value}"),
                             EngineType::cases(),
                         ),
                         EngineType::cases(),

@@ -1,6 +1,13 @@
-engine_type:
+engineType:
     diesel: Дизельный
     petrol: Бензиновый
     electric: Электрический
     gas: Газовый
     hybrid: Гибридный
+
+orderStatus:
+    new: Новый
+    confirmed: Подтверждён
+    in_progress: В работе
+    completed: Завершён
+    cancelled: Отменён

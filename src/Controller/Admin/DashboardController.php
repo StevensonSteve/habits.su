@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\Client;
 use App\Entity\Expense\ExpenseCategory;
+use App\Entity\Order;
 use App\Entity\Vehicle\Truck;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
@@ -57,5 +58,6 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Категории трат', 'fas fa-list', ExpenseCategory::class);
         yield MenuItem::linkToCrud('Грузовики', 'fas fa-list', Truck::class);
         yield MenuItem::linkToCrud('Клиенты', 'fas fa-list', Client::class);
+        yield MenuItem::linkToCrud('Заказы', 'fas fa-list', Order::class);
     }
 }
