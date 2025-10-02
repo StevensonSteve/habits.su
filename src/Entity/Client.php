@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\ClientRepository;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
@@ -46,21 +48,58 @@ class Client
     #[ORM\Column]
     public ?\DateTimeImmutable $updatedAt = null;
 
+    /**
+     * @var Collection<int, Order>
+     */
+    #[ORM\OneToMany(targetEntity: Order::class, mappedBy: 'client', orphanRemoval: true)]
+    private Collection $orders;
+
     public function __construct(
         #[ORM\Id]
         #[ORM\Column(type: UuidType::NAME)]
         #[ORM\GeneratedValue(strategy: 'NONE')]
         public Uuid $id {
             get => $this->id;
-        }
+        },
     ) {
         $this->createdAt = new DateTimeImmutable();
         $this->updatedAt = clone $this->createdAt;
+        $this->orders = new ArrayCollection();
     }
 
     #[ORM\PreUpdate]
     public function onUpdate(): void
     {
         $this->updatedAt = new DateTimeImmutable();
+    }
+
+    /**
+     * @return Collection<int, Order>
+     */
+    public function getOrders(): Collection
+    {
+        return $this->orders;
+    }
+
+    public function addOrder(Order $order): static
+    {
+        if (! $this->orders->contains($order)) {
+            $this->orders->add($order);
+            $order->setClient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrder(Order $order): static
+    {
+        if ($this->orders->removeElement($order)) {
+            // set the owning side to null (unless already changed)
+            if ($order->getClient() === $this) {
+                $order->setClient(null);
+            }
+        }
+
+        return $this;
     }
 }
