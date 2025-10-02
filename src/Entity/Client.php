@@ -15,7 +15,7 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\UniqueConstraint(name: 'uniq_client_tax_number', columns: ['tax_number'])]
 #[ORM\UniqueConstraint(name: 'uniq_client_email', columns: ['email'])]
 #[ORM\HasLifecycleCallbacks]
-#[UniqueEntity('tax_number', message: 'Tax number номер должен быть уникальным')]
+#[UniqueEntity('taxNumber', message: 'Tax number номер должен быть уникальным')]
 #[UniqueEntity('email', message: 'Email номер должен быть уникальным')]
 class Client
 {

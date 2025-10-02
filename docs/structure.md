@@ -131,6 +131,17 @@ client:
 - createdAt
 - updatedAt
 
+order:
+- id
+- client_id // (FK client.id) ManyToOne
+- order_number // Номер заказа (id уже есть?)
+- order_date // Дата заказа
+- status // ENUM('new', 'confirmed', 'in_progress', 'completed', 'cancelled')
+- total_amount // Общая сумма заказа
+- payment_status // Статус оплаты
+- createdAt
+- updatedAt
+
 shipment:
 - id
 - client_order_id // (FK client_order.id) ManyToOne
@@ -194,17 +205,6 @@ cargo:
 - hazardous_material // Признак опасного груза
 - temperature_requirements // Температурный режим
 - handling_instructions // Инструкции по обращению
-- createdAt
-- updatedAt
-
-client_order:
-- id
-- client_id // (FK client.id) ManyToOne
-- order_number // Номер заказа (id уже есть?)
-- order_date // Дата заказа
-- status // ENUM('new', 'confirmed', 'in_progress', 'completed', 'cancelled')
-- total_amount // Общая сумма заказа
-- payment_status // Статус оплаты
 - createdAt
 - updatedAt
 
