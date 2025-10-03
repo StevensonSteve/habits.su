@@ -1,13 +1,1 @@
-engineType:
-    diesel: Diesel
-    petrol: Petrol
-    electric: Electric
-    gas: Gas
-    hybrid: Hybrid
 
-orderStatus:
-    new: New
-    confirmed: Confirmed
-    in_progress: In progress
-    completed: Completed
-    cancelled: Cancelled

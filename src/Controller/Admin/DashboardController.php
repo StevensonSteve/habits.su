@@ -16,6 +16,8 @@ use Symfony\Component\HttpFoundation\Response;
 #[AdminDashboard(routePath: '/admin', routeName: 'admin')]
 class DashboardController extends AbstractDashboardController
 {
+    private const string TRANSLATION_DOMAIN = 'easyAdmin';
+
     public function index(): Response
     {
         $adminUrlGenerator = $this->container->get(AdminUrlGenerator::class);
@@ -49,15 +51,17 @@ class DashboardController extends AbstractDashboardController
     public function configureDashboard(): Dashboard
     {
         return Dashboard::new()
+            ->setTranslationDomain(self::TRANSLATION_DOMAIN)
             ->setTitle('LogiTruck'); // toDo set from .env
     }
 
     public function configureMenuItems(): iterable
     {
-        yield MenuItem::linkToDashboard('Админ панель', 'fa fa-home');
-        yield MenuItem::linkToCrud('Категории трат', 'fas fa-list', ExpenseCategory::class);
-        yield MenuItem::linkToCrud('Грузовики', 'fas fa-list', Truck::class);
-        yield MenuItem::linkToCrud('Клиенты', 'fas fa-list', Client::class);
-        yield MenuItem::linkToCrud('Заказы', 'fas fa-list', Order::class);
+        yield MenuItem::linkToDashboard('dashboard.menu.dashboard', 'fa fa-home');
+        yield MenuItem::section('dashboard.menu.management');
+        yield MenuItem::linkToCrud('dashboard.menu.expense_categories', 'fas fa-tags', ExpenseCategory::class);
+        yield MenuItem::linkToCrud('dashboard.menu.trucks', 'fas fa-truck', Truck::class);
+        yield MenuItem::linkToCrud('dashboard.menu.clients', 'fas fa-users', Client::class);
+        yield MenuItem::linkToCrud('dashboard.menu.orders', 'fas fa-shopping-cart', Order::class);
     }
 }

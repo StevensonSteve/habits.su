@@ -18,17 +18,17 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Component\Uid\Uuid;
 
-use function Symfony\Component\Translation\t;
-
 class TruckCrudController extends AbstractCrudController
 {
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
-            ->setPageTitle(Crud::PAGE_INDEX, 'Список грузовиков')
-            ->setPageTitle(Crud::PAGE_DETAIL, 'Просмотр информации грузовика')
-            ->setPageTitle(Crud::PAGE_NEW, 'Добавить грузовик')
-            ->setPageTitle(Crud::PAGE_EDIT, 'Редактировать информацию грузовика')
+            ->setPageTitle(Crud::PAGE_INDEX, 'truck.pageTitle.index')
+            ->setPageTitle(Crud::PAGE_DETAIL, 'truck.pageTitle.detail')
+            ->setPageTitle(Crud::PAGE_NEW, 'truck.pageTitle.new')
+            ->setPageTitle(Crud::PAGE_EDIT, 'truck.pageTitle.edit')
+            ->setEntityLabelInSingular('truck.entity.singular')
+            ->setEntityLabelInPlural('truck.entity.plural')
             ->setDefaultSort([
                 'createdAt' => 'DESC',
             ]);
@@ -36,7 +36,7 @@ class TruckCrudController extends AbstractCrudController
 
     public function configureActions(Actions $actions): Actions
     {
-        $exportAction = Action::new('export', 'Export CSV', 'fa fa-download')
+        $exportAction = Action::new('export', 'truck.action.export', 'fa fa-download')
             ->linkToRoute('admin_truck_custom_export')
             ->createAsGlobalAction();
 
@@ -44,13 +44,22 @@ class TruckCrudController extends AbstractCrudController
             ->add(Crud::PAGE_INDEX, $exportAction)
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
             ->update(Crud::PAGE_INDEX, Action::DETAIL, function (Action $action) {
-                return $action->setIcon('fa fa-eye');
+                return $action
+                    ->setIcon('fa fa-eye')
+                    ->setLabel('admin.action.detail');
             })
             ->update(Crud::PAGE_INDEX, Action::EDIT, function (Action $action) {
-                return $action->setIcon('fa fa-edit');
+                return $action
+                    ->setIcon('fa fa-edit')
+                    ->setLabel('admin.action.edit');
             })
             ->update(Crud::PAGE_INDEX, Action::DELETE, function (Action $action) {
-                return $action->setIcon('fa fa-trash');
+                return $action
+                    ->setIcon('fa fa-trash')
+                    ->setLabel('admin.action.delete');
+            })
+            ->update(Crud::PAGE_INDEX, Action::NEW, function (Action $action) {
+                return $action->setLabel('truck.action.new');
             });
     }
 
@@ -71,19 +80,19 @@ class TruckCrudController extends AbstractCrudController
                 ->hideOnForm()
                 ->hideOnIndex(),
 
-            TextField::new('vin', 'VIN'),
-            TextField::new('brand', 'Марка'),
-            TextField::new('model', 'Модель'),
-            TextField::new('licensePlate', 'Гос. номер'),
+            TextField::new('vin', 'truck.field.vin'),
+            TextField::new('brand', 'truck.field.brand'),
+            TextField::new('model', 'truck.field.model'),
+            TextField::new('licensePlate', 'truck.field.licensePlate'),
 
-            DateField::new('manufactureDate', 'Дата производства'),
-            DateField::new('purchaseDate', 'Дата покупки'),
+            DateField::new('manufactureDate', 'truck.field.manufactureDate'),
+            DateField::new('purchaseDate', 'truck.field.purchaseDate'),
 
-            ChoiceField::new('engineType', 'Тип двигателя')
+            ChoiceField::new('engineType', 'truck.field.engineType')
                 ->setChoices(
                     array_combine(
                         array_map(
-                            fn(EngineType $type) => t("engineType.{$type->value}"),
+                            fn(EngineType $type) => "truck.engineType.{$type->value}",
                             EngineType::cases(),
                         ),
                         EngineType::cases(),
@@ -91,32 +100,32 @@ class TruckCrudController extends AbstractCrudController
                 )
                 ->renderAsBadges(),
 
-            IntegerField::new('engineCapacity', 'Мощность двигателя (л.с.)')
+            IntegerField::new('engineCapacity', 'truck.field.engineCapacity')
                 ->hideOnIndex(),
 
-            NumberField::new('engineVolume', 'Объем двигателя (л)')
+            NumberField::new('engineVolume', 'truck.field.engineVolume')
                 ->setNumDecimals(2)
                 ->setNumberFormat('%.2f')
                 ->hideOnIndex(),
 
-            IntegerField::new('mileageInitial', 'Начальный пробег')
+            IntegerField::new('mileageInitial', 'truck.field.mileageInitial')
                 ->hideOnIndex(),
 
-            IntegerField::new('emptyWeight', 'Снаряженная масса (кг)'),
-            IntegerField::new('maxWeight', 'Макс. масса (кг)'),
+            IntegerField::new('emptyWeight', 'truck.field.emptyWeight'),
+            IntegerField::new('maxWeight', 'truck.field.maxWeight'),
 
-            TextField::new('color', 'Цвет')
+            TextField::new('color', 'truck.field.color')
                 ->hideOnIndex(),
 
-            TextareaField::new('description', 'Описание')
+            TextareaField::new('description', 'truck.field.description')
                 ->hideOnIndex(),
 
-            DateTimeField::new('createdAt', 'Создан')
+            DateTimeField::new('createdAt', 'truck.field.createdAt')
                 ->hideOnForm()
                 ->setFormat('dd.MM.Y HH:mm')
                 ->hideOnIndex(),
 
-            DateTimeField::new('updatedAt', 'Обновлен')
+            DateTimeField::new('updatedAt', 'truck.field.updatedAt')
                 ->hideOnForm()
                 ->setFormat('dd.MM.Y HH:mm')
                 ->hideOnIndex(),
