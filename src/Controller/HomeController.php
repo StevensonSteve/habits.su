@@ -11,8 +11,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Uid\Uuid;
-
 use Symfony\Contracts\Translation\TranslatorInterface;
+
 use function Symfony\Component\Translation\t;
 
 final class HomeController extends AbstractController
@@ -21,11 +21,11 @@ final class HomeController extends AbstractController
     public function index(
         EntityManagerInterface $entityManager,
         ClientRepository $clientRepository,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
     ): Response {
 
-//        dd(($translator->trans("orderStatus.new", domain: 'orders')));
-//        dd(t("orderStatus.new", [], 'orders'));
+        //        dd(($translator->trans("orderStatus.new", domain: 'orders')));
+        //        dd(t("orderStatus.new", [], 'orders'));
 
         $result = $translator->trans("test");
         dump($result); // Выведет "Дизельный"
@@ -38,7 +38,7 @@ final class HomeController extends AbstractController
         } catch (\Exception $e) {
             dump($e->getMessage());
         }
-//        echo t("engineType.diesel", domain: 'order')->getMessage();
+        //        echo t("engineType.diesel", domain: 'order')->getMessage();
         die();
         $client = $clientRepository->find('0199a3a4-b4c6-75d8-931b-1f3db3fdbddf');
         //        dd($client);
