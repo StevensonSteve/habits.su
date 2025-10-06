@@ -23,6 +23,7 @@ services:
       - REDIS_URL=redis://redis:${REDIS_PORT}
       - APP_ENV=${APP_ENV}
       - APP_DEBUG=${APP_DEBUG}
+      - PHP_MEMORY_LIMIT=${PHP_MEMORY_LIMIT}
     depends_on:
       - postgres
       - rabbitmq

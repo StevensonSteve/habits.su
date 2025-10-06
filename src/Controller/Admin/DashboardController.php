@@ -13,7 +13,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Component\HttpFoundation\Response;
 
-#[AdminDashboard(routePath: '/admin', routeName: 'admin')]
+#[AdminDashboard(routePath: '/easyadmin', routeName: 'admin')]
 class DashboardController extends AbstractDashboardController
 {
     private const string TRANSLATION_DOMAIN = 'easyAdmin';
