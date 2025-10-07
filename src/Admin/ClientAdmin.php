@@ -12,13 +12,18 @@ use Sonata\AdminBundle\Show\ShowMapper;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Uid\Uuid;
 
 final class ClientAdmin extends AbstractAdmin
 {
+    protected function createNewInstance(): object
+    {
+        return new Client(Uuid::v7());
+    }
+
     protected function configureFormFields(FormMapper $form): void
     {
         $form->with('Основная информация');
-        $form->add('id', TextType::class);
         $form->add('name', TextType::class);
         $form->add('contactPerson', TextType::class);
         $form->add('phone', TextType::class, ['label' => 'Телефон']);
@@ -88,7 +93,7 @@ final class ClientAdmin extends AbstractAdmin
             'label' => 'Обновлен',
             'format' => 'd.m.Y H:i'
         ]);
-//        $list->add('_action', null, [
+//        $list->add('_action', 'actions', [
 //            'label' => 'Действия',
 //            'actions' => [
 //                'show' => [],
@@ -139,7 +144,7 @@ final class ClientAdmin extends AbstractAdmin
         $show->add('orders', null, [
             'label' => 'Заказы',
             'associated_property' => function ($order) {
-                return $order->getId(); // Замените на нужное поле из Order
+                return $order->getId();
             }
         ]);
         $show->end();

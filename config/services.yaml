@@ -21,4 +21,9 @@ services:
     admin.client:
         class: App\Admin\ClientAdmin
         tags:
-            - { name: sonata.admin, model_class: App\Entity\Client, manager_type: orm, label: Клиенты }
+            - { name: sonata.admin, model_class: App\Entity\Client, manager_type: orm, label: 'Клиенты' }
+
+    admin.order:
+        class: App\Admin\OrderAdmin
+        tags:
+            - { name: sonata.admin, model_class: App\Entity\Order, manager_type: orm, label: 'Заказы' }

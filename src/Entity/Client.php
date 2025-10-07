@@ -67,6 +67,11 @@ class Client
         return $this->id;
     }
 
+    public function __toString(): string
+    {
+        return $this->name;
+    }
+
     #[ORM\PreUpdate]
     public function onUpdate(): void
     {
