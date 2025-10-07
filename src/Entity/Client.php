@@ -85,7 +85,7 @@ class Client
 
     public function addOrder(Order $order): void
     {
-        if (!$this->orders->contains($order)) {
+        if (! $this->orders->contains($order)) {
             $this->orders->add($order);
             $order->client = $this;
         }

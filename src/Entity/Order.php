@@ -20,7 +20,7 @@ class Order
     #[Assert\NotNull(message: 'Дата заказа обязательна для заполнения')]
     #[Assert\LessThanOrEqual(
         value: '+1 minute',
-        message: 'Дата заказа не может быть в будущем'
+        message: 'Дата заказа не может быть в будущем',
     )]
     public DateTimeImmutable $orderDate;
 
@@ -28,11 +28,11 @@ class Order
     #[Assert\PositiveOrZero(message: 'Сумма заказа должна быть положительной или нулевой')]
     #[Assert\LessThanOrEqual(
         value: 999999.99,
-        message: 'Сумма заказа не может превышать 999 999.99'
+        message: 'Сумма заказа не может превышать 999 999.99',
     )]
     #[Assert\Regex(
         pattern: '/^\d+(\.\d{1,2})?$/',
-        message: 'Сумма заказа должна быть в формате 123.45 (максимум 2 знака после запятой)'
+        message: 'Сумма заказа должна быть в формате 123.45 (максимум 2 знака после запятой)',
     )]
     public ?string $totalAmount = null;
 
@@ -44,7 +44,7 @@ class Order
     #[Assert\PositiveOrZero(message: 'Вес должен быть положительным или нулевым')]
     #[Assert\LessThanOrEqual(
         value: 100000,
-        message: 'Вес не может превышать 100 000 кг'
+        message: 'Вес не может превышать 100 000 кг',
     )]
     public ?int $weight = null;
 
@@ -52,11 +52,11 @@ class Order
     #[Assert\PositiveOrZero(message: 'Объем должен быть положительным или нулевым')]
     #[Assert\LessThanOrEqual(
         value: 10000,
-        message: 'Объем не может превышать 10 000 м³'
+        message: 'Объем не может превышать 10 000 м³',
     )]
     #[Assert\Regex(
         pattern: '/^\d+(\.\d{1,2})?$/',
-        message: 'Объем должен быть в формате 123.45 (максимум 2 знака после запятой)'
+        message: 'Объем должен быть в формате 123.45 (максимум 2 знака после запятой)',
     )]
     public ?string $volume = null;
 
@@ -93,7 +93,7 @@ class Order
         return sprintf(
             'Заказ %s - %s',
             $this->orderDate->format('d.m.Y'),
-            $this->client?->name ?? 'Без клиента'
+            $this->client?->name ?? 'Без клиента',
         );
     }
 

@@ -64,7 +64,9 @@ class OrderCrudController extends AbstractCrudController
             ->setPageTitle(Crud::PAGE_EDIT, 'order.pageTitle.edit')
             ->setEntityLabelInSingular('order.entity.singular')
             ->setEntityLabelInPlural('order.entity.plural')
-            ->setDefaultSort(['createdAt' => 'DESC'])
+            ->setDefaultSort([
+                'createdAt' => 'DESC',
+            ])
             ->setSearchFields(['id', 'client.name']);
     }
 

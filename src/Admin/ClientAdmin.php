@@ -3,7 +3,6 @@
 namespace App\Admin;
 
 use App\Entity\Client;
-use App\Factory\ClientFactory;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
@@ -16,6 +15,11 @@ use Symfony\Component\Uid\Uuid;
 
 final class ClientAdmin extends AbstractAdmin
 {
+    protected function configure(): void
+    {
+        $this->setTranslationDomain('sonataAdmin');
+    }
+
     protected function createNewInstance(): object
     {
         return new Client(Uuid::v7());
@@ -23,28 +27,41 @@ final class ClientAdmin extends AbstractAdmin
 
     protected function configureFormFields(FormMapper $form): void
     {
-        $form->with('Основная информация');
-        $form->add('name', TextType::class);
-        $form->add('contactPerson', TextType::class);
-        $form->add('phone', TextType::class, ['label' => 'Телефон']);
-        $form->add('email', EmailType::class, ['label' => 'Email']);
+        $form->with('client.pageTitle.edit');
+        $form->add('name', TextType::class, [
+            'label' => 'client.field.name',
+        ]);
+        $form->add('contactPerson', TextType::class, [
+            'label' => 'client.field.contactPerson',
+        ]);
+        $form->add('phone', TextType::class, [
+            'label' => 'client.field.phone',
+        ]);
+        $form->add('email', EmailType::class, [
+            'label' => 'client.field.email',
+        ]);
         $form->end();
 
-        $form->with('Юридическая информация');
+        $form->with('client.pageTitle.edit');
         $form->add('taxNumber', TextType::class, [
-            'label' => 'Налоговый номер'
+            'label' => 'client.field.taxNumber',
         ]);
         $form->add('address', TextareaType::class, [
-            'label' => 'Адрес',
+            'label' => 'client.field.address',
             'required' => false,
-            'attr' => ['rows' => 3]
+            'attr' => [
+                'rows' => 3,
+            ],
         ]);
         $form->end();
-        $form->with('Дополнительно');
+
+        $form->with('client.pageTitle.edit');
         $form->add('paymentTerms', TextareaType::class, [
-            'label' => 'Условия оплаты',
+            'label' => 'client.field.paymentTerms',
             'required' => false,
-            'attr' => ['rows' => 3]
+            'attr' => [
+                'rows' => 3,
+            ],
         ]);
         $form->end();
     }
@@ -52,100 +69,101 @@ final class ClientAdmin extends AbstractAdmin
     protected function configureDatagridFilters(DatagridMapper $datagrid): void
     {
         $datagrid->add('name', null, [
-            'label' => 'Название компании'
+            'label' => 'client.field.name',
         ]);
         $datagrid->add('contactPerson', null, [
-            'label' => 'Контактное лицо'
+            'label' => 'client.field.contactPerson',
         ]);
         $datagrid->add('phone', null, [
-            'label' => 'Телефон'
+            'label' => 'client.field.phone',
         ]);
         $datagrid->add('email', null, [
-            'label' => 'Email'
+            'label' => 'client.field.email',
         ]);
         $datagrid->add('taxNumber', null, [
-            'label' => 'Налоговый номер'
+            'label' => 'client.field.taxNumber',
         ]);
     }
 
     protected function configureListFields(ListMapper $list): void
     {
         $list->addIdentifier('name', null, [
-            'label' => 'Название компании'
+            'label' => 'client.field.name',
         ]);
         $list->add('contactPerson', null, [
-            'label' => 'Контактное лицо'
+            'label' => 'client.field.contactPerson',
         ]);
         $list->add('phone', null, [
-            'label' => 'Телефон'
+            'label' => 'client.field.phone',
         ]);
         $list->add('email', null, [
-            'label' => 'Email'
+            'label' => 'client.field.email',
         ]);
         $list->add('taxNumber', null, [
-            'label' => 'Налоговый номер'
+            'label' => 'client.field.taxNumber',
         ]);
         $list->add('createdAt', 'datetime', [
-            'label' => 'Создан',
-            'format' => 'd.m.Y H:i'
+            'label' => 'client.field.createdAt',
+            'format' => 'd.m.Y H:i',
         ]);
         $list->add('updatedAt', 'datetime', [
-            'label' => 'Обновлен',
-            'format' => 'd.m.Y H:i'
+            'label' => 'client.field.updatedAt',
+            'format' => 'd.m.Y H:i',
         ]);
-//        $list->add('_action', 'actions', [
-//            'label' => 'Действия',
-//            'actions' => [
-//                'show' => [],
-//                'edit' => [],
-//                'delete' => [],
-//            ],
-//        ]);
+        // $list->add('_action', 'actions', [
+        //     'label' => 'admin.action',
+        //     'actions' => [
+        //         'show' => [],
+        //         'edit' => [],
+        //         'delete' => [],
+        //     ],
+        // ]);
     }
 
     protected function configureShowFields(ShowMapper $show): void
     {
-        $show->with('Основная информация');
+        $show->with('client.pageTitle.detail');
         $show->add('name', null, [
-            'label' => 'Название компании'
+            'label' => 'client.field.name',
         ]);
         $show->add('contactPerson', null, [
-            'label' => 'Контактное лицо'
+            'label' => 'client.field.contactPerson',
         ]);
         $show->add('phone', null, [
-            'label' => 'Телефон'
+            'label' => 'client.field.phone',
         ]);
         $show->add('email', null, [
-            'label' => 'Email'
+            'label' => 'client.field.email',
         ]);
         $show->end();
-        $show->with('Юридическая информация');
+
+        $show->with('client.pageTitle.detail');
         $show->add('taxNumber', null, [
-            'label' => 'Налоговый номер'
+            'label' => 'client.field.taxNumber',
         ]);
         $show->add('address', null, [
-            'label' => 'Адрес'
+            'label' => 'client.field.address',
         ]);
         $show->end();
-        $show->with('Дополнительно');
+
+        $show->with('client.pageTitle.detail');
         $show->add('paymentTerms', null, [
-            'label' => 'Условия оплата'
+            'label' => 'client.field.paymentTerms',
         ]);
         $show->add('createdAt', 'datetime', [
-            'label' => 'Создан',
-            'format' => 'd.m.Y H:i'
+            'label' => 'client.field.createdAt',
+            'format' => 'd.m.Y H:i',
         ]);
         $show->add('updatedAt', 'datetime', [
-            'label' => 'Обновлен',
-            'format' => 'd.m.Y H:i'
+            'label' => 'client.field.updatedAt',
+            'format' => 'd.m.Y H:i',
         ]);
         $show->end();
-        $show->with('Заказы');
+
+        $show->with('client.field.orders');
         $show->add('orders', null, [
-            'label' => 'Заказы',
-            'associated_property' => function ($order) {
-                return $order->getId();
-            }
+            'label' => 'client.field.orders',
+            'associated_property' => fn($order) => $order->getId(),
         ]);
         $show->end();
     }
@@ -154,6 +172,6 @@ final class ClientAdmin extends AbstractAdmin
     {
         return $object instanceof Client
             ? $object->name
-            : 'Клиент';
+            : $this->trans('client.entity.singular');
     }
 }

@@ -30,173 +30,160 @@ final class OrderAdmin extends AbstractAdmin
 
     protected function configureFormFields(FormMapper $form): void
     {
-        $form->with('Основная информация');
+        $form->with('order.pageTitle.edit');
         $form->add('client', EntityType::class, [
             'class' => Client::class,
             'choice_label' => 'name',
-            'label' => 'Клиент'
+            'label' => 'order.field.client',
         ]);
         $form->add('orderDate', DateTimePickerType::class, [
-            'label' => 'Дата заказа',
-            'format' => 'dd.MM.yyyy HH:mm'
+            'label' => 'order.field.orderDate',
+            'format' => 'dd.MM.yyyy HH:mm',
         ]);
         $form->add('status', ChoiceType::class, [
-            'label' => 'Статус',
+            'label' => 'order.field.status',
             'choices' => OrderStatus::cases(),
-            'choice_label' => function (OrderStatus $status) {
-                return $status->value;
-            },
-            'choice_value' => function (?OrderStatus $status) {
-                return $status?->value;
-            }
+            'choice_label' => fn(OrderStatus $status) => $status->value,
+            'choice_value' => fn(?OrderStatus $status) => $status?->value,
         ]);
         $form->end();
 
-        $form->with('Финансовая информация');
+        $form->with('order.pageTitle.edit');
         $form->add('totalAmount', NumberType::class, [
-            'label' => 'Сумма заказа',
+            'label' => 'order.field.totalAmount',
             'required' => false,
             'scale' => 2,
             'attr' => [
                 'step' => '0.01',
                 'min' => '0',
-                'max' => '999999.99'
-            ]
+                'max' => '999999.99',
+            ],
         ]);
         $form->end();
 
-        $form->with('Характеристики груза');
+        $form->with('order.pageTitle.edit');
         $form->add('weight', NumberType::class, [
-            'label' => 'Вес (кг)',
+            'label' => 'order.field.weight',
             'required' => false,
             'attr' => [
                 'min' => '0',
-                'max' => '100000'
-            ]
+                'max' => '100000',
+            ],
         ]);
         $form->add('volume', NumberType::class, [
-            'label' => 'Объем (м³)',
+            'label' => 'order.field.volume',
             'required' => false,
             'scale' => 2,
             'attr' => [
                 'step' => '0.01',
                 'min' => '0',
-                'max' => '10000'
-            ]
+                'max' => '10000',
+            ],
         ]);
         $form->end();
     }
 
     protected function configureDatagridFilters(DatagridMapper $datagrid): void
     {
-        $datagrid->add(
-            'client',
-            null,
-            [
-            'label' => 'Клиент'
+        $datagrid->add('client', null, [
+            'label' => 'order.field.client',
         ], [
             'class' => Client::class,
             'choice_label' => 'name',
         ]);
         $datagrid->add('orderDate', null, [
-            'label' => 'Дата заказа'
+            'label' => 'order.field.orderDate',
         ]);
-        $datagrid->add(
-            'status',
-            null,
-            [
-                'label' => 'Статус'
-            ],
-            [
+        $datagrid->add('status', null, [
+            'label' => 'order.field.status',
+        ], [
             'choices' => OrderStatus::cases(),
-            'choice_label' => function (OrderStatus $status) {
-                return $status->value;
-            }
+            'choice_label' => fn(OrderStatus $status) => $status->value,
         ]);
         $datagrid->add('totalAmount', null, [
-            'label' => 'Сумма заказа'
+            'label' => 'order.field.totalAmount',
         ]);
         $datagrid->add('weight', null, [
-            'label' => 'Вес (кг)'
+            'label' => 'order.field.weight',
         ]);
         $datagrid->add('volume', null, [
-            'label' => 'Объем (м³)'
+            'label' => 'order.field.volume',
         ]);
     }
 
     protected function configureListFields(ListMapper $list): void
     {
         $list->add('client', null, [
-            'label' => 'Клиент',
-            'associated_property' => 'name'
+            'label' => 'order.field.client',
+            'associated_property' => 'name',
         ]);
         $list->add('orderDate', 'datetime', [
-            'label' => 'Дата заказа',
-            'format' => 'd.m.Y H:i'
+            'label' => 'order.field.orderDate',
+            'format' => 'd.m.Y H:i',
         ]);
         $list->add('status', null, [
-            'label' => 'Статус'
+            'label' => 'order.field.status',
         ]);
         $list->add('totalAmount', 'currency', [
-            'label' => 'Сумма',
-            'currency' => 'RUB'
+            'label' => 'order.field.totalAmount',
+            'currency' => 'RUB',
         ]);
         $list->add('weight', null, [
-            'label' => 'Вес (кг)'
+            'label' => 'order.field.weight',
         ]);
         $list->add('volume', null, [
-            'label' => 'Объем (м³)'
+            'label' => 'order.field.volume',
         ]);
-//        $list->add('_action', 'actions', [
-//            'label' => 'Действия',
-//            'actions' => [
-//                'show' => [],
-//                'edit' => [],
-//                'delete' => [],
-//            ],
-//        ]);
+        // $list->add('_action', 'actions', [
+        //     'label' => 'admin.action',
+        //     'actions' => [
+        //         'show' => [],
+        //         'edit' => [],
+        //         'delete' => [],
+        //     ],
+        // ]);
     }
 
     protected function configureShowFields(ShowMapper $show): void
     {
-        $show->with('Основная информация');
+        $show->with('order.pageTitle.detail');
         $show->add('client', null, [
-            'label' => 'Клиент',
-            'associated_property' => 'name'
+            'label' => 'order.field.client',
+            'associated_property' => 'name',
         ]);
         $show->add('orderDate', 'datetime', [
-            'label' => 'Дата заказа',
-            'format' => 'd.m.Y H:i'
+            'label' => 'order.field.orderDate',
+            'format' => 'd.m.Y H:i',
         ]);
         $show->add('status', null, [
-            'label' => 'Статус'
+            'label' => 'order.field.status',
         ]);
         $show->end();
 
-        $show->with('Финансовая информация');
+        $show->with('order.pageTitle.detail');
         $show->add('totalAmount', 'currency', [
-            'label' => 'Сумма заказа',
-            'currency' => 'RUB'
+            'label' => 'order.field.totalAmount',
+            'currency' => 'RUB',
         ]);
         $show->end();
 
-        $show->with('Характеристики груза');
+        $show->with('order.pageTitle.detail');
         $show->add('weight', null, [
-            'label' => 'Вес (кг)'
+            'label' => 'order.field.weight',
         ]);
         $show->add('volume', null, [
-            'label' => 'Объем (м³)'
+            'label' => 'order.field.volume',
         ]);
         $show->end();
 
-        $show->with('Системная информация');
+        $show->with('order.pageTitle.detail');
         $show->add('createdAt', 'datetime', [
-            'label' => 'Создан',
-            'format' => 'd.m.Y H:i'
+            'label' => 'order.field.createdAt',
+            'format' => 'd.m.Y H:i',
         ]);
         $show->add('updatedAt', 'datetime', [
-            'label' => 'Обновлен',
-            'format' => 'd.m.Y H:i'
+            'label' => 'order.field.updatedAt',
+            'format' => 'd.m.Y H:i',
         ]);
         $show->end();
     }
@@ -205,6 +192,6 @@ final class OrderAdmin extends AbstractAdmin
     {
         return $object instanceof Order
             ? (string) $object
-            : 'Заказ';
+            : $this->trans('order.entity.singular');
     }
 }
