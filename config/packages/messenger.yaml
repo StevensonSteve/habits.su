@@ -3,6 +3,7 @@ framework:
         failure_transport: failed
 
         transports:
+            scheduler_daily_order_report: schedule://daily_order_report
             # https://symfony.com/doc/current/messenger.html#transport-configuration
             async:
                 dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
@@ -24,6 +25,5 @@ framework:
             Symfony\Component\Mailer\Messenger\SendEmailMessage: async
             Symfony\Component\Notifier\Message\ChatMessage: async
             Symfony\Component\Notifier\Message\SmsMessage: async
-
-            # Route your messages to the transports
-            # 'App\Message\YourMessage': async
+            App\Scheduler\Order\Message\SendDailyOrderReport: scheduler_daily_order_report
+            App\Notification\Message\TelegramNotification: async

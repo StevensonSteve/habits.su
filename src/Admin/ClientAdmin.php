@@ -122,7 +122,7 @@ final class ClientAdmin extends AbstractAdmin
 
     protected function configureShowFields(ShowMapper $show): void
     {
-        $show->with('client.pageTitle.detail');
+        $show->with('client.pageTitle.detail', ['class' => 'col-md-6']);
         $show->add('name', null, [
             'label' => 'client.field.name',
         ]);
@@ -160,7 +160,7 @@ final class ClientAdmin extends AbstractAdmin
         ]);
         $show->end();
 
-        $show->with('client.field.orders');
+        $show->with('client.field.orders', ['class' => 'col-md-6']);
         $show->add('orders', null, [
             'label' => 'client.field.orders',
             'associated_property' => fn($order) => $order->getId(),
@@ -171,7 +171,7 @@ final class ClientAdmin extends AbstractAdmin
     public function toString(object $object): string
     {
         return $object instanceof Client
-            ? $object->name
+            ? $object->name ?? ''
             : $this->trans('client.entity.singular');
     }
 }
