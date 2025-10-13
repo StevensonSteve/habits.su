@@ -14,7 +14,7 @@ class TelegramNotifier
         private string $chatId,
         #[Autowire(env: 'string:TELEGRAM_API_KEY')]
         private string $apiKey,
-        private HttpClientInterface $httpClient
+        private HttpClientInterface $httpClient,
     ) {}
 
     public function send(string $message): void
@@ -22,12 +22,12 @@ class TelegramNotifier
         try {
             $response = $this->httpClient->request('GET', sprintf(
                 'https://api.telegram.org/bot%s/sendMessage',
-                $this->apiKey
+                $this->apiKey,
             ), [
                 'query' => [
                     'chat_id' => '-' . $this->chatId,
                     'text' => $message,
-                ]
+                ],
             ]);
 
             if ($response->getStatusCode() !== 200) {

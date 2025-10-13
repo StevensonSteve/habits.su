@@ -14,15 +14,15 @@ use Symfony\Contracts\Cache\CacheInterface;
 #[AsSchedule('daily_order_report')]
 class DailyOrderReportScheduleProvider implements ScheduleProviderInterface
 {
-    public function __construct(private CacheInterface $cache) {}
+    public function __construct(
+        private CacheInterface $cache,
+    ) {}
 
     public function getSchedule(): Schedule
     {
         return (new Schedule())
             ->add(
-                RecurringMessage::cron('* * * * *', new SendDailyOrderReport(
-                    new DateTimeImmutable('now', new DateTimeZone('Europe/Minsk')),
-                ))
+                RecurringMessage::cron('* * * * *', new SendDailyOrderReport()),
             )
             ->stateful($this->cache)
             ->processOnlyLastMissedRun(true);

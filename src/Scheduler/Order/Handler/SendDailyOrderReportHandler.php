@@ -13,12 +13,12 @@ class SendDailyOrderReportHandler
 {
     public function __construct(
         private MessageBusInterface $bus,
-        private OrderReportService $orderReportService
+        private OrderReportService $orderReportService,
     ) {}
 
     public function __invoke(SendDailyOrderReport $message): void
     {
-        $reportText = $this->orderReportService->generateDailyReport($message->reportDate);
+        $reportText = $this->orderReportService->generateDailyReport($message->getReportDate());
         $this->bus->dispatch(new TelegramNotification($reportText));
     }
 }

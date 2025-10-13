@@ -11,7 +11,9 @@ class OrderReportService
 {
     private const REPORT_PERIOD_HOURS = 24;
 
-    public function __construct(private OrderRepository $orderRepository) {}
+    public function __construct(
+        private OrderRepository $orderRepository,
+    ) {}
 
     public function generateDailyReport(DateTimeImmutable $reportDate): string
     {

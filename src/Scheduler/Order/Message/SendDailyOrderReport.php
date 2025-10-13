@@ -3,10 +3,14 @@
 namespace App\Scheduler\Order\Message;
 
 use DateTimeImmutable;
+use DateTimeZone;
 
 class SendDailyOrderReport
 {
-    public function __construct(
-        public readonly DateTimeImmutable $reportDate
-    ) {}
+    public function __construct() {}
+
+    public function getReportDate(): DateTimeImmutable
+    {
+        return new DateTimeImmutable('now', new DateTimeZone('Europe/Minsk'));
+    }
 }

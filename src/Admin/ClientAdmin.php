@@ -13,6 +13,9 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Uid\Uuid;
 
+/**
+ * @implements AdminInterface<Client>
+ */
 final class ClientAdmin extends AbstractAdmin
 {
     protected function configure(): void
@@ -122,7 +125,9 @@ final class ClientAdmin extends AbstractAdmin
 
     protected function configureShowFields(ShowMapper $show): void
     {
-        $show->with('client.pageTitle.detail', ['class' => 'col-md-6']);
+        $show->with('client.pageTitle.detail', [
+            'class' => 'col-md-6',
+        ]);
         $show->add('name', null, [
             'label' => 'client.field.name',
         ]);
@@ -160,7 +165,9 @@ final class ClientAdmin extends AbstractAdmin
         ]);
         $show->end();
 
-        $show->with('client.field.orders', ['class' => 'col-md-6']);
+        $show->with('client.field.orders', [
+            'class' => 'col-md-6',
+        ]);
         $show->add('orders', null, [
             'label' => 'client.field.orders',
             'associated_property' => fn($order) => $order->getId(),
