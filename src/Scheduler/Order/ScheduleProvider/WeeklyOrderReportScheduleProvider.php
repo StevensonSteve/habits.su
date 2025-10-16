@@ -2,17 +2,15 @@
 
 namespace App\Scheduler\Order\ScheduleProvider;
 
-use App\Scheduler\Order\Message\SendDailyOrderReport;
-use DateTimeImmutable;
-use DateTimeZone;
+use App\Scheduler\Order\Message\SendWeeklyOrderReport;
 use Symfony\Component\Scheduler\Attribute\AsSchedule;
 use Symfony\Component\Scheduler\RecurringMessage;
 use Symfony\Component\Scheduler\Schedule;
 use Symfony\Component\Scheduler\ScheduleProviderInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 
-#[AsSchedule('daily_order_report')]
-class DailyOrderReportScheduleProvider implements ScheduleProviderInterface
+#[AsSchedule('weekly_order_report')]
+class WeeklyOrderReportScheduleProvider implements ScheduleProviderInterface
 {
     public function __construct(
         private CacheInterface $cache,
@@ -22,7 +20,7 @@ class DailyOrderReportScheduleProvider implements ScheduleProviderInterface
     {
         return (new Schedule())
             ->add(
-                RecurringMessage::cron('* * * * *', new SendDailyOrderReport()),
+                RecurringMessage::cron('*/2 * * * *', new SendWeeklyOrderReport()),
             )
             ->stateful($this->cache)
             ->processOnlyLastMissedRun(true);

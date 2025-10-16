@@ -16,6 +16,11 @@ services:
     App\:
         resource: '../src/'
 
+    App\Service\TelegramNotifier:
+        arguments:
+            $chatId: '%env(TELEGRAM_CHAT_ID)%'
+            $apiKey: '%env(TELEGRAM_API_KEY)%'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
     admin.client:

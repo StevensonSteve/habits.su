@@ -3,16 +3,13 @@
 namespace App\Service;
 
 use RuntimeException;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class TelegramNotifier
 {
     public function __construct(
-        #[Autowire(env: 'string:TELEGRAM_CHAT_ID')]
         private string $chatId,
-        #[Autowire(env: 'string:TELEGRAM_API_KEY')]
         private string $apiKey,
         private HttpClientInterface $httpClient,
     ) {}

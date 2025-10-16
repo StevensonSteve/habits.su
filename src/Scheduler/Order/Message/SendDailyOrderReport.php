@@ -2,15 +2,26 @@
 
 namespace App\Scheduler\Order\Message;
 
+use App\Notification\Message\TelegramNotification;
+use App\Service\Order\OrderDailyReportService;
 use DateTimeImmutable;
 use DateTimeZone;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Scheduler\Attribute\AsCronTask;
 
+#[AsCronTask('* * * * *', method: 'sendTelegram')]
 class SendDailyOrderReport
 {
-    public function __construct() {}
+    public function __construct(
+        private MessageBusInterface $bus,
+        private OrderDailyReportService $orderDailyReportService,
+    ) {}
 
-    public function getReportDate(): DateTimeImmutable
+    public function sendTelegram(): void
     {
-        return new DateTimeImmutable('now', new DateTimeZone('Europe/Minsk'));
+        $reportText = $this->orderDailyReportService->generateDailyReport(
+            new DateTimeImmutable('now', new DateTimeZone('Europe/Minsk')),
+        );
+        $this->bus->dispatch(new TelegramNotification($reportText));
     }
 }

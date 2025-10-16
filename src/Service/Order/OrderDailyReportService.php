@@ -7,7 +7,7 @@ use App\Enum\OrderStatus;
 use App\Repository\OrderRepository;
 use DateTimeImmutable;
 
-class OrderReportService
+class OrderDailyReportService
 {
     private const REPORT_PERIOD_HOURS = 24;
 
@@ -21,18 +21,18 @@ class OrderReportService
         $orders = $this->orderRepository->findOrdersByDateRange($startDate, $reportDate);
 
         if ($orders->isEmpty()) {
-            return $this->generateEmptyReport($reportDate);
+            return $this->generateEmptyDailyReport($reportDate);
         }
 
-        return $this->formatReport($orders, $reportDate);
+        return $this->formatDailyReport($orders, $reportDate);
     }
 
-    private function formatReport(OrderCollection $orders, DateTimeImmutable $reportDate): string
+    private function formatDailyReport(OrderCollection $orders, DateTimeImmutable $reportDate): string
     {
         $periodEnd = $reportDate->format('d.m.Y H:i');
         $periodStart = $reportDate->modify('-' . self::REPORT_PERIOD_HOURS . ' hours')->format('d.m.Y H:i');
 
-        $report = "*Отчет по заказам*\n";
+        $report = "*Дневной отчет по заказам*\n";
         $report .= "Период: {$periodStart} - {$periodEnd}\n\n";
 
         $report .= "*Общая статистика:*\n";
@@ -50,12 +50,12 @@ class OrderReportService
         return $report;
     }
 
-    private function generateEmptyReport(DateTimeImmutable $reportDate): string
+    private function generateEmptyDailyReport(DateTimeImmutable $reportDate): string
     {
         $periodEnd = $reportDate->format('d.m.Y H:i');
         $periodStart = $reportDate->modify('-' . self::REPORT_PERIOD_HOURS . ' hours')->format('d.m.Y H:i');
 
-        return "*Отчет по заказам*\n"
+        return "*Дневной отчет по заказам*\n"
             . "Период: {$periodStart} - {$periodEnd}\n\n"
             . "*Заказов за этот период не найдено*";
     }
