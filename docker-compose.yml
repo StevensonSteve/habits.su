@@ -24,6 +24,7 @@ services:
       - APP_ENV=${APP_ENV}
       - APP_DEBUG=${APP_DEBUG}
       - PHP_MEMORY_LIMIT=${PHP_MEMORY_LIMIT}
+      - USER_NAME=${USER_NAME}
     depends_on:
       - postgres
       - rabbitmq
