@@ -5,6 +5,7 @@ namespace App\Admin;
 use App\Entity\Client;
 use App\Entity\Order;
 use App\Enum\OrderStatus;
+use App\Notification\Message\TelegramNotification;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
@@ -14,10 +15,18 @@ use Sonata\Form\Type\DateTimePickerType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 
 final class OrderAdmin extends AbstractAdmin
 {
+    private MessageBusInterface $bus;
+
+    public function setMessageBus(MessageBusInterface $bus): void
+    {
+        $this->bus = $bus;
+    }
+
     protected function configure(): void
     {
         $this->setTranslationDomain('sonataAdmin');
@@ -26,6 +35,18 @@ final class OrderAdmin extends AbstractAdmin
     protected function createNewInstance(): object
     {
         return new Order(Uuid::v7());
+    }
+
+    protected function postPersist(object $object): void
+    {
+        /** @var Order $order */
+        $order = $object;
+
+        $this->bus->dispatch(new TelegramNotification(
+            sprintf('Новый заказ #%s создан!', $order->getId()),
+        ));
+
+        parent::postPersist($object);
     }
 
     protected function configureFormFields(FormMapper $form): void
