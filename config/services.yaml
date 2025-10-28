@@ -30,7 +30,5 @@ services:
 
     admin.order:
         class: App\Admin\OrderAdmin
-        calls:
-            - [ 'setMessageBus', [ '@messenger.default_bus' ] ]
         tags:
             - { name: sonata.admin, model_class: App\Entity\Order, manager_type: orm, label: 'Заказы' }

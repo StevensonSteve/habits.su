@@ -23,9 +23,10 @@ final class OrderAdmin extends AbstractAdmin
 {
     private MessageBusInterface $bus;
 
-    public function setMessageBus(MessageBusInterface $bus): void
+    public function __construct(MessageBusInterface $bus)
     {
         $this->bus = $bus;
+        parent::__construct();
     }
 
     protected function configure(): void
