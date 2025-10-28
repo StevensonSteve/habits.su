@@ -32,8 +32,6 @@ services:
       - ./docker/php-fpm/php.ini:/usr/local/etc/php/conf.d/custom.ini
     networks:
       - symfony-network
-    environment:
-      - MESSENGER_CONSUMER_NAME=async-worker
     healthcheck:
       test: ["CMD", "php", "bin/console", "messenger:stats"]
       interval: 10s
@@ -53,8 +51,6 @@ services:
       - ./docker/php-fpm/php.ini:/usr/local/etc/php/conf.d/custom.ini
     networks:
       - symfony-network
-    environment:
-      - MESSENGER_CONSUMER_NAME=async-worker
     healthcheck:
       test: ["CMD", "php", "bin/console", "messenger:stats"]
       interval: 10s
@@ -74,8 +70,6 @@ services:
       - ./docker/php-fpm/php.ini:/usr/local/etc/php/conf.d/custom.ini
     networks:
       - symfony-network
-    environment:
-      - MESSENGER_CONSUMER_NAME=async-worker
     healthcheck:
       test: ["CMD", "php", "bin/console", "messenger:stats"]
       interval: 10s
@@ -95,8 +89,6 @@ services:
       - ./docker/php-fpm/php.ini:/usr/local/etc/php/conf.d/custom.ini
     networks:
       - symfony-network
-    environment:
-      - MESSENGER_CONSUMER_NAME=async-worker
     healthcheck:
       test: ["CMD", "php", "bin/console", "messenger:stats"]
       interval: 10s
