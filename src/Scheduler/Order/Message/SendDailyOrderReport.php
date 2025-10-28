@@ -9,7 +9,7 @@ use DateTimeZone;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Scheduler\Attribute\AsCronTask;
 
-#[AsCronTask('*/15 * * * *', method: 'sendTelegram')]
+#[AsCronTask('0 * * * *', method: 'sendTelegram')]
 class SendDailyOrderReport
 {
     public function __construct(

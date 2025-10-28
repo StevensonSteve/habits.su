@@ -6,6 +6,7 @@ use App\Entity\Client;
 use App\Entity\Order;
 use App\Enum\OrderStatus;
 use App\Notification\Message\TelegramNotification;
+use App\Scheduler\Order\Message\BrokerMessage;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
@@ -43,7 +44,10 @@ final class OrderAdmin extends AbstractAdmin
         $order = $object;
 
         $this->bus->dispatch(new TelegramNotification(
-            sprintf('Новый заказ #%s создан!', $order->getId()),
+            sprintf('TelegramNotification: Новый заказ #%s создан!', $order->getId()),
+        ));
+        $this->bus->dispatch(new BrokerMessage(
+            sprintf('BrokerMessage: Новый заказ #%s создан!', $order->getId()),
         ));
 
         parent::postPersist($object);

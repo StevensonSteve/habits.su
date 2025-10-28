@@ -20,7 +20,7 @@ class WeeklyOrderReportScheduleProvider implements ScheduleProviderInterface
     {
         return (new Schedule())
             ->add(
-                RecurringMessage::cron('*/30 * * * *', new SendWeeklyOrderReport()),
+                RecurringMessage::cron('0 */2 * * *', new SendWeeklyOrderReport()),
             )
             ->stateful($this->cache)
             ->processOnlyLastMissedRun(true);
