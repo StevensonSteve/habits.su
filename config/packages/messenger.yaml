@@ -12,6 +12,16 @@ framework:
                 retry_strategy:
                     max_retries: 3
                     multiplier: 2
+            async_rabbitmq:
+                dsn: 'amqp://%env(RABBITMQ_USER)%:%env(RABBITMQ_PASSWORD)%@rabbitmq:%env(RABBITMQ_PORT)%/%2f'
+                options:
+                    exchange:
+                        name: 'messages'
+                        type: 'direct'
+                retry_strategy:
+                    max_retries: 3
+                    delay: 1000
+                    multiplier: 2
             failed: 'doctrine://default?queue_name=failed'
             # sync: 'sync://'
 
@@ -24,3 +34,4 @@ framework:
             Symfony\Component\Mailer\Messenger\SendEmailMessage: async
             Symfony\Component\Notifier\Message\ChatMessage: async
             Symfony\Component\Notifier\Message\SmsMessage: async
+            App\Scheduler\Order\Message\BrokerMessage: async_rabbitmq
