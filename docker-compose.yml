@@ -122,10 +122,6 @@ services:
 
   postgres:
     build: ./docker/postgres
-#    environment:
-#      POSTGRES_DB: ${POSTGRES_DB}
-#      POSTGRES_USER: ${POSTGRES_USER}
-#      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -146,9 +142,6 @@ services:
   rabbitmq:
     build: ./docker/rabbitmq
     hostname: rabbitmq
-#    environment:
-#      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
-#      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
