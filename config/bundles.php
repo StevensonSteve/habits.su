@@ -68,4 +68,8 @@ return [
     Sonata\DoctrineORMAdminBundle\SonataDoctrineORMAdminBundle::class => [
         'all' => true,
     ],
+    Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle::class => [
+        'dev' => true,
+        'test' => true,
+    ],
 ];

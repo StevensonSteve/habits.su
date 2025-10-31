@@ -5,8 +5,7 @@ ARG USER_NAME=www-data
 ARG GROUP_ID=1000
 ARG GROUP_NAME=www-data
 
-RUN sed -i 's/dl-cdn.alpinelinux.org/mirror.leaseweb.com/g' /etc/apk/repositories && \
-    apk update && apk add --no-cache \
+RUN apk update && apk add --no-cache \
     git curl libpng-dev libwebp-dev libjpeg-turbo-dev freetype-dev \
     libzip-dev postgresql-dev icu-dev oniguruma-dev rabbitmq-c-dev \
     linux-headers autoconf make g++ bash nano vim
