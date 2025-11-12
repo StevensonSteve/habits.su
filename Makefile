@@ -1,21 +1,35 @@
 build:
-	docker compose build \
+	docker compose build --no-cache \
 		--build-arg USER_ID=$(shell id -u) \
 		--build-arg USER_NAME=$(shell id -un) \
 		--build-arg GROUP_ID=$(shell id -g) \
-		--build-arg GROUP_NAME=$(shell id -gn)
+		--build-arg GROUP_NAME=$(shell id -gn) \
 
+init: build composer-install migrate fixtures
+	docker compose up -d
 
-up: build
+up:
 	docker compose up -d
 
 down:
 	docker compose down
 
+composer-install:
+	docker compose exec php-fpm composer install
+
+migrate:
+	docker compose exec php-fpm php bin/console doctrine:migrations:migrate --no-interaction
+
+fixtures:
+	docker compose exec php-fpm php bin/console doctrine:fixtures:load --no-interaction
+
 ps:
 	docker compose ps
 
 restart: down up
+
+test:
+	docker compose exec php-fpm php bin/phpunit
 
 fix:
 	docker compose exec php-fpm vendor/bin/ecs --fix
