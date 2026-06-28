@@ -19,3 +19,6 @@
 /public/assets/
 /assets/vendor/
 ###< symfony/asset-mapper ###
+
+# Auto-generated Symfony PHP config reference (DX/typing only)
+/config/reference.php
