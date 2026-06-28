@@ -3,10 +3,14 @@
 namespace App\Tests\Controller\Vehicle;
 
 use App\Entity\Vehicle\Truck;
+use App\Enum\EngineType;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Uid\Uuid;
+use DateTimeImmutable;
 
 final class TruckControllerTest extends WebTestCase
 {
@@ -33,69 +37,67 @@ final class TruckControllerTest extends WebTestCase
 
     public function testIndex(): void
     {
+        $this->manager->persist($this->createTruck('11111111111111111', 'AA-1111'));
+        $this->manager->persist($this->createTruck('22222222222222222', 'BB-2222'));
+        $this->manager->flush();
+
         $this->client->followRedirects();
         $crawler = $this->client->request('GET', $this->path);
 
-        self::assertResponseStatusCodeSame(200);
+        self::assertResponseIsSuccessful();
         self::assertPageTitleContains('Truck index');
+        self::assertCount(2, $crawler->filter('table.table tbody tr'));
+        self::assertSelectorTextContains('table.table', '11111111111111111');
+        self::assertSelectorTextContains('table.table', 'BB-2222');
+        self::assertSelectorExists('a:contains("Create new")');
+    }
 
-        // Use the $crawler to perform additional assertions e.g.
-        // self::assertSame('Some text on the page', $crawler->filter('.p')->first()->text());
+    public function testIndexEmpty(): void
+    {
+        $this->client->followRedirects();
+        $crawler = $this->client->request('GET', $this->path);
+
+        self::assertResponseIsSuccessful();
+        self::assertPageTitleContains('Truck index');
+        self::assertSelectorTextContains('table.table tbody', 'no records found');
+        self::assertCount(1, $crawler->filter('table.table tbody tr'));
     }
 
     public function testNew(): void
     {
-        $this->markTestIncomplete();
+        // toDo try Object Mother паттерн
         $this->client->request('GET', sprintf('%snew', $this->path));
-
-        self::assertResponseStatusCodeSame(200);
+        self::assertResponseIsSuccessful();
 
         $this->client->submitForm('Save', [
-            'truck[createdAt]' => 'Testing',
-            'truck[updatedAt]' => 'Testing',
-            'truck[id]' => 'Testing',
-            'truck[vin]' => 'Testing',
-            'truck[brand]' => 'Testing',
-            'truck[model]' => 'Testing',
-            'truck[manufactureDate]' => 'Testing',
-            'truck[mileageInitial]' => 'Testing',
-            'truck[engineType]' => 'Testing',
-            'truck[engineCapacity]' => 'Testing',
-            'truck[engineVolume]' => 'Testing',
-            'truck[purchaseDate]' => 'Testing',
-            'truck[color]' => 'Testing',
-            'truck[licensePlate]' => 'Testing',
-            'truck[maxWeight]' => 'Testing',
-            'truck[emptyWeight]' => 'Testing',
-            'truck[description]' => 'Testing',
+            'truck[vin]' => 'AB123456789012345',
+            'truck[brand]' => 'Renault',
+            'truck[model]' => 'Master',
+            'truck[manufactureDate]' => '2020-01-15T10:00',
+            'truck[mileageInitial]' => '120000',
+            'truck[engineType]' => EngineType::DIESEL->value,
+            'truck[engineCapacity]' => '150',
+            'truck[engineVolume]' => '2.30',
+            'truck[purchaseDate]' => '2021-03-10T10:00',
+            'truck[color]' => 'White',
+            'truck[licensePlate]' => 'AA-1234',
+            'truck[maxWeight]' => '3500',
+            'truck[emptyWeight]' => '2000',
+            'truck[description]' => 'Test truck',
         ]);
 
-        self::assertResponseRedirects($this->path);
-
+        self::assertResponseRedirects('/vehicle/truck', Response::HTTP_SEE_OTHER);
         self::assertSame(1, $this->truckRepository->count([]));
+
+        $truck = $this->truckRepository->findOneBy(['vin' => 'AB123456789012345']);
+        self::assertNotNull($truck);
+        self::assertSame('Renault', $truck->getBrand());
+        self::assertSame(EngineType::DIESEL, $truck->getEngineType());
     }
 
     public function testShow(): void
     {
-        $this->markTestIncomplete();
-        $fixture = new Truck();
-        $fixture->setCreatedAt('My Title');
-        $fixture->setUpdatedAt('My Title');
-        $fixture->setId('My Title');
-        $fixture->setVin('My Title');
-        $fixture->setBrand('My Title');
-        $fixture->setModel('My Title');
-        $fixture->setManufactureDate('My Title');
-        $fixture->setMileageInitial('My Title');
-        $fixture->setEngineType('My Title');
-        $fixture->setEngineCapacity('My Title');
-        $fixture->setEngineVolume('My Title');
-        $fixture->setPurchaseDate('My Title');
-        $fixture->setColor('My Title');
-        $fixture->setLicensePlate('My Title');
-        $fixture->setMaxWeight('My Title');
-        $fixture->setEmptyWeight('My Title');
-        $fixture->setDescription('My Title');
+        $fixture = $this->createTruck('12345678901234567', '0256 HA-8');
 
         $this->manager->persist($fixture);
         $this->manager->flush();
@@ -104,101 +106,43 @@ final class TruckControllerTest extends WebTestCase
 
         self::assertResponseStatusCodeSame(200);
         self::assertPageTitleContains('Truck');
-
-        // Use assertions to check that the properties are properly displayed.
+        self::assertSelectorTextContains('tr:contains("Vin") td', $fixture->getVin());
+        self::assertSelectorTextContains('tr:contains("Brand") td', $fixture->getBrand());
+        self::assertSelectorTextContains('tr:contains("Model") td', $fixture->getModel());
+        self::assertSelectorTextContains('tr:contains("LicensePlate") td', $fixture->getLicensePlate());
+        self::assertSelectorTextContains('tr:contains("Color") td', $fixture->getColor());
+        self::assertSelectorTextContains('tr:contains("EngineType") td', $fixture->getEngineType()->value);
+        self::assertSelectorTextContains('tr:contains("MaxWeight") td', $fixture->getMaxWeight());
+        self::assertSelectorTextContains('tr:contains("ManufactureDate") td', $fixture->getManufactureDate()->format('Y-m-d'));
     }
 
     public function testEdit(): void
     {
-        $this->markTestIncomplete();
-        $fixture = new Truck();
-        $fixture->setCreatedAt('Value');
-        $fixture->setUpdatedAt('Value');
-        $fixture->setId('Value');
-        $fixture->setVin('Value');
-        $fixture->setBrand('Value');
-        $fixture->setModel('Value');
-        $fixture->setManufactureDate('Value');
-        $fixture->setMileageInitial('Value');
-        $fixture->setEngineType('Value');
-        $fixture->setEngineCapacity('Value');
-        $fixture->setEngineVolume('Value');
-        $fixture->setPurchaseDate('Value');
-        $fixture->setColor('Value');
-        $fixture->setLicensePlate('Value');
-        $fixture->setMaxWeight('Value');
-        $fixture->setEmptyWeight('Value');
-        $fixture->setDescription('Value');
+        $fixture = $this->createTruck('12345678901234567', '0256 HA-8');
 
         $this->manager->persist($fixture);
         $this->manager->flush();
 
         $this->client->request('GET', sprintf('%s%s/edit', $this->path, $fixture->getId()));
+        self::assertResponseIsSuccessful();
 
         $this->client->submitForm('Update', [
-            'truck[createdAt]' => 'Something New',
-            'truck[updatedAt]' => 'Something New',
-            'truck[id]' => 'Something New',
-            'truck[vin]' => 'Something New',
-            'truck[brand]' => 'Something New',
-            'truck[model]' => 'Something New',
-            'truck[manufactureDate]' => 'Something New',
-            'truck[mileageInitial]' => 'Something New',
-            'truck[engineType]' => 'Something New',
-            'truck[engineCapacity]' => 'Something New',
-            'truck[engineVolume]' => 'Something New',
-            'truck[purchaseDate]' => 'Something New',
-            'truck[color]' => 'Something New',
-            'truck[licensePlate]' => 'Something New',
-            'truck[maxWeight]' => 'Something New',
-            'truck[emptyWeight]' => 'Something New',
-            'truck[description]' => 'Something New',
+            'truck[brand]' => 'Volvo',
+            'truck[color]' => 'Blue',
         ]);
 
-        self::assertResponseRedirects('/vehicle/truck/');
+        self::assertResponseRedirects('/vehicle/truck', Response::HTTP_SEE_OTHER);
+        $this->manager->clear();
+        $updated = $this->truckRepository->find($fixture->getId());
 
-        $fixture = $this->truckRepository->findAll();
-
-        self::assertSame('Something New', $fixture[0]->getCreatedAt());
-        self::assertSame('Something New', $fixture[0]->getUpdatedAt());
-        self::assertSame('Something New', $fixture[0]->getId());
-        self::assertSame('Something New', $fixture[0]->getVin());
-        self::assertSame('Something New', $fixture[0]->getBrand());
-        self::assertSame('Something New', $fixture[0]->getModel());
-        self::assertSame('Something New', $fixture[0]->getManufactureDate());
-        self::assertSame('Something New', $fixture[0]->getMileageInitial());
-        self::assertSame('Something New', $fixture[0]->getEngineType());
-        self::assertSame('Something New', $fixture[0]->getEngineCapacity());
-        self::assertSame('Something New', $fixture[0]->getEngineVolume());
-        self::assertSame('Something New', $fixture[0]->getPurchaseDate());
-        self::assertSame('Something New', $fixture[0]->getColor());
-        self::assertSame('Something New', $fixture[0]->getLicensePlate());
-        self::assertSame('Something New', $fixture[0]->getMaxWeight());
-        self::assertSame('Something New', $fixture[0]->getEmptyWeight());
-        self::assertSame('Something New', $fixture[0]->getDescription());
+        self::assertNotNull('Volvo', $updated->getBrand());
+        self::assertNotNull('Blue', $updated->getColor());
+        self::assertNotNull('Clio', $updated->getModel());
     }
 
-    public function testRemove(): void
+    public function testDelete(): void
     {
-        $this->markTestIncomplete();
-        $fixture = new Truck();
-        $fixture->setCreatedAt('Value');
-        $fixture->setUpdatedAt('Value');
-        $fixture->setId('Value');
-        $fixture->setVin('Value');
-        $fixture->setBrand('Value');
-        $fixture->setModel('Value');
-        $fixture->setManufactureDate('Value');
-        $fixture->setMileageInitial('Value');
-        $fixture->setEngineType('Value');
-        $fixture->setEngineCapacity('Value');
-        $fixture->setEngineVolume('Value');
-        $fixture->setPurchaseDate('Value');
-        $fixture->setColor('Value');
-        $fixture->setLicensePlate('Value');
-        $fixture->setMaxWeight('Value');
-        $fixture->setEmptyWeight('Value');
-        $fixture->setDescription('Value');
+        $fixture = $this->createTruck('12345678901234567', '0256 HA-8');
 
         $this->manager->persist($fixture);
         $this->manager->flush();
@@ -206,7 +150,28 @@ final class TruckControllerTest extends WebTestCase
         $this->client->request('GET', sprintf('%s%s', $this->path, $fixture->getId()));
         $this->client->submitForm('Delete');
 
-        self::assertResponseRedirects('/vehicle/truck/');
+        self::assertResponseRedirects('/vehicle/truck', Response::HTTP_SEE_OTHER);
         self::assertSame(0, $this->truckRepository->count([]));
+    }
+
+    private function createTruck(string $vin, string $licensePlate): Truck
+    {
+        $truck = new Truck(Uuid::v7());
+        $truck->setVin($vin);
+        $truck->setBrand('Renault');
+        $truck->setModel('Clio');
+        $truck->setManufactureDate(new DateTimeImmutable('-1 year'));
+        $truck->setMileageInitial(123555);
+        $truck->setEngineType(EngineType::DIESEL);
+        $truck->setEngineCapacity(250);
+        $truck->setEngineVolume('12.3');
+        $truck->setPurchaseDate(new DateTimeImmutable());
+        $truck->setColor('Red');
+        $truck->setLicensePlate($licensePlate);
+        $truck->setMaxWeight(2400);
+        $truck->setEmptyWeight(3500);
+        $truck->setDescription('Some description');
+
+        return $truck;
     }
 }

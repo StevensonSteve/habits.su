@@ -25,9 +25,7 @@ class TruckType extends AbstractType
             ->add('mileageInitial')
             ->add('engineType', EnumType::class, [
                 'class' => EngineType::class,
-                'choice_label' => function (EngineType $engineType) {
-                    return fn(string $engineType) => t("engine_type.{$engineType}");
-                },
+                'choice_label' => fn(EngineType $engineType) => t("engine_type.{$engineType->value}"),
                 'placeholder' => 'Выберите тип двигателя',
             ])
             ->add('engineCapacity')

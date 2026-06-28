@@ -41,4 +41,8 @@ docker compose exec -T postgres psql -U symfony symfony < backup.sql
 docker compose exec redis redis-cli
 # Мониторинг команд Redis
 docker compose exec redis redis-cli monitor
+# Запуск тестов
+docker compose exec php-fpm php bin/phpunit
+# Запуск теста для конкретно файла 
+docker compose exec php-fpm php bin/phpunit tests/Controller/Vehicle/TruckControllerTest.php
 ```
