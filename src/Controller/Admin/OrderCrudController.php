@@ -4,7 +4,10 @@ namespace App\Controller\Admin;
 
 use App\Entity\Order;
 use App\Enum\OrderStatus;
+use App\Notification\Message\TelegramNotification;
+use App\Scheduler\Order\Message\BrokerMessage;
 use DateTimeImmutable;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -13,13 +16,34 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 
 class OrderCrudController extends AbstractCrudController
 {
+    public function __construct(
+        private readonly MessageBusInterface $bus,
+    ) {}
+
     public static function getEntityFqcn(): string
     {
         return Order::class;
+    }
+
+    public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        parent::persistEntity($entityManager, $entityInstance);
+
+        if (!$entityInstance instanceof Order) {
+            return;
+        }
+
+        $this->bus->dispatch(new TelegramNotification(
+            sprintf('TelegramNotification: Новый заказ #%s создан!', $entityInstance->getId()),
+        ));
+        $this->bus->dispatch(new BrokerMessage(
+            sprintf('BrokerMessage: Новый заказ #%s создан!', $entityInstance->getId()),
+        ));
     }
 
     public function createEntity(string $entityFqcn)
