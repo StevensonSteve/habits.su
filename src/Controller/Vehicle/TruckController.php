@@ -7,6 +7,7 @@ use App\Form\Vehicle\TruckType;
 use App\Repository\Vehicle\TruckRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -18,8 +19,10 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 final class TruckController extends AbstractController
 {
     #[Route('', name: 'app_vehicle_truck_index', methods: ['GET'])]
-    public function index(TruckRepository $truckRepository, TagAwareCacheInterface $cacheTrucks): Response
-    {
+    public function index(
+        TruckRepository $truckRepository,
+        #[Target('cache.trucks')] TagAwareCacheInterface $cacheTrucks
+    ): Response {
         $trucks = $cacheTrucks->get('trucks_list_all', function (ItemInterface $item) use ($truckRepository) {
             // Пока в кеше один ключ, тег избыточен (хватило бы delete('trucks_list_all')).
             // Оставлен на будущее: когда появятся пагинация/фильтры и ключей станет много
@@ -41,7 +44,7 @@ final class TruckController extends AbstractController
     public function new(
         Request $request,
         EntityManagerInterface $entityManager,
-        TagAwareCacheInterface $cacheTrucks
+        #[Target('cache.trucks')] TagAwareCacheInterface $cacheTrucks
     ): Response {
         $truck = new Truck(Uuid::v7());
         $form = $this->createForm(TruckType::class, $truck);
@@ -75,7 +78,7 @@ final class TruckController extends AbstractController
         Request $request,
         Truck $truck,
         EntityManagerInterface $entityManager,
-        TagAwareCacheInterface $cacheTrucks
+        #[Target('cache.trucks')] TagAwareCacheInterface $cacheTrucks
     ): Response {
         $form = $this->createForm(TruckType::class, $truck);
         $form->handleRequest($request);
@@ -99,7 +102,7 @@ final class TruckController extends AbstractController
         Request $request,
         Truck $truck,
         EntityManagerInterface $entityManager,
-        TagAwareCacheInterface $cacheTrucks
+        #[Target('cache.trucks')] TagAwareCacheInterface $cacheTrucks
     ): Response {
         if ($this->isCsrfTokenValid('delete' . $truck->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($truck);
