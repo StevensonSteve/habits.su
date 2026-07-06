@@ -3,6 +3,7 @@
 namespace App\Entity\Vehicle;
 
 use App\Enum\EngineType;
+use App\EventListener\TruckCacheInvalidator;
 use App\Repository\Vehicle\TruckRepository;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
@@ -17,6 +18,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\UniqueConstraint(name: 'uniq_truck_vin', columns: ['vin'])]
 #[ORM\UniqueConstraint(name: 'uniq_truck_license_plate', columns: ['license_plate'])]
 #[ORM\HasLifecycleCallbacks]
+#[ORM\EntityListeners([TruckCacheInvalidator::class])]
 #[UniqueEntity('vin', message: 'VIN номер должен быть уникальным')]
 #[UniqueEntity('licensePlate', message: 'Гос. номер должен быть уникальным')]
 class Truck
