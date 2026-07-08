@@ -2,22 +2,24 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\Vehicle\Truck;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Service\Vehicle\TruckService;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 
 #[AdminRoute('/report/truck', name: 'truck_custom')]
 class TruckCustomController extends AbstractController
 {
+    public function __construct(
+        private readonly TruckService $truckService,
+    ) {}
+
     #[AdminRoute('/export', name: 'export')]
     //    #[Route('/admin/truck/export', name: 'admin_truck_custom_export', priority: 1)]
     //      toDo решить проблему конфликтов urls можно с priority: 1 #[Route перебивает AdminRoute
-    public function exportTrucks(EntityManagerInterface $entityManager): Response
+    public function exportTrucks(): Response
     {
-        $trucks = $entityManager->getRepository(Truck::class)->findAll();
+        $trucks = $this->truckService->findAll();
 
         $csv = "VIN,Brand,Model,License Plate, Engine type\n";
         foreach ($trucks as $truck) {

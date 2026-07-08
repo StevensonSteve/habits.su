@@ -34,7 +34,7 @@ class OrderCrudController extends AbstractCrudController
     {
         parent::persistEntity($entityManager, $entityInstance);
 
-        if (!$entityInstance instanceof Order) {
+        if (! $entityInstance instanceof Order) {
             return;
         }
 

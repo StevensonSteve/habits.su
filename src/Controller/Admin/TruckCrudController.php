@@ -4,6 +4,8 @@ namespace App\Controller\Admin;
 
 use App\Entity\Vehicle\Truck;
 use App\Enum\EngineType;
+use App\Service\Vehicle\TruckService;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -16,10 +18,13 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
-use Symfony\Component\Uid\Uuid;
 
 class TruckCrudController extends AbstractCrudController
 {
+    public function __construct(
+        private readonly TruckService $truckService,
+    ) {}
+
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
@@ -70,7 +75,28 @@ class TruckCrudController extends AbstractCrudController
 
     public function createEntity(string $entityFqcn)
     {
-        return new Truck(Uuid::v7());
+        return $this->truckService->createNew();
+    }
+
+    public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        assert($entityInstance instanceof Truck);
+
+        $this->truckService->saveNew($entityInstance);
+    }
+
+    public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        assert($entityInstance instanceof Truck);
+
+        $this->truckService->update($entityInstance);
+    }
+
+    public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        assert($entityInstance instanceof Truck);
+
+        $this->truckService->delete($entityInstance);
     }
 
     public function configureFields(string $pageName): iterable

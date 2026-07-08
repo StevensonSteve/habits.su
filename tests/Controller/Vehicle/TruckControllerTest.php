@@ -4,12 +4,12 @@ namespace App\Tests\Controller\Vehicle;
 
 use App\Entity\Vehicle\Truck;
 use App\Enum\EngineType;
+use App\Service\Vehicle\TruckService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Uid\Uuid;
 use DateTimeImmutable;
 
 final class TruckControllerTest extends WebTestCase
@@ -20,6 +20,8 @@ final class TruckControllerTest extends WebTestCase
 
     private EntityRepository $truckRepository;
 
+    private TruckService $truckService;
+
     private string $path = '/vehicle/truck/';
 
     protected function setUp(): void
@@ -27,19 +29,19 @@ final class TruckControllerTest extends WebTestCase
         $this->client = static::createClient();
         $this->manager = static::getContainer()->get('doctrine')->getManager();
         $this->truckRepository = $this->manager->getRepository(Truck::class);
+        $this->truckService = static::getContainer()->get(TruckService::class);
 
-        foreach ($this->truckRepository->findAll() as $object) {
-            $this->manager->remove($object);
+        foreach ($this->truckService->findAll() as $truck) {
+            $this->truckService->delete($truck);
         }
 
-        $this->manager->flush();
+        $this->manager->clear();
     }
 
     public function testIndex(): void
     {
-        $this->manager->persist($this->createTruck('11111111111111111', 'AA-1111'));
-        $this->manager->persist($this->createTruck('22222222222222222', 'BB-2222'));
-        $this->manager->flush();
+        $this->truckService->saveNew($this->createTruck('11111111111111111', 'AA-1111'));
+        $this->truckService->saveNew($this->createTruck('22222222222222222', 'BB-2222'));
 
         $this->client->followRedirects();
         $crawler = $this->client->request('GET', $this->path);
@@ -89,7 +91,9 @@ final class TruckControllerTest extends WebTestCase
         self::assertResponseRedirects('/vehicle/truck', Response::HTTP_SEE_OTHER);
         self::assertSame(1, $this->truckRepository->count([]));
 
-        $truck = $this->truckRepository->findOneBy(['vin' => 'AB123456789012345']);
+        $truck = $this->truckRepository->findOneBy([
+            'vin' => 'AB123456789012345',
+        ]);
         self::assertNotNull($truck);
         self::assertSame('Renault', $truck->getBrand());
         self::assertSame(EngineType::DIESEL, $truck->getEngineType());
@@ -98,9 +102,7 @@ final class TruckControllerTest extends WebTestCase
     public function testShow(): void
     {
         $fixture = $this->createTruck('12345678901234567', '0256 HA-8');
-
-        $this->manager->persist($fixture);
-        $this->manager->flush();
+        $this->truckService->saveNew($fixture);
 
         $this->client->request('GET', sprintf('%s%s', $this->path, $fixture->getId()));
 
@@ -119,9 +121,7 @@ final class TruckControllerTest extends WebTestCase
     public function testEdit(): void
     {
         $fixture = $this->createTruck('12345678901234567', '0256 HA-8');
-
-        $this->manager->persist($fixture);
-        $this->manager->flush();
+        $this->truckService->saveNew($fixture);
 
         $this->client->request('GET', sprintf('%s%s/edit', $this->path, $fixture->getId()));
         self::assertResponseIsSuccessful();
@@ -143,9 +143,7 @@ final class TruckControllerTest extends WebTestCase
     public function testDelete(): void
     {
         $fixture = $this->createTruck('12345678901234567', '0256 HA-8');
-
-        $this->manager->persist($fixture);
-        $this->manager->flush();
+        $this->truckService->saveNew($fixture);
 
         $this->client->request('GET', sprintf('%s%s', $this->path, $fixture->getId()));
         $this->client->submitForm('Delete');
@@ -156,7 +154,7 @@ final class TruckControllerTest extends WebTestCase
 
     private function createTruck(string $vin, string $licensePlate): Truck
     {
-        $truck = new Truck(Uuid::v7());
+        $truck = $this->truckService->createNew();
         $truck->setVin($vin);
         $truck->setBrand('Renault');
         $truck->setModel('Clio');

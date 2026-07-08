@@ -11,6 +11,7 @@ final class TruckCacheKeys
     public const string POOL = 'cache.trucks';
 
     public const string TAG_LIST = 'trucks_list';
+
     public const string KEY_LIST_ALL = 'trucks_list_all';
 
     public static function tagOne(Uuid|string $id): string
