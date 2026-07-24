@@ -7,6 +7,7 @@ services:
     volumes:
       - .:/var/www
       - ./docker/php-fpm/php.ini:/usr/local/etc/php/conf.d/custom.ini
+      - ./docker/php-fpm/zz-pool.conf:/usr/local/etc/php-fpm.d/zz-pool.conf
     networks:
       - symfony-network
     healthcheck:
