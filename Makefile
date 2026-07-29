@@ -5,8 +5,7 @@ build:
 		--build-arg GROUP_ID=$(shell id -g) \
 		--build-arg GROUP_NAME=$(shell id -gn) \
 
-init: build composer-install migrate fixtures
-	docker compose up -d
+init: build up composer-install migrate fixtures
 
 up:
 	docker compose up -d
