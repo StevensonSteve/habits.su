@@ -19,6 +19,9 @@ composer-install:
 migrate:
 	docker compose exec php-fpm php bin/console doctrine:migrations:migrate --no-interaction
 
+migration-diff:
+	docker compose exec php-fpm php bin/console doctrine:migrations:diff --no-interaction
+
 fixtures:
 	docker compose exec php-fpm php bin/console doctrine:fixtures:load --no-interaction
 

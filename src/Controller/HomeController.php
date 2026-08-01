@@ -80,7 +80,7 @@ final class HomeController extends AbstractController
         ]);
     }
 
-    #[Route('/steven', name: 'app_steven')]
+    #[Route('/steven-test', name: 'app_steven')]
     public function steveAction(): Response
     {
         return $this->render('home/index.html.twig', [
