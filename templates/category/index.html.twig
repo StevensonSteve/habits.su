@@ -1,0 +1,88 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Трекер активностей{% endblock %}
+
+{% block body %}
+<section class="w-[360px] mx-auto mt-8 overflow-hidden rounded-2xl border border-line bg-card shadow-lg shadow-blue-100/80" id="screen-home">
+      {# Шапка трекера #}
+      <div class="flex items-center justify-between bg-gradient-to-r from-blue-600 to-sky-500 px-4 py-3 text-white">
+        <div>
+          <div class="text-xs text-white/80">главная</div>
+          <div class="text-lg font-semibold">Трекер</div>
+        </div>
+        {# Динамическая дата: выведет, например, "30 июл" #}
+        <div class="text-sm text-white/90">{{ "now"|date('d ') }}{{ "now"|date('M')|trans }}</div>
+      </div>
+      
+      <div class="p-4">
+        {# Блок прогресса за день #}
+        <div class="rounded-2xl bg-brand-soft px-4 py-3">
+          <div class="text-xs font-medium uppercase tracking-wide text-brand">сегодня цели</div>
+          
+          {# Считаем выполненные и общие цели #}
+          {% set completedGoals = dayProgress.completed|default(0) %}
+          {% set totalGoals = dayProgress.total|default(0) %}
+          {% set progressPercent = totalGoals > 0 ? (completedGoals / totalGoals * 100)|round : 0 %}
+          
+          <div class="mt-1 text-2xl font-semibold text-ink">
+              {{ completedGoals }} <span class="text-lg font-normal text-muted">из {{ totalGoals }}</span>
+          </div>
+          <div class="mt-2 h-2 overflow-hidden rounded-full bg-white">
+            <div class="h-full rounded-full bg-brand" style="width: {{ progressPercent }}%"></div>
+          </div>
+        </div>
+        
+        <p class="mt-3 text-xs text-muted">считается по полю «цель на день».
+          <a class="text-brand" href="#" onclick="show('activity-form');return false;">форма →</a>
+        </p>
+
+        {# Список категорий #}
+        <div class="mt-3 space-y-2">
+          {% if categories is not empty %}
+              {% for category in categories %}
+                  {# Рассчитываем прогресс внутри конкретной категории #}
+                  {% set catDone = category.doneCount|default(0) %}
+                  {% set catTotal = category.totalCount|default(0) %}
+                  {% set catPercent = catTotal > 0 ? (catDone / catTotal * 100)|round : 0 %}
+                  
+                  {# Если категория первая — делаем её кнопкой по вашему примеру, остальные обычными блоками #}
+                  {% if loop.first %}
+                      <button type="button" class="w-full rounded-2xl border border-line bg-page p-3 text-left hover:border-brand" onclick="show('category')">
+                        <div class="flex justify-between">
+                            <span class="font-semibold">{{ category.name }}</span>
+                            <span class="text-muted">{{ catDone }}/{{ catTotal }}</span>
+                        </div>
+                        <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-blue-100">
+                            <div class="h-full bg-brand" style="width: {{ catPercent }}%"></div>
+                        </div>
+                      </button>
+                  {% else %}
+                      <div class="rounded-2xl border border-line bg-page p-3">
+                        <div class="flex justify-between">
+                            <span class="font-semibold">{{ category.name }}</span>
+                            <span class="text-muted">{{ catDone }}/{{ catTotal }}</span>
+                        </div>
+                        <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-blue-100">
+                            <div class="h-full bg-brand" style="width: {{ catPercent }}%"></div>
+                        </div>
+                      </div>
+                  {% endif %}
+              {% endfor %}
+          {% else %}
+              <div class="rounded-2xl border border-dashed border-line p-4 text-center text-xs text-muted">
+                  Категории на сегодня не созданы.
+              </div>
+          {% endif %}
+        </div>
+
+        {# Нижняя навигация #}
+        <nav class="mt-4 flex flex-wrap gap-x-4 gap-y-2 border-t border-line pt-3 text-sm">
+          <a class="font-semibold text-brand" href="#" onclick="show('home');return false;">главная</a>
+          <a class="text-muted hover:text-brand" href="#" onclick="show('journal');return false;">журнал</a>
+          <a class="text-muted hover:text-brand" href="#">+ категория</a>
+          <a class="text-muted hover:text-brand" href="#" onclick="show('admin');return false;">админка</a>
+          <a class="text-muted hover:text-brand" href="#" onclick="show('login');return false;">выйти</a>
+        </nav>
+      </div>
+</section>
+{% endblock %}

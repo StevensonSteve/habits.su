@@ -15,6 +15,7 @@ final class TodoController extends AbstractController
     {
         $user = $todoUserRepository->find(3);
 
+        dd($user);
         if ($user) {
             $user->getTasks()->toArray(); 
         }

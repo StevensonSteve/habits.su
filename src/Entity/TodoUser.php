@@ -4,8 +4,8 @@ namespace App\Entity;
 
 use App\Repository\TodoUserRepository;
 use DateTimeImmutable;
-use Doctrine\Common\Collections\ArrayCollection; // Добавлено
-use Doctrine\Common\Collections\Collection;       // Добавлено
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -21,6 +21,15 @@ class TodoUser
 
     #[ORM\Column(length: 255)]
     private string $name;
+    
+    #[ORM\Column(length: 127)]
+    private string $email;
+
+    #[ORM\Column(length: 63)]
+    private string $password;
+
+    #[ORM\Column(type: Types::BOOLEAN)]
+    private bool $isAdmin = false;
 
     // Связь OneToMany: один пользователь имеет много задач.
     // mappedBy указывает на свойство user в сущности Todo.
