@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Repository\CategoryRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -11,22 +11,29 @@ use Symfony\Component\Routing\Attribute\Route;
 final class CategoryController extends AbstractController
 {
     #[Route('', name: 'category_index')]
-    public function index(CategoryRepository $categoryRepository): Response 
+    public function index(EntityManagerInterface $entityManager): Response 
     {
-        $categories = $categoryRepository->findAll();
-
+        $sql = 'SELECT * FROM categories WHERE user_id = :userId';
+        $categories = $entityManager->getConnection()->executeQuery($sql, [
+            'userId' => 1,
+        ])->fetchAllAssociative();
+        
         // dd($categories);
-
+        
         return $this->render('category/index.html.twig', [
             'categories' => $categories,
         ]);
     }
-
-    #[Route('/reading', name: 'todo_reading')]
-    public function reading(): Response 
+    
+    #[Route('/delete/{id}', name: 'category_delete')]
+    public function delete(int $id, EntityManagerInterface $entityManager): Response 
     {
-        return $this->render('todo/reading.html.twig', [
-            'controller_name' => 'TodoController',
-        ]);
+        $sql = 'DELETE FROM categories WHERE id = :id';
+
+        $entityManager->getConnection()->executeQuery($sql, [
+            'id' => $id
+        ])->fetchAllAssociative();
+
+        return $this->redirectToRoute('category_index');
     }
 }

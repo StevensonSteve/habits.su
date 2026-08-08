@@ -25,6 +25,9 @@ migration-diff:
 fixtures:
 	docker compose exec php-fpm php bin/console doctrine:fixtures:load --no-interaction
 
+cache-clear:
+	docker compose exec php-fpm php bin/console cache:clear
+
 ps:
 	docker compose ps
 
