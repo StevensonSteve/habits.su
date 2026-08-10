@@ -30,6 +30,10 @@
                         <div class="flex justify-between">
                             <span class="font-semibold">{{ category.name }}</span>
                             <a class="text-muted hover:text-brand" 
+                              href="{{ path('category_update', {'id': category.id}) }}">
+                              Edit
+                            </a>
+                            <a class="text-muted hover:text-brand" 
                               href="{{ path('category_delete', {'id': category.id}) }}" 
                               onclick="return confirm('Удалить категорию?');">
                               Delete

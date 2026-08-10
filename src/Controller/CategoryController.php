@@ -64,4 +64,31 @@ final class CategoryController extends AbstractController
             'categories' => [],
         ]);
     }
+
+    #[Route('/update/{id}', name: 'category_update')]
+    public function update(int $id, Request $request, EntityManagerInterface $entityManager): Response 
+    {
+        if ($request->getMethod() == 'POST') {
+            $name = $request->request->get('name');
+
+            $sql = "UPDATE categories SET name = :name, updated_at = :updatedAt WHERE id = :id";
+
+            $entityManager->getConnection()->executeQuery($sql , [
+                'name' => $name,
+                'id' => $id,
+                'updatedAt' => new DateTimeImmutable()->format("Y-m-d H:m:s"),
+            ])->fetchAllAssociative();
+
+            return $this->redirectToRoute('category_index');
+        }
+
+        $sql = 'SELECT * FROM categories WHERE id = :id';
+        $category = $entityManager->getConnection()->executeQuery($sql, [
+            'id' => $id,
+        ])->fetchAssociative();
+
+        return $this->render('category/update.html.twig', [
+            'category' => $category,
+        ]);
+    }
 }
