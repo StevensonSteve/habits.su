@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Трекер активностей{% endblock %}
+
+{% block body %}
+<section class="w-[360px] overflow-hidden rounded-2xl border border-line bg-card shadow-lg shadow-blue-100/80" id="screen-category">
+  <div class="border-b border-line px-4 py-3">
+    <div class="flex justify-between text-sm">
+      <a class="text-brand" href="{{ path('category_index') }}" onclick="show('home');return false;">← главная</a>
+      <a class="text-brand" href="#" onclick="show('activity-form');return false;">+ занятие</a>
+    </div>
+    <h2 class="mt-1 text-xl font-semibold">{{category.name}}({{category.user_id}})</h2>
+  </div>
+  <div class="space-y-3 p-4">
+    {% if activities is not empty %}
+        {% for activity in activities %}    
+          <article class="rounded-2xl border border-line bg-page p-4">
+            <div class="flex items-start justify-between gap-2">
+              <div>
+                <a class="font-semibold text-ink" href="#" onclick="show('activity');return false;">{{activity.name}}</a>
+                <p class="text-xs text-muted">сегодня 12 раз</p>
+              </div>
+              <span class="rounded-full bg-brand-soft px-2.5 py-1 text-xs font-medium text-brand">12/20</span>
+            </div>
+            <div class="mt-3 flex flex-wrap gap-2">
+              <button class="min-h-11 rounded-xl bg-brand px-3.5 font-medium text-white shadow-sm shadow-blue-200" onclick="toast('+1')">+1</button>
+              <button class="min-h-11 rounded-xl bg-brand px-3.5 font-medium text-white" onclick="toast('+5')">+5</button>
+              <button class="min-h-11 rounded-xl bg-brand px-3.5 font-medium text-white" onclick="toast('+10')">+10</button>
+              <button class="min-h-11 rounded-xl border border-line bg-white px-3.5 text-muted" onclick="show('activity')">своя</button>
+            </div>
+          </article>
+        {% endfor %}
+    {% else %}
+        <div class="rounded-2xl border border-dashed border-line p-4 text-center text-xs text-muted">
+            активности на сегодня не созданы.
+        </div>
+    {% endif %}
+  </div>
+  <div>
+    <nav class="flex flex-wrap gap-3 border-t border-line pt-3 text-sm text-muted">
+      <a class="hover:text-brand" href="{{ path('category_index') }}" onclick="show('home');return false;">главная</a>
+      <a class="hover:text-brand" href="#" onclick="show('journal');return false;">журнал</a>
+      <a class="hover:text-brand" href="#" onclick="show('category-history');return false;">история категории</a>
+    </nav>
+  </div>
+</section>
+{% endblock %}

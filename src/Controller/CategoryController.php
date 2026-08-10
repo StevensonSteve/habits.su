@@ -91,4 +91,23 @@ final class CategoryController extends AbstractController
             'category' => $category,
         ]);
     }
+
+    #[Route('/{id}', name: 'category_view')]
+    public function activity(int $id, Request $request, EntityManagerInterface $entityManager): Response 
+    {
+        $sql = 'SELECT * FROM categories WHERE id = :id';
+        $category = $entityManager->getConnection()->executeQuery($sql, [
+            'id' => $id,
+        ])->fetchAssociative();
+
+        $sql = 'SELECT * FROM activities WHERE category_id = :categoryId';
+        $activities = $entityManager->getConnection()->executeQuery($sql, [
+            'categoryId' => $id,
+        ])->fetchAllAssociative();
+        
+        return $this->render('category/view.html.twig', [
+            'category' => $category,
+            'activities' => $activities,
+        ]);
+    }
 }
