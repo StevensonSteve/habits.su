@@ -53,9 +53,9 @@ final class CategoryController extends AbstractController
             $entityManager->getConnection()->executeQuery($sql , [
                 'name' => $name,
                 'userId' => self::TEST_USER_ID,
-                'createdAt' => new DateTimeImmutable()->format("Y-m-d H:m:s"),
-                'updatedAt' => new DateTimeImmutable()->format("Y-m-d H:m:s"),
-            ])->fetchAllAssociative();
+                'createdAt' => new DateTimeImmutable()->format("Y-m-d H:i:s"),
+                'updatedAt' => new DateTimeImmutable()->format("Y-m-d H:i:s"),
+            ]);
 
             return $this->redirectToRoute('category_index');
         }
@@ -76,7 +76,7 @@ final class CategoryController extends AbstractController
             $entityManager->getConnection()->executeQuery($sql , [
                 'name' => $name,
                 'id' => $id,
-                'updatedAt' => new DateTimeImmutable()->format("Y-m-d H:m:s"),
+                'updatedAt' => new DateTimeImmutable()->format("Y-m-d H:i:s"),
             ])->fetchAllAssociative();
 
             return $this->redirectToRoute('category_index');
@@ -93,7 +93,7 @@ final class CategoryController extends AbstractController
     }
 
     #[Route('/{id}', name: 'category_view')]
-    public function activity(int $id, Request $request, EntityManagerInterface $entityManager): Response 
+    public function activity(int $id, EntityManagerInterface $entityManager): Response 
     {
         $sql = 'SELECT * FROM categories WHERE id = :id';
         $category = $entityManager->getConnection()->executeQuery($sql, [
@@ -104,7 +104,7 @@ final class CategoryController extends AbstractController
         $activities = $entityManager->getConnection()->executeQuery($sql, [
             'categoryId' => $id,
         ])->fetchAllAssociative();
-        
+
         return $this->render('category/view.html.twig', [
             'category' => $category,
             'activities' => $activities,
