@@ -27,14 +27,30 @@ final class ActivityController extends AbstractController
     //     ]);
     // }
 
+    #[Route('/delete/{id}', name: 'activity_delete')]
+    public function delete(int $id, EntityManagerInterface $entityManager): Response 
+    {
+        $sql = 'SELECT * FROM activities WHERE id = :id';
+        $activity = $entityManager->getConnection()->executeQuery($sql, [
+            'id' => $id
+        ])->fetchAssociative();
+
+        $sql = 'DELETE FROM activities WHERE id = :id';
+        $entityManager->getConnection()->executeQuery($sql, [
+            'id' => $id
+        ]);
+
+        return $this->redirectToRoute('category_view', ['id' => $activity['category_id']]);
+    }
+
     #[Route('/new/category/{id}', name: 'activity_new')]
-    public function add(int $id, Request $request, EntityManagerInterface $entityManager): Response 
+    public function new(int $id, Request $request, EntityManagerInterface $entityManager): Response 
     {
         if ($request->getMethod() == 'POST') {
             $name = $request->request->get('name');
             $unit = $request->request->get('unit');
 
-            $sql = "INSERT INTO activities (name, category_id, unit, created_at, updated_at) 
+            $sql = "INSERT INTO activities (name, category_id, unit, created_at, updated_at)
                 VALUES (:name, :categoryId, :unit, :createdAt, :updatedAt)";
 
             $entityManager->getConnection()->executeQuery($sql , [
@@ -57,4 +73,39 @@ final class ActivityController extends AbstractController
             'category' => $category,
         ]);
     }
+
+    #[Route('/update/{id}', name: 'activity_update')]
+    public function update(int $id, Request $request, EntityManagerInterface $entityManager): Response 
+    {
+        $sql = 'SELECT * FROM activities WHERE id = :id';
+        $activity = $entityManager->getConnection()->executeQuery($sql, [
+            'id' => $id
+        ])->fetchAssociative();
+
+        if ($request->getMethod() == 'POST') {
+            $name = $request->request->get('name');
+            $unit = $request->request->get('unit');
+
+            $sql = "UPDATE activities SET name = :name, unit = :unit, updated_at = :updatedAt WHERE id = :id";
+            $entityManager->getConnection()->executeQuery($sql , [
+                'id' => $id,
+                'name' => $name,
+                'unit' => $unit,
+                'updatedAt' => new DateTimeImmutable()->format("Y-m-d H:i:s"),
+            ]);
+
+            return $this->redirectToRoute('category_view', ['id' => $activity['category_id']]);
+        }
+    
+        $sql = 'SELECT * FROM categories WHERE id = :id';
+        $category = $entityManager->getConnection()->executeQuery($sql, [
+            'id' => $activity['category_id'],
+        ])->fetchAssociative();
+
+        return $this->render('activity/update.html.twig', [
+            'category' => $category,
+            'activity' => $activity,
+        ]);
+    }
 }
+

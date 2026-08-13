@@ -36,7 +36,7 @@ final class CategoryController extends AbstractController
 
         $entityManager->getConnection()->executeQuery($sql, [
             'id' => $id
-        ])->fetchAllAssociative();
+        ]);
 
         return $this->redirectToRoute('category_index');
     }

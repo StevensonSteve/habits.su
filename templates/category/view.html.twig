@@ -25,16 +25,47 @@
                   <a class="font-semibold text-slate-700 hover:text-brand transition-colors" href="#" onclick="show('activity');return false;">{{ activity.name }}</a>
                   <p class="mt-0.5 text-xs text-muted">сегодня: 12 {{ activity.unit == 1 ? 'раз' : (activity.unit == 2 ? 'км' : 'мин') }}</p>
                 </div>
+                <div class="flex items-center gap-3 text-xs">
+                <a class="text-muted hover:text-brand transition-colors" href="{{ path('activity_update', {'id': activity.id}) }}">изм.</a>
+                <span class="text-line">|</span>
+                <a class="text-muted hover:text-danger transition-colors" href="{{ path('activity_delete', {'id': activity.id}) }}" onclick="return confirm('Удалить активность?');">удл.</a>
+              </div>
                 <span class="rounded-full bg-brand-soft px-2.5 py-1 text-xs font-medium text-brand">12/20</span>
               </div>
               
-              {# Быстрые кнопки управления #}
               <div class="mt-4 flex flex-wrap gap-2">
-                <button class="min-h-11 flex-1 rounded-xl bg-brand font-medium text-white shadow-md shadow-brand/10 transition-colors hover:bg-brand-dark" onclick="toast('+1')">+1</button>
-                <button class="min-h-11 flex-1 rounded-xl bg-brand font-medium text-white shadow-md shadow-brand/10 transition-colors hover:bg-brand-dark" onclick="toast('+5')">+5</button>
-                <button class="min-h-11 flex-1 rounded-xl bg-brand font-medium text-white shadow-md shadow-brand/10 transition-colors hover:bg-brand-dark" onclick="toast('+10')">+10</button>
-                <button class="min-h-11 flex-[1.5] rounded-xl border border-line bg-card font-medium text-muted transition-colors hover:bg-page" onclick="show('activity')">своя</button>
+                <form action="{{ path('record_new', {'id': activity.id}) }}" method="POST" class="flex-1">
+                  <input type="hidden" name="amount" value="1">
+                  
+                  <button type="submit" 
+                          onclick="toast('+1')" 
+                          class="w-full min-h-11 rounded-xl bg-brand font-medium text-white shadow-md shadow-brand/10 transition-colors hover:bg-brand-dark">
+                      +1
+                  </button>
+              </form>
+                <form action="{{ path('record_new', {'id': activity.id}) }}" method="POST" class="flex-1">
+                  <input type="hidden" name="amount" value="5">
+                  
+                  <button type="submit" 
+                          onclick="toast('+5')" 
+                          class="w-full min-h-11 rounded-xl bg-brand font-medium text-white shadow-md shadow-brand/10 transition-colors hover:bg-brand-dark">
+                      +5
+                  </button>
+              </form>
+                <form action="{{ path('record_new', {'id': activity.id}) }}" method="POST" class="w-full mt-2 flex gap-2">
+              <div class="relative flex-1">
+                <input type="number" name="amount" 
+                      required
+                      min="1"
+                      placeholder="свой вариант" 
+                      class="w-full min-h-11 px-4 rounded-xl border border-line bg-transparent text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand transition-all">
               </div>
+              
+              <button type="submit" 
+                      class="px-5 min-h-11 rounded-xl bg-brand font-medium text-white shadow-md shadow-brand/10 transition-colors hover:bg-brand-dark">
+                ОК
+              </button>
+            </form>
             </article>
           {% endfor %}
       {% else %}

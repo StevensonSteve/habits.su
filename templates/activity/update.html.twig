@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<section class="w-[360px] mx-auto mt-8 overflow-hidden rounded-2xl border border-line bg-card shadow-lg shadow-blue-100/80" id="screen-activity-edit">
+  <div class="border-b border-line bg-brand-soft px-4 py-3 text-xs font-medium text-brand uppercase tracking-wider">Редактирование</div>
+  <div class="p-5">
+    <a class="text-brand text-sm" href="{{ path('category_view', {'id': category.id}) }}" onclick="show('home');return false;">← {{category.name}}</a>
+    <h2 class="mt-2 text-xl font-semibold text-slate-800">Карточка занятия</h2>
+    
+    <div class="mt-4 space-y-4">
+
+    <form action="{{ path('activity_update', {'id': activity.id}) }}" method="POST" class="mt-4 space-y-4">
+      <div>
+        <label for="username" class="mb-1 block text-xs font-medium text-muted">название</label>
+        <input type="text" name="name" value="{{activity.name}}" required
+               class="w-full rounded-xl border border-line bg-page px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand transition-all"
+               placeholder="Например: Бег, Плавание...">
+      </div>
+      <div>
+        <label class="mb-1 block text-xs font-medium text-muted">единица</label>
+        <select name="unit" required
+              class="w-full appearance-none rounded-xl border border-line bg-page pl-3 pr-10 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand transition-all">
+        <option value="1" {{ activity.unit == 1 ? "selected" : '' }}>раз</option>
+        <option value="2" {{ activity.unit == 2 ? "selected" : '' }}>км</option>
+        <option value="3" {{ activity.unit == 3 ? "selected" : '' }}>мин</option>
+      </select>
+      </div>
+      
+      <button type="submit" class="min-h-11 w-full rounded-xl bg-brand font-medium text-white hover:bg-brand-dark transition-colors shadow-md shadow-brand/10">
+        сохранить изменения
+      </button>
+    </form>
+
+
+      {# <!-- Toggle: has daily goal -->
+      <label class="flex cursor-pointer items-center justify-between gap-3 rounded-2xl border border-line bg-page px-4 py-3 transition-colors hover:bg-slate-50/50">
+        <span class="block font-medium text-slate-700">цель на день</span>
+        <span class="relative inline-flex">
+          <input type="checkbox" checked class="peer sr-only" id="goal-toggle" onchange="document.getElementById('goal-field').classList.toggle('hidden', !this.checked)">
+          <span class="h-7 w-12 rounded-full bg-slate-300 transition peer-checked:bg-brand"></span>
+          <span class="absolute left-0.5 top-0.5 h-6 w-6 rounded-full bg-white shadow transition peer-checked:translate-x-5"></span>
+        </span>
+      </label> #}
+
+      {# <div id="goal-field" class="transition-all">
+        <label class="mb-1 block text-xs font-medium text-muted">значение цели</label>
+        <input class="w-full rounded-xl border border-line bg-page px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand transition-all" type="number" value="20">
+      </div> #}
+
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+
