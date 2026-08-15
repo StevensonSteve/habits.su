@@ -17,7 +17,7 @@ final class CategoryController extends AbstractController
     #[Route('', name: 'category_index')]
     public function index(EntityManagerInterface $entityManager): Response 
     {
-        $sql = 'SELECT * FROM categories WHERE user_id = :userId';
+        $sql = 'SELECT * FROM categories WHERE user_id = :userId ORDER BY updated_at DESC';
         $categories = $entityManager->getConnection()->executeQuery($sql, [
             'userId' => self::TEST_USER_ID,
         ])->fetchAllAssociative();
@@ -100,11 +100,23 @@ final class CategoryController extends AbstractController
             'id' => $id,
         ])->fetchAssociative();
 
-        $sql = 'SELECT * FROM activities WHERE category_id = :categoryId';
+        $sql = 'SELECT activity_id, SUM(amount) AS count
+            FROM records 
+            WHERE DATE(created_at) = CURRENT_DATE 
+            GROUP BY activity_id;
+        ';
+        $activityCount = $entityManager->getConnection()->executeQuery($sql)
+            ->fetchAllKeyValue();
+
+        $sql = 'SELECT * FROM activities WHERE category_id = :categoryId ORDER BY updated_at DESC';
         $activities = $entityManager->getConnection()->executeQuery($sql, [
             'categoryId' => $id,
         ])->fetchAllAssociative();
 
+        foreach ($activities as $index => $activity) {
+            $activities[$index]['count'] = $activityCount[$activity['id']] ?? 0;
+        }
+        
         return $this->render('category/view.html.twig', [
             'category' => $category,
             'activities' => $activities,

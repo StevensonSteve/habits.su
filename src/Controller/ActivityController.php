@@ -12,20 +12,26 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/activity')]
 final class ActivityController extends AbstractController
 {
-    // #[Route('/{id}', name: 'activity_index')]
-    // public function index(int $id, EntityManagerInterface $entityManager): Response 
-    // {
-    //     $sql = 'SELECT * FROM activities WHERE category_id = :categoryId';
-    //     $activities = $entityManager->getConnection()->executeQuery($sql, [
-    //         'categoryId' => $id,
-    //     ])->fetchAllAssociative();
+    #[Route('/{id}', name: 'activity_view')]
+    public function view(int $id, EntityManagerInterface $entityManager): Response 
+    {
+        $sql = 'SELECT * FROM activities WHERE id = :id';
+        $activity = $entityManager->getConnection()->executeQuery($sql, [
+            'id' => $id,
+        ])->fetchAssociative();
 
-    //     // dd($activities);
+        // dd($activities);
 
-    //     return $this->render('activity/index.html.twig', [
-    //         'activities' => $activities,
-    //     ]);
-    // }
+        $sql = 'SELECT * FROM categories WHERE id = :id';
+        $category = $entityManager->getConnection()->executeQuery($sql, [
+            'id' => $activity['category_id'],
+        ])->fetchAssociative();        
+
+        return $this->render('activity/view.html.twig', [
+            'activity' => $activity,
+            'category' => $category,
+        ]);
+    }
 
     #[Route('/delete/{id}', name: 'activity_delete')]
     public function delete(int $id, EntityManagerInterface $entityManager): Response 
