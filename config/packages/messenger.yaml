@@ -12,27 +12,7 @@ framework:
                 retry_strategy:
                     max_retries: 3
                     multiplier: 2
-            async_rabbitmq:
-                dsn: '%env(RABBITMQ_TRANSPORT_DSN)%'
-                options: # погуглить, откуда беруться все эти значения
-                    exchange:
-                        name: 'notifications'
-                        type: 'direct'
-                        default_publish_routing_key: 'tg_messages'
-                        arguments:
-                            durable: true
-                    queues:
-                        tg_messages_queue:
-                            binding_keys: ['tg_messages']
-                            arguments:
-                                durable: true
-                                delivery_mode: 2
-                retry_strategy:
-                    max_retries: 3
-                    delay: 1000
-                    multiplier: 2
             failed: 'doctrine://default?queue_name=failed'
-            # sync: 'sync://'
 
         default_bus: messenger.bus.default
 
@@ -43,4 +23,3 @@ framework:
             Symfony\Component\Mailer\Messenger\SendEmailMessage: async
             Symfony\Component\Notifier\Message\ChatMessage: async
             Symfony\Component\Notifier\Message\SmsMessage: async
-            App\Scheduler\Order\Message\BrokerMessage: async_rabbitmq

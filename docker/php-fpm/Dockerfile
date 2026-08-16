@@ -7,13 +7,13 @@ ARG GROUP_NAME=www-data
 
 RUN apk update && apk add --no-cache \
     git curl libpng-dev libwebp-dev libjpeg-turbo-dev freetype-dev \
-    libzip-dev postgresql-dev icu-dev oniguruma-dev rabbitmq-c-dev \
-    linux-headers autoconf make g++ bash nano vim
+    libzip-dev postgresql-dev icu-dev oniguruma-dev \
+    linux-headers autoconf make g++ bash
 
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp && \
-    docker-php-ext-install pdo_mysql pdo_pgsql zip exif pcntl gd intl mbstring bcmath
+    docker-php-ext-install pdo_pgsql zip exif pcntl gd intl mbstring bcmath
 
-RUN pecl install redis amqp && docker-php-ext-enable redis amqp
+RUN pecl install redis && docker-php-ext-enable redis
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
