@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Трекер привычек{% endblock %}
+
+{% block body %}
+
+  <section class="w-full max-w-md md:max-w-4xl mx-auto mt-4 md:mt-12 min-h-[calc(100vh-2rem)] md:min-h-0 flex flex-col overflow-hidden rounded-2xl border border-line bg-card shadow-lg shadow-blue-100/80" id="screen-home">
+
+  <div class="flex items-center justify-between bg-gradient-to-r from-blue-600 to-sky-500 px-4 py-3 md:px-6 md:py-4 text-white shrink-0">
+    <div>
+      <div class="text-xs text-white/80 uppercase tracking-wider">главная</div>
+      <div class="text-lg md:text-xl font-semibold">Трекер привычек</div>
+    </div>
+    <div class="text-sm md:text-base text-white/90 font-medium">
+      {{ "now"|date('d ') }}{{ "now"|date('M')|trans }}
+    </div>      
+  </div>
+
+  <div class="p-5 md:p-6 flex-1 pb-24 md:pb-6">
+    
+    <div class="flex items-center justify-between">
+      <h2 class="text-xl md:text-2xl font-semibold text-slate-800">Категории</h2>
+      <a class="text-xs md:text-sm font-medium text-brand hover:underline bg-brand-soft px-3 py-1.5 rounded-lg transition-colors" href="{{ path('category_new') }}" onclick="show('category-form');return false;">
+        + категория
+      </a>
+    </div>
+
+    <div class="mt-5 space-y-2 md:space-y-0 md:grid md:grid-cols-2 md:gap-4">
+      {% if categories is not empty %}
+          {% for category in categories %}                 
+            <div class="flex items-center justify-between rounded-xl border border-line bg-page px-4 py-3 hover:shadow-sm transition-shadow">
+              <span class="font-medium text-slate-700">
+                <a class="hover:text-brand transition-colors text-sm md:text-base" href="{{ path('category_view', {'id': category.id}) }}">
+                  {{ category.name }}
+                </a>
+              </span>
+              <div class="flex items-center gap-3 text-xs md:text-sm">
+                <a class="text-muted hover:text-brand transition-colors" href="{{ path('category_update', {'id': category.id}) }}">изм.</a>
+                <span class="text-line">|</span>
+                <a class="text-muted hover:text-bad transition-colors" href="{{ path('category_delete', {'id': category.id}) }}" onclick="return confirm('Удалить категорию?');">удл.</a>
+              </div>
+            </div>
+          {% endfor %}
+      {% else %}
+          <div class="md:col-span-2 rounded-xl border border-dashed border-line p-8 text-center text-xs md:text-sm text-muted">
+              Категории на сегодня не созданы.
+          </div>
+      {% endif %}
+    </div>
+
+    <nav class="fixed bottom-0 left-0 w-full bg-card border-t border-line p-4 shadow-[0_-4px_12px_rgba(0,0,0,0.05)] z-50 flex flex-wrap justify-around gap-2 text-xs font-semibold uppercase tracking-wider md:relative md:bottom-auto md:left-auto md:w-auto md:bg-transparent md:border-t-0 md:p-0 md:mt-6 md:shadow-none md:justify-start md:gap-x-6 md:gap-y-2 md:font-medium md:text-sm">
+      <a class="text-brand py-1 px-2 rounded-lg bg-brand-soft md:bg-transparent md:p-0" href="#" onclick="show('home');return false;">главная</a>
+      <a class="text-muted hover:text-brand transition-colors py-1 px-2" href="#" onclick="show('journal');return false;">журнал</a>
+      <a class="text-muted hover:text-brand transition-colors py-1 px-2" href="#" onclick="show('admin');return false;">админка</a>
+      <a class="text-muted hover:text-bad transition-colors py-1 px-2" href="#" onclick="show('login');return false;">выйти</a>
+    </nav>
+  </div>
+</section>
+{% endblock %}

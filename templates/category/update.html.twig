@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Трекер activeностей{% endblock %}
+
+{% block body %}
+<section class="w-[360px] mx-auto mt-8 overflow-hidden rounded-2xl border border-line bg-card shadow-lg shadow-blue-100/80" id="screen-category-edit">
+  {# Шапка трекера #}
+  <div class="flex items-center justify-between bg-gradient-to-r from-blue-600 to-sky-500 px-4 py-3 text-white">
+    <div>
+      <div class="text-xs text-white/80">редактирование</div>
+      <div class="text-lg font-semibold">Настройки</div>
+    </div>
+    <div class="text-sm text-white/90">{{ "now"|date('d ') }}{{ "now"|date('M')|trans }}</div>      
+  </div>
+  
+  <div class="p-5">
+    <a class="text-brand text-sm" href="{{ path('category_index') }}" onclick="show('home');return false;">← Назад</a>
+    <h2 class="mt-2 text-xl font-semibold text-slate-800">Изменить категорию</h2>
+
+    <form action="{{ path('category_update', {'id': category.id}) }}" method="POST" class="mt-4 space-y-4">
+      <div>
+        <label for="category_name" class="mb-1 block text-xs font-medium text-muted">название категории</label>
+        <input type="text" id="category_name" name="name" value="{{ category.name|default('') }}" required
+               class="w-full rounded-xl border border-line bg-page px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand transition-all"
+               placeholder="Введите название...">
+      </div>
+      
+      <button type="submit" class="min-h-11 w-full rounded-xl bg-brand font-medium text-white hover:bg-brand-dark transition-colors shadow-md shadow-brand/10">
+        сохранить изменения
+      </button>
+    </form>
+  </div>
+</section>
+{% endblock %}

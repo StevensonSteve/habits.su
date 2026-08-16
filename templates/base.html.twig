@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>
+      {% block title %}{% endblock %}
+  </title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <style type="text/tailwindcss">
+    @theme {
+      --font-sans: "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+      --color-ink: #0f172a;
+      --color-muted: #64748b;
+      --color-page: #eff6ff;
+      --color-card: #ffffff;
+      --color-line: #bfdbfe;
+      --color-brand: #2563eb;
+      --color-brand-dark: #1d4ed8;
+      --color-brand-soft: #dbeafe;
+      --color-ok: #059669;
+      --color-warn: #d97706;
+      --color-bad: #dc2626;
+    }
+  </style>
+</head>
+    <body>
+        {% block body %}{% endblock %}
+    </body>
+</html>
