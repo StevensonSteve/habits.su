@@ -20,16 +20,39 @@ final class ActivityController extends AbstractController
             'id' => $id,
         ])->fetchAssociative();
 
-        // dd($activities);
+        $sql = 'SELECT * FROM records WHERE activity_id = :activityId ORDER BY created_at DESC';
+        $records = $entityManager->getConnection()->executeQuery($sql, [
+            'activityId' => $activity['id'],
+        ])->fetchAllAssociative();
+
+        $sql = 'SELECT COUNT(*) AS count
+            FROM records 
+            WHERE activity_id = :activityId;
+        ';
+        $activityCount = $entityManager->getConnection()->executeQuery($sql, [
+            'activityId' => $id,
+        ])->fetchAssociative();
+
+        $sql = 'SELECT SUM(amount) AS sum
+            FROM records 
+            WHERE activity_id = :activityId;
+        ';
+        $activitySum = $entityManager->getConnection()->executeQuery($sql, [
+            'activityId' => $id,
+        ])->fetchAssociative();
 
         $sql = 'SELECT * FROM categories WHERE id = :id';
         $category = $entityManager->getConnection()->executeQuery($sql, [
             'id' => $activity['category_id'],
-        ])->fetchAssociative();        
+        ])->fetchAssociative(); 
+        
 
         return $this->render('activity/view.html.twig', [
             'activity' => $activity,
             'category' => $category,
+            'activityCount' => $activityCount,
+            'activitySum' => $activitySum,
+            'records' => $records,
         ]);
     }
 
@@ -113,5 +136,6 @@ final class ActivityController extends AbstractController
             'activity' => $activity,
         ]);
     }
+
 }
 

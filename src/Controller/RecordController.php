@@ -15,44 +15,45 @@ final class RecordController extends AbstractController
     #[Route('/new/activity/{id}', name: 'record_new')]
     public function new(int $id, Request $request, EntityManagerInterface $entityManager): Response 
     {
-        // if ($request->getMethod() == 'POST') {
-            $amount = $request->request->get('amount', 0);
+        $amount = $request->request->get('amount', 0);
+        $date = $request->request->get('date', 0);
 
-            $sql = "INSERT INTO records (amount, activity_id, created_at, updated_at) 
-                VALUES (:amount, :activityId, :createdAt, :updatedAt)";
+        $createdAt = $date 
+            ? (new DateTimeImmutable($date . ' ' . date('H:i:s')))->format("Y-m-d H:i:s")
+            : (new DateTimeImmutable())->format("Y-m-d H:i:s");
 
-            $entityManager->getConnection()->executeQuery($sql , [
-                'amount' => $amount,
-                'activityId' => $id,
-                'createdAt' => new DateTimeImmutable()->format("Y-m-d H:i:s"),
-                'updatedAt' => new DateTimeImmutable()->format("Y-m-d H:i:s"),
-            ]);
+        $sql = "INSERT INTO records (amount, activity_id, created_at, updated_at) 
+            VALUES (:amount, :activityId, :createdAt, :updatedAt)";
 
-            $sql = 'SELECT * FROM activities WHERE id = :id';
-            $activity = $entityManager->getConnection()->executeQuery($sql, [
-                'id' => $id,
-            ])->fetchAssociative();
+        $entityManager->getConnection()->executeQuery($sql , [
+            'amount' => $amount,
+            'activityId' => $id,
+            'createdAt' => $createdAt,
+            'updatedAt' => new DateTimeImmutable()->format("Y-m-d H:i:s"),
+        ]);
+
+        $sql = 'SELECT * FROM activities WHERE id = :id';
+        $activity = $entityManager->getConnection()->executeQuery($sql, [
+            'id' => $id,
+        ])->fetchAssociative();
 
 
-            return $this->redirectToRoute('category_view', ['id' => $activity['category_id']]);
-        // }
+        return $this->redirectToRoute('category_view', ['id' => $activity['category_id']]);
+    }
 
-        // $sql = 'SELECT * FROM activities WHERE id = :id';
-        // $activity = $entityManager->getConnection()->executeQuery($sql, [
-        //     'id' => $id,
-        // ])->fetchAssociative();
+    #[Route('/delete/{id}', name: 'record_delete')]
+    public function delete(int $id, EntityManagerInterface $entityManager): Response 
+    {
+        $sql = 'SELECT activity_id FROM records WHERE id = :id';
+        $activityId = $entityManager->getConnection()->executeQuery($sql, [
+            'id' => $id,
+        ])->fetchOne();
 
-        // // dd($activity);
+        $sql = 'DELETE FROM records WHERE id = :id';
+        $entityManager->getConnection()->executeQuery($sql, [
+            'id' => $id
+        ]);
 
-        // $sql = 'SELECT * FROM categories WHERE id = :id';
-        // $category = $entityManager->getConnection()->executeQuery($sql, [
-        //     'id' => $activity['category_id'],
-        // ])->fetchAssociative();
-
-        // // dd($category);
-
-        // return $this->render('category/view.html.twig', [
-        //     'categories' => $category,
-        // ]);
+        return $this->redirectToRoute('activity_view', ['id' => $activityId]);
     }
 }
