@@ -27,14 +27,54 @@
 
         <p class="mb-2 mt-4 text-xs font-medium uppercase tracking-wide text-muted">история</p>
         <div class="flex flex-wrap gap-1.5">
-            <a class="rounded-full px-3 py-1.5 text-xs text-muted hover:bg-brand-soft" href="#">неделя</a>
-            <a class="rounded-full bg-brand px-3 py-1.5 text-xs font-medium text-white" href="#">месяц</a>
-            <a class="rounded-full px-3 py-1.5 text-xs text-muted hover:bg-brand-soft" href="#">полгода</a>
-            <a class="rounded-full px-3 py-1.5 text-xs text-muted hover:bg-brand-soft" href="#">год</a>
+            <form action="{{ path('activity_view', {'id': activity.id}) }}" method="POST" class="flex-1">
+                <input type="hidden" name="filter" value="week">
+            
+                <button type="submit" 
+                        class="rounded-full px-3 py-1.5 text-xs  
+                            {{filter == 'week' 
+                                ? 'font-medium bg-brand text-white' 
+                                : 'text-muted hover:bg-brand-soft' }}">
+                    неделя
+                </button>
+            </form>
+            <form action="{{ path('activity_view', {'id': activity.id}) }}" method="POST" class="flex-1">
+                <input type="hidden" name="filter" value="month">
+            
+                <button type="submit" 
+                        class="rounded-full px-3 py-1.5 text-xs  
+                            {{filter == 'month' 
+                                ? 'font-medium bg-brand text-white' 
+                                : 'text-muted hover:bg-brand-soft' }}">
+                    месяц
+                </button>
+            </form>
+            <form action="{{ path('activity_view', {'id': activity.id}) }}" method="POST" class="flex-1">
+                <input type="hidden" name="filter" value="half-year">
+            
+                <button type="submit" 
+                        class="rounded-full px-3 py-1.5 text-xs  
+                            {{filter == 'half-year' 
+                                ? 'font-medium bg-brand text-white' 
+                                : 'text-muted hover:bg-brand-soft' }}">
+                    полгода
+                </button>
+            </form>
+            <form action="{{ path('activity_view', {'id': activity.id}) }}" method="POST" class="flex-1">
+                <input type="hidden" name="filter" value="year">
+            
+                <button type="submit" 
+                        class="rounded-full px-3 py-1.5 text-xs  
+                            {{filter == 'year' 
+                                ? 'font-medium bg-brand text-white' 
+                                : 'text-muted hover:bg-brand-soft' }}">
+                    год
+                </button>
+            </form>
             <a class="rounded-full px-3 py-1.5 text-xs text-muted hover:bg-brand-soft" href="#" onclick="show('custom-filter');return false;">свой</a>
         </div>
         
-        <div class="mt-3 rounded-xl bg-brand-soft px-3 py-2 text-sm text-brand">Σ месяц = {{activitySum.sum}} {{ activity.unit == 1 ? 'раз' : (activity.unit == 2 ? 'км' : 'мин') }} · {{activityCount.count}} записей</div>
+        <div class="mt-3 rounded-xl bg-brand-soft px-3 py-2 text-sm text-brand">Σ = {{activitySum.sum}} {{ activity.unit == 1 ? 'раз' : (activity.unit == 2 ? 'км' : 'мин') }} · {{activityCount.count}} записей</div>
 
         {% if records is not empty %}
             <ul class="mt-3 divide-y divide-line overflow-hidden rounded-2xl border border-line bg-white">

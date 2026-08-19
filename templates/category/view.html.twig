@@ -36,13 +36,13 @@
               <div class="mt-4 flex flex-wrap gap-2">
                 <form action="{{ path('record_new', {'id': activity.id}) }}" method="POST" class="flex-1">
                   <input type="hidden" name="amount" value="1">
-                  
+                
                   <button type="submit" 
                           onclick="toast('+1')" 
                           class="w-full min-h-11 rounded-xl bg-brand font-medium text-white shadow-md shadow-brand/10 transition-colors hover:bg-brand-dark">
                       +1
                   </button>
-              </form>
+                </form>
                 <form action="{{ path('record_new', {'id': activity.id}) }}" method="POST" class="flex-1">
                   <input type="hidden" name="amount" value="5">
                   
@@ -51,21 +51,22 @@
                           class="w-full min-h-11 rounded-xl bg-brand font-medium text-white shadow-md shadow-brand/10 transition-colors hover:bg-brand-dark">
                       +5
                   </button>
-              </form>
+                </form>
                 <form action="{{ path('record_new', {'id': activity.id}) }}" method="POST" class="w-full mt-2 flex gap-2">
-              <div class="relative flex-1">
-                <input type="number" name="amount" 
-                      required
-                      min="1"
-                      placeholder="свой вариант" 
-                      class="w-full min-h-11 px-4 rounded-xl border border-line bg-transparent text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand transition-all">
+                  <div class="relative flex-1">
+                    <input type="number" name="amount" 
+                          required
+                          min="1"
+                          placeholder="свой вариант" 
+                          class="w-full min-h-11 px-4 rounded-xl border border-line bg-transparent text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand transition-all">
+                  </div>
+                
+                  <button type="submit" 
+                        class="px-5 min-h-11 rounded-xl bg-brand font-medium text-white shadow-md shadow-brand/10 transition-colors hover:bg-brand-dark">
+                  ОК
+                  </button>
+                </form>
               </div>
-              
-              <button type="submit" 
-                      class="px-5 min-h-11 rounded-xl bg-brand font-medium text-white shadow-md shadow-brand/10 transition-colors hover:bg-brand-dark">
-                ОК
-              </button>
-            </form>
             </article>
           {% endfor %}
       {% else %}

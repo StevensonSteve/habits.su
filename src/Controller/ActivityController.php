@@ -12,33 +12,54 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/activity')]
 final class ActivityController extends AbstractController
 {
+    private const FILTER_PERIOD_WEEK = 'week';
+    private const FILTER_PERIOD_MONTH = 'month';
+    private const FILTER_PERIOD_HALF_YEAR = 'half-year';
+    private const FILTER_PERIOD_YEAR = 'year';
+    private const FILTER_PERIOD_ALL_TIME = 'all-time';
+
     #[Route('/{id}', name: 'activity_view')]
-    public function view(int $id, EntityManagerInterface $entityManager): Response 
+    public function view(int $id, Request $request, EntityManagerInterface $entityManager): Response 
     {
+        $filter = $request->request->get('filter', self::FILTER_PERIOD_WEEK);
+
         $sql = 'SELECT * FROM activities WHERE id = :id';
         $activity = $entityManager->getConnection()->executeQuery($sql, [
             'id' => $id,
         ])->fetchAssociative();
 
-        $sql = 'SELECT * FROM records WHERE activity_id = :activityId ORDER BY created_at DESC';
+        $now = new DateTimeImmutable();
+        $dateFrom = match ($filter) {
+            self::FILTER_PERIOD_WEEK   => $now->modify('-7 days'),
+            self::FILTER_PERIOD_HALF_YEAR   => $now->modify('-6 months'),
+            self::FILTER_PERIOD_YEAR   => $now->modify('-1 year'),
+            self::FILTER_PERIOD_ALL_TIME    => null,
+            self::FILTER_PERIOD_MONTH  => $now->modify('-1 month'),
+            default  => $now->modify('-7 days'),
+        };
+
+        $sql = 'SELECT * FROM records WHERE activity_id = :activityId AND created_at >= :dateFrom  ORDER BY created_at DESC';        
         $records = $entityManager->getConnection()->executeQuery($sql, [
             'activityId' => $activity['id'],
+            'dateFrom' => $dateFrom->format('Y-m-d 00:00:00'),
         ])->fetchAllAssociative();
 
         $sql = 'SELECT COUNT(*) AS count
             FROM records 
-            WHERE activity_id = :activityId;
+            WHERE activity_id = :activityId AND created_at >= :dateFrom;
         ';
         $activityCount = $entityManager->getConnection()->executeQuery($sql, [
             'activityId' => $id,
+            'dateFrom' => $dateFrom->format('Y-m-d 00:00:00'),
         ])->fetchAssociative();
 
         $sql = 'SELECT SUM(amount) AS sum
             FROM records 
-            WHERE activity_id = :activityId;
+            WHERE activity_id = :activityId AND created_at >= :dateFrom;
         ';
         $activitySum = $entityManager->getConnection()->executeQuery($sql, [
             'activityId' => $id,
+            'dateFrom' => $dateFrom->format('Y-m-d 00:00:00'),
         ])->fetchAssociative();
 
         $sql = 'SELECT * FROM categories WHERE id = :id';
@@ -53,6 +74,7 @@ final class ActivityController extends AbstractController
             'activityCount' => $activityCount,
             'activitySum' => $activitySum,
             'records' => $records,
+            'filter' => $filter,
         ]);
     }
 
