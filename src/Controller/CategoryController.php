@@ -17,12 +17,14 @@ final class CategoryController extends AbstractController
     #[Route('', name: 'category_index')]
     public function index(EntityManagerInterface $entityManager): Response 
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
+        $user = $this->getUser();
+
         $sql = 'SELECT * FROM categories WHERE user_id = :userId ORDER BY updated_at DESC';
         $categories = $entityManager->getConnection()->executeQuery($sql, [
-            'userId' => self::TEST_USER_ID,
+            'userId' => $user->getId(),
         ])->fetchAllAssociative();
-        
-        // dd($categories);
         
         return $this->render('category/index.html.twig', [
             'categories' => $categories,
