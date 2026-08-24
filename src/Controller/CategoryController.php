@@ -2,36 +2,21 @@
 
 namespace App\Controller;
 
+use App\Security\CategoryVoter;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/category')]
+#[IsGranted('IS_AUTHENTICATED_FULLY')] 
 final class CategoryController extends AbstractController
-{
-    private const TEST_USER_ID = 1;
-
-    #[Route('', name: 'category_index')]
-    public function index(EntityManagerInterface $entityManager): Response 
-    {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-
-        $user = $this->getUser();
-
-        $sql = 'SELECT * FROM categories WHERE user_id = :userId ORDER BY updated_at DESC';
-        $categories = $entityManager->getConnection()->executeQuery($sql, [
-            'userId' => $user->getId(),
-        ])->fetchAllAssociative();
-        
-        return $this->render('category/index.html.twig', [
-            'categories' => $categories,
-        ]);
-    }
-    
+{   
     #[Route('/delete/{id}', name: 'category_delete')]
+    #[IsGranted(CategoryVoter::MANAGE, subject: 'id')] 
     public function delete(int $id, EntityManagerInterface $entityManager): Response 
     {
         $sql = 'DELETE FROM categories WHERE id = :id';
@@ -40,7 +25,7 @@ final class CategoryController extends AbstractController
             'id' => $id
         ]);
 
-        return $this->redirectToRoute('category_index');
+        return $this->redirectToRoute('dashboard_index');
     }
 
     #[Route('/new', name: 'category_new')]
@@ -54,12 +39,12 @@ final class CategoryController extends AbstractController
 
             $entityManager->getConnection()->executeQuery($sql , [
                 'name' => $name,
-                'userId' => self::TEST_USER_ID,
+                'userId' => $this->getUser()->getId(),
                 'createdAt' => new DateTimeImmutable()->format("Y-m-d H:i:s"),
                 'updatedAt' => new DateTimeImmutable()->format("Y-m-d H:i:s"),
             ]);
 
-            return $this->redirectToRoute('category_index');
+            return $this->redirectToRoute('dashboard_index');
         }
 
         return $this->render('category/new.html.twig', [
@@ -68,6 +53,7 @@ final class CategoryController extends AbstractController
     }
 
     #[Route('/update/{id}', name: 'category_update')]
+    #[IsGranted(CategoryVoter::MANAGE, subject: 'id')]
     public function update(int $id, Request $request, EntityManagerInterface $entityManager): Response 
     {
         if ($request->getMethod() == 'POST') {
@@ -81,7 +67,7 @@ final class CategoryController extends AbstractController
                 'updatedAt' => new DateTimeImmutable()->format("Y-m-d H:i:s"),
             ])->fetchAllAssociative();
 
-            return $this->redirectToRoute('category_index');
+            return $this->redirectToRoute('dashboard_index');
         }
 
         $sql = 'SELECT * FROM categories WHERE id = :id';
@@ -95,6 +81,7 @@ final class CategoryController extends AbstractController
     }
 
     #[Route('/{id}', name: 'category_view')]
+    #[IsGranted(CategoryVoter::MANAGE, subject: 'id')]
     public function activity(int $id, EntityManagerInterface $entityManager): Response 
     {
         $sql = 'SELECT * FROM categories WHERE id = :id';

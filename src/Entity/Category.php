@@ -50,6 +50,11 @@ class Category
         $this->name = $name;
     }
 
+    public function getUserId(): string
+    {
+        return $this->userId;
+    }
+
     public function getCreatedAt(): DateTimeImmutable
     {
         return $this->created_at;

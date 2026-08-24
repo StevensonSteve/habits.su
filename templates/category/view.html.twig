@@ -7,7 +7,7 @@
   {# Шапка экрана #}
   <div class="border-b border-line bg-brand-soft px-4 py-3 text-xs font-medium text-brand">
     <div class="flex justify-between items-center">
-      <a class="text-brand transition-colors hover:text-brand-dark" href="{{ path('category_index') }}" onclick="show('home');return false;">← главная</a>
+      <a class="text-brand transition-colors hover:text-brand-dark" href="{{ path('dashboard_index') }}" onclick="show('home');return false;">← главная</a>
       <a class="text-brand transition-colors hover:text-brand-dark" href="{{ path('activity_new', {'id': category.id}) }}" onclick="show('activity-form');return false;">+ занятие</a>
     </div>
   </div>
@@ -78,7 +78,7 @@
 
     {# Нижняя навигация #}
     <nav class="mt-5 flex flex-wrap gap-x-4 gap-y-2 border-t border-line pt-4 text-xs font-medium uppercase tracking-wider">
-      <a class="text-muted hover:text-brand transition-colors" href="{{ path('category_index') }}" onclick="show('home');return false;">главная</a>
+      <a class="text-muted hover:text-brand transition-colors" href="{{ path('dashboard_index') }}" onclick="show('home');return false;">главная</a>
       <a class="text-muted hover:text-brand transition-colors" href="#" onclick="show('journal');return false;">журнал</a>
       <a class="text-muted hover:text-brand transition-colors" href="#" onclick="show('category-history');return false;">история</a>
     </nav>

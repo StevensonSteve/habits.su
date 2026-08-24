@@ -2,14 +2,18 @@
 
 namespace App\Controller;
 
+use App\Security\ActivityVoter;
+use App\Security\CategoryVoter;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/activity')]
+#[IsGranted('IS_AUTHENTICATED_FULLY')]
 final class ActivityController extends AbstractController
 {
     private const FILTER_PERIOD_WEEK = 'week';
@@ -19,6 +23,7 @@ final class ActivityController extends AbstractController
     private const FILTER_PERIOD_ALL_TIME = 'all-time';
 
     #[Route('/{id}', name: 'activity_view')]
+    #[IsGranted(ActivityVoter::MANAGE, subject: 'id')]
     public function view(int $id, Request $request, EntityManagerInterface $entityManager): Response 
     {
         $filter = $request->request->get('filter', self::FILTER_PERIOD_WEEK);
@@ -79,6 +84,7 @@ final class ActivityController extends AbstractController
     }
 
     #[Route('/delete/{id}', name: 'activity_delete')]
+    #[IsGranted(ActivityVoter::MANAGE, subject: 'id')]
     public function delete(int $id, EntityManagerInterface $entityManager): Response 
     {
         $sql = 'SELECT * FROM activities WHERE id = :id';
@@ -95,6 +101,7 @@ final class ActivityController extends AbstractController
     }
 
     #[Route('/new/category/{id}', name: 'activity_new')]
+    #[IsGranted(CategoryVoter::MANAGE, subject: 'id')]
     public function new(int $id, Request $request, EntityManagerInterface $entityManager): Response 
     {
         if ($request->getMethod() == 'POST') {
@@ -126,6 +133,7 @@ final class ActivityController extends AbstractController
     }
 
     #[Route('/update/{id}', name: 'activity_update')]
+    #[IsGranted(ActivityVoter::MANAGE, subject: 'id')]
     public function update(int $id, Request $request, EntityManagerInterface $entityManager): Response 
     {
         $sql = 'SELECT * FROM activities WHERE id = :id';
