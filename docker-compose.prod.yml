@@ -45,6 +45,9 @@ services:
 
   caddy:
     image: caddy:2-alpine
+    environment:
+      PRIMARY_DOMAIN: ${PRIMARY_DOMAIN:?Set PRIMARY_DOMAIN in .env}
+      ACME_EMAIL: ${ACME_EMAIL:?Set ACME_EMAIL in .env}
     ports:
       - "80:80"
       - "443:443"
