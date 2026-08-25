@@ -9,6 +9,7 @@ services:
         GROUP_NAME: ${GROUP_NAME:-www-data}
     volumes:
       - .:/var/www
+      - ../shared:/var/shared:ro
       - ./docker/php-fpm/php.prod.ini:/usr/local/etc/php/conf.d/custom.ini:ro
       - ./docker/php-fpm/zz-pool.prod.conf:/usr/local/etc/php-fpm.d/zz-pool.conf:ro
     networks:
