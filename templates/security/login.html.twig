@@ -14,25 +14,30 @@
             </div>
         {% endif %}
 
-        <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
-        <label for="username">Email</label>
-        <input type="email" value="{{ last_username }}" name="_username" id="username" class="form-control" autocomplete="email" required autofocus>
-        <label for="password">Password</label>
-        <input type="password" name="_password" id="password" class="form-control" autocomplete="current-password" required>
-        <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
+    <section class="w-[360px] overflow-hidden rounded-2xl border border-line bg-card shadow-lg shadow-blue-100/80" id="screen-login">
+      <div class="bg-gradient-to-r from-blue-600 to-sky-500 px-4 py-3 text-xs font-medium text-white/90">Вход</div>
+      <div class="p-5">
+        <h2 class="text-xl font-semibold text-ink">С возвращением</h2>
+        <p class="mt-1 text-muted">войдите в трекер</p>
+        <div class="mt-5 space-y-3">
+          <div>
+            <input type="email" value="{{ last_username }}" name="_username" id="username" class="w-full rounded-xl border border-line bg-page px-3 py-2.5 outline-none ring-brand focus:ring-2" autocomplete="email" required autofocus placeholder="email">
+          </div>
+          <div>
+            <input type="password" name="_password" id="password" class="w-full rounded-xl border border-line bg-page px-3 py-2.5 outline-none ring-brand focus:ring-2" autocomplete="current-password" required placeholder="пароль">
+            <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">  
+          </div>
 
-        {#
-            Uncomment this section and add a remember_me option below your firewall to activate remember me functionality.
-            See https://symfony.com/doc/current/security/remember_me.html
+          <label class="flex cursor-pointer items-center gap-3 rounded-xl border border-line bg-page/70 px-3 py-2.5">
+            <input type="checkbox" checked="" class="peer sr-only">
+            <span class="relative flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 border-line bg-white transition peer-checked:border-brand peer-checked:bg-brand peer-focus-visible:ring-2 peer-focus-visible:ring-brand/40 after:absolute after:hidden after:h-2.5 after:w-1.5 after:rotate-45 after:border-b-2 after:border-r-2 after:border-white peer-checked:after:block"></span>
+            <span class="text-sm">запомнить меня</span>
+          </label>
 
-            <div class="checkbox mb-3">
-                <input type="checkbox" name="_remember_me" id="_remember_me">
-                <label for="_remember_me">Remember me</label>
-            </div>
-        #}
-
-        <button class="btn btn-lg btn-primary" type="submit">
-            Sign in
-        </button>
+          <button class="min-h-11 w-full rounded-xl bg-brand px-4 py-2.5 font-medium text-white shadow-md shadow-blue-200 hover:bg-brand-dark" onclick="show('home')">войти</button>
+        </div>
+        <p class="mt-4 text-center text-muted">нет аккаунта? <a class="font-medium text-brand" href="#" onclick="show('register');return false;">регистрация</a></p>
+      </div>
+    </section>
     </form>
 {% endblock %}

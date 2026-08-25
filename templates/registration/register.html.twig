@@ -7,14 +7,45 @@
 
     {{ form_errors(registrationForm) }}
 
-    {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.name) }}
-        {{ form_row(registrationForm.email) }}
-        {{ form_row(registrationForm.plainPassword, {
-            label: 'Password'
-        }) }}
-        {{ form_row(registrationForm.agreeTerms) }}
+    <form method="post">
+    <section class="w-[360px] overflow-hidden rounded-2xl border border-line bg-card shadow-lg shadow-blue-100/80" id="screen-register">
+      <div class="border-b border-line bg-brand-soft px-4 py-3 text-xs font-medium text-brand">Регистрация</div>
+      <div class="p-5">
+        <a class="text-brand" href="{{ path('app_logout') }}" onclick="show('login');return false;">← вход</a>
+        <h2 class="mt-2 text-xl font-semibold">Новый аккаунт</h2>
+        <div class="mt-4 space-y-3">
+            {{ form_start(registrationForm) }}
+                {{ form_row(registrationForm.name, {                    
+                    'label': false,
+                    'attr': {
+                        'class': 'w-full rounded-xl border border-line bg-page px-3 py-2.5 outline-none focus:ring-2 focus:ring-brand',
+                        'placeholder': 'имя'
+                        },
+                }) }}
+                {{ form_row(registrationForm.email, {                    
+                    'label': false,
+                    'attr': {
+                        'class': 'w-full rounded-xl border border-line bg-page px-3 py-2.5 outline-none focus:ring-2 focus:ring-brand',
+                        'placeholder': 'email'
+                        },
+                }) }}
+                {{ form_row(registrationForm.plainPassword, {                    
+                    'label': false,
+                    'attr': {
+                        'class': 'w-full rounded-xl border border-line bg-page px-3 py-2.5 outline-none focus:ring-2 focus:ring-brand',
+                        'placeholder': 'пароль'
+                        },
+                }) }}
+                {{ form_row(registrationForm.agreeTerms, {
+                    'checked': false,
+                    'label': 'согласен с правилами сервиса',
+                    'attr': {
+                        'class': 'mt-0.5 h-5 w-5 rounded border-line text-brand accent-brand',
+                    },
+                }) }}
 
-        <button type="submit" class="btn">Register</button>
-    {{ form_end(registrationForm) }}
+                <button type="submit" class="min-h-11 w-full rounded-xl bg-brand font-medium text-white hover:bg-brand-dark">создать</button>
+            {{ form_end(registrationForm) }}
+    </section>
+</form>
 {% endblock %}
