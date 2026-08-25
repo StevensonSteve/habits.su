@@ -1,0 +1,11 @@
+{
+    email {$ACME_EMAIL}
+}
+
+{$PRIMARY_DOMAIN} {
+    reverse_proxy nginx:80
+}
+
+www.{$PRIMARY_DOMAIN} {
+    redir https://{$PRIMARY_DOMAIN}{uri} permanent
+}

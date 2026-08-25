@@ -7,6 +7,27 @@ build:
 
 init: build up composer-install migrate fixtures
 
+prod-build:
+	docker compose -f docker-compose.prod.yml build \
+		--build-arg USER_ID=$(shell id -u) \
+		--build-arg USER_NAME=$(shell id -un) \
+		--build-arg GROUP_ID=$(shell id -g) \
+		--build-arg GROUP_NAME=$(shell id -gn)
+
+prod-up:
+	docker compose -f docker-compose.prod.yml up -d
+
+prod-composer-install:
+	docker compose -f docker-compose.prod.yml exec -T php-fpm composer install --no-dev --optimize-autoloader --no-interaction
+
+prod-migrate:
+	docker compose -f docker-compose.prod.yml exec -T php-fpm php bin/console doctrine:migrations:migrate --no-interaction
+
+prod-cache-clear:
+	docker compose -f docker-compose.prod.yml exec -T php-fpm php bin/console cache:clear --env=prod --no-interaction
+
+deploy: prod-build prod-up prod-composer-install prod-migrate prod-cache-clear
+
 up:
 	docker compose up -d
 
