@@ -3,20 +3,21 @@
 {% block title %}Трекер активностей{% endblock %}
 
 {% block body %}
-<section class="w-full max-w-md md:max-w-4xl mx-auto mt-4 md:mt-12 min-h-[calc(100vh-2rem)] md:min-h-0 flex flex-col overflow-hidden rounded-2xl border border-line bg-card shadow-lg shadow-blue-100/80" id="screen-home">
-  {# Шапка экрана #}
-  <div class="border-b border-line bg-brand-soft px-4 py-3 text-xs font-medium text-brand">
+<section class="w-full max-w-md md:max-w-4xl mx-auto mt-0 md:mt-6 h-screen md:h-[90vh] flex flex-col overflow-hidden rounded-b-2xl md:rounded-2xl border-x border-b md:border border-line bg-card shadow-lg shadow-blue-100/80" id="screen-home">
+  
+  <div class="flex-shrink-0 border-b border-line bg-brand-soft px-4 py-3 text-xs font-medium text-brand">
     <div class="flex justify-between items-center">
       <a class="text-brand transition-colors hover:text-brand-dark" href="{{ path('dashboard_index') }}" onclick="show('home');return false;">← главная</a>
       <a class="text-brand transition-colors hover:text-brand-dark" href="{{ path('activity_new', {'id': category.id}) }}" onclick="show('activity-form');return false;">+ занятие</a>
     </div>
   </div>
 
-  <div class="p-5 md:p-6 flex-1 pb-24 md:pb-6">
+  <div class="flex-shrink-0 p-5 pb-2 md:p-6 md:pb-2">
     <h2 class="text-xl font-semibold text-slate-800">{{ category.name }}</h2>
+  </div>
     
-    {# Список активностей #}
-    <div class="mt-4 space-y-3">
+  <div class="flex-1 overflow-y-auto px-5 md:px-6 pb-4">
+    <div class="space-y-3">
       {% if activities is not empty %}
           {% for activity in activities %}    
             <article class="rounded-2xl border border-line bg-page p-4">
@@ -26,10 +27,10 @@
                   <p class="mt-0.5 text-xs text-muted">сегодня: {{activity.count}} {{ activity.unit == 1 ? 'раз' : (activity.unit == 2 ? 'км' : 'мин') }}</p>
                 </div>
                 <div class="flex items-center gap-3 text-xs">
-                <a class="text-muted hover:text-brand transition-colors" href="{{ path('activity_update', {'id': activity.id}) }}">изм.</a>
-                <span class="text-line">|</span>
-                <a class="text-muted hover:text-danger transition-colors" href="{{ path('activity_delete', {'id': activity.id}) }}" onclick="return confirm('Удалить активность?');">удл.</a>
-              </div>
+                  <a class="text-muted hover:text-brand transition-colors" href="{{ path('activity_update', {'id': activity.id}) }}">изм.</a>
+                  <span class="text-line">|</span>
+                  <a class="text-muted hover:text-danger transition-colors" href="{{ path('activity_delete', {'id': activity.id}) }}" onclick="return confirm('Удалить активность?');">удл.</a>
+                </div>
                 <span class="rounded-full bg-brand-soft px-2.5 py-1 text-xs font-medium text-brand">{{activity.count}}/20</span>
               </div>
               
@@ -75,13 +76,14 @@
           </div>
       {% endif %}
     </div>
+  </div>  
 
-    {# Нижняя навигация #}
-    <nav class="mt-5 flex flex-wrap gap-x-4 gap-y-2 border-t border-line pt-4 text-xs font-medium uppercase tracking-wider">
-      <a class="text-muted hover:text-brand transition-colors" href="{{ path('dashboard_index') }}" onclick="show('home');return false;">главная</a>
-      <a class="text-muted hover:text-brand transition-colors" href="#" onclick="show('journal');return false;">журнал</a>
-      <a class="text-muted hover:text-brand transition-colors" href="#" onclick="show('category-history');return false;">история</a>
-    </nav>
-  </div>
+  <nav class="flex-shrink-0 bg-card border-t border-line p-4 shadow-[0_-4px_12px_rgba(0,0,0,0.05)] z-50 flex flex-wrap gap-x-4 gap-y-2 text-xs font-medium uppercase tracking-wider">
+    <a class="text-muted hover:text-brand transition-colors" href="{{ path('dashboard_index') }}" onclick="show('home');return false;">главная</a>
+    <a class="text-muted hover:text-brand transition-colors" href="#" onclick="show('journal');return false;">журнал</a>
+    <a class="text-muted hover:text-brand transition-colors" href="#" onclick="show('category-history');return false;">история</a>
+  </nav>
+
 </section>
 {% endblock %}
+
