@@ -42,17 +42,29 @@ final class DashboardController extends AbstractController
         $user = $this->getUser();
 
         $sql = 'SELECT a.id, a.name 
-                FROM activities AS a
-                INNER JOIN categories AS c ON c.id = a.category_id
-                WHERE c.user_id = :userId
-                ORDER BY a.name ASC';
-
+            FROM activities AS a
+            INNER JOIN categories AS c ON c.id = a.category_id
+            WHERE c.user_id = :userId
+            ORDER BY a.name ASC'
+        ;
         $activities = $entityManager->getConnection()->executeQuery($sql, [
+            'userId' => $user->getId(),
+        ])->fetchAllAssociative();
+
+        $sql ='SELECT r.id, r.amount, r.created_at, a.name FROM records AS r
+               INNER JOIN activities AS a ON a.id = r.activity_id
+               INNER JOIN categories AS c ON c.id = a.category_id
+               WHERE c.user_id = :userId
+               ORDER BY r.created_at DESC';
+
+        ;
+        $records = $entityManager->getConnection()->executeQuery($sql, [
             'userId' => $user->getId(),
         ])->fetchAllAssociative();
 
         return $this->render('dashboard/magazine.html.twig', [
             'activities' => $activities,
+            'records' => $records,
         ]);
     }
 
