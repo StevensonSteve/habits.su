@@ -43,7 +43,7 @@ final class RecordController extends AbstractController
         ])->fetchAssociative();
 
 
-        return $this->redirectToRoute('category_view', ['id' => $activity['category_id']]);
+        return $this->redirectToRoute('activity_view', ['id' => $activity['id']]);
     }
 
     #[Route('/delete/{id}', name: 'record_delete')]

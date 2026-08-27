@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Журнал{% endblock %}
+
+{% block body %}
+    <section class="w-full max-w-md md:max-w-4xl mx-auto mt-0 md:mt-6 h-screen md:h-[90vh] flex flex-col overflow-hidden rounded-b-2xl md:rounded-2xl border-x border-b md:border border-line bg-card shadow-lg shadow-blue-100/80" id="screen-home">
+      <div class="bg-gradient-to-r from-blue-600 to-sky-500 px-4 py-3 text-white">
+        <a class="text-xs text-white/80" href="{{ path('dashboard_index') }}" onclick="show('home');return false;">← главная</a>
+        <div class="text-lg font-semibold">Журнал</div>
+      </div>
+      <div class="p-4">
+        <div class="flex flex-wrap gap-1.5">
+          <span class="rounded-full px-3 py-1.5 text-xs text-muted">неделя</span>
+          <span class="rounded-full bg-brand px-3 py-1.5 text-xs text-white">месяц</span>
+          <span class="rounded-full px-3 py-1.5 text-xs text-muted">полгода</span>
+          <span class="rounded-full px-3 py-1.5 text-xs text-muted">год</span>
+          <span class="rounded-full px-3 py-1.5 text-xs text-muted">свой</span>
+        </div>
+        <label class="mb-1 mt-3 block text-xs text-muted">категория</label>
+        <select class="w-full rounded-xl border border-line bg-page px-3 py-2 text-sm text-slate-700 outline-none">
+            <option value="all">все</option>
+            {% if activities is not empty %}
+                {% for act in activities %}
+                    <option value="{{ act.id }}">{{ act.name }}</option>
+                {% endfor %}
+            {% endif %}
+        </select>
+
+        <div class="mt-3 rounded-xl bg-brand-soft px-3 py-2 text-sm text-brand">месяц · 62 записи</div>
+        <ul class="mt-3 space-y-2">
+          <li class="rounded-xl border border-line bg-page px-3 py-2">30 июл · Спорт / <b>Бег</b> +5 км</li>
+          <li class="rounded-xl border border-line bg-page px-3 py-2">30 июл · Здоровье / <b>Вода</b> +0.5 л</li>
+          <li class="rounded-xl border border-line bg-page px-3 py-2">29 июл · Чтение / <b>Книга</b> +20 стр</li>
+        </ul>
+      </div>
+    </section>
+{% endblock %}
