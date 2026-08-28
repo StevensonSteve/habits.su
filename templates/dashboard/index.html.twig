@@ -8,13 +8,14 @@
     <div class="flex flex-col shrink-0 border-b border-line">
       <div class="flex items-center justify-between bg-gradient-to-r from-blue-600 to-sky-500 px-4 py-3 md:px-6 md:py-4 text-white">
         <div>
-          <div class="text-xs text-white/80 uppercase tracking-wider">главная</div>
           <div class="text-lg md:text-xl font-semibold">Трекер привычек</div>
-          <div class="text-lg md:text-xl font-semibold">Здравствуйте {{user.name}}!</div>
         </div>
-        <div class="text-sm md:text-base text-white/90 font-medium">
-          {{ "now"|date('d ') }}{{ "now"|date('M')|trans }}
-        </div>      
+        <div>
+          <div class="text-sm md:text-base text-white/90 font-medium">Здравствуйте <b>{{user.name}}</b>!</div>
+          <div class="text-sm md:text-base text-white/90 font-medium">
+            {{ "now"|date('d ') }}{{ "now"|date('M')|trans }}
+          </div>      
+        </div>
       </div>
 
       <div class="flex p-4 md:p-5 items-center justify-between bg-card">

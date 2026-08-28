@@ -10,20 +10,59 @@
         <div class="text-lg font-semibold">Журнал</div>
       </div>
 
-      <div class="flex-shrink-0 px-4 pt-4">
-        <div class="flex flex-wrap gap-1.5">
-          <span class="rounded-full px-3 py-1.5 text-xs text-muted cursor-pointer hover:bg-page">неделя</span>
-          <span class="rounded-full bg-brand px-3 py-1.5 text-xs text-white cursor-pointer">месяц</span>
-          <span class="rounded-full px-3 py-1.5 text-xs text-muted cursor-pointer hover:bg-page">полгода</span>
-          <span class="rounded-full px-3 py-1.5 text-xs text-muted cursor-pointer hover:bg-page">год</span>
-          <span class="rounded-full px-3 py-1.5 text-xs text-muted cursor-pointer hover:bg-page">свой</span>
+      <div class="flex flex-wrap gap-1.5">
+            <form action="{{ path('dushboard_magazine') }}" method="POST" class="flex-1">
+                <input type="hidden" name="filter" value="week">
+            
+                <button type="submit" 
+                        class="w-full rounded-full px-3 py-1.5 text-xs  
+                            {{filter == 'week' 
+                                ? 'font-medium bg-brand text-white' 
+                                : 'text-muted hover:bg-brand-soft' }}">
+                    неделя
+                </button>
+            {# </form> #}
+            {# <form action="{{ path('activity_view', {'id': activity.id}) }}" method="POST" class="flex-1"> #}
+                <input type="hidden" name="filter" value="month">
+            
+                <button type="submit" 
+                        class="w-full rounded-full px-3 py-1.5 text-xs  
+                            {{filter == 'month' 
+                                ? 'font-medium bg-brand text-white' 
+                                : 'text-muted hover:bg-brand-soft' }}">
+                    месяц
+                </button>
+            {# </form> #}
+            {# <form action="{{ path('activity_view', {'id': activity.id}) }}" method="POST" class="flex-1"> #}
+                <input type="hidden" name="filter" value="half-year">
+            
+                <button type="submit" 
+                        class="w-full rounded-full px-3 py-1.5 text-xs  
+                            {{filter == 'half-year' 
+                                ? 'font-medium bg-brand text-white' 
+                                : 'text-muted hover:bg-brand-soft' }}">
+                    полгода
+                </button>
+            {# </form> #}
+            {# <form action="{{ path('activity_view', {'id': activity.id}) }}" method="POST" class="flex-1"> #}
+                <input type="hidden" name="filter" value="year">
+            
+                <button type="submit" 
+                        class="w-full rounded-full px-3 py-1.5 text-xs  
+                            {{filter == 'year' 
+                                ? 'font-medium bg-brand text-white' 
+                                : 'text-muted hover:bg-brand-soft' }}">
+                    год
+                </button>
+            <a class="rounded-full px-3 py-1.5 text-xs text-muted hover:bg-brand-soft text-center flex-1" href="#" onclick="show('custom-filter');return false;">свой</a>
         </div>
+    </form>
         
         <label class="mb-1 mt-3 block text-xs text-muted">категория</label>
         <select class="w-full rounded-xl border border-line bg-page px-3 py-2 text-sm text-slate-700 outline-none">
             <option value="all">все</option>
-            {% if activities is not empty %}
-                {% for act in activities %}
+            {% if activity is not empty %}
+                {% for act in activity %}
                     <option value="{{ act.id }}">{{ act.name }}</option>
                 {% endfor %}
             {% endif %}
@@ -40,9 +79,9 @@
         {% for record in records %}  
             <li class="flex justify-between px-3 py-2.5 text-sm md:text-base text-slate-700 hover:bg-slate-50 transition-colors">
                 <span>
-                    {{ record.created_at|date('d M')|trans }} · 
+                    <b>{{ record.created_at|date('d M')|trans }} · </b>
                     <b>{{ record.amount }}</b> · 
-                    {{ record.name }}
+                    <b>{{ record.name }}</b>
                 </span>
                 <span class="text-xs md:text-sm flex items-center">
                     {# <a class="text-bad hover:underline" href="{{ path('record_delete', {'id': record.id}) }}" onclick="return confirm('Удалить запись?');">уд.</a> #}

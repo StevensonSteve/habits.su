@@ -25,7 +25,12 @@ final class DashboardController extends AbstractController
     {
         $user = $this->getUser();
 
-        $sql = 'SELECT * FROM categories WHERE user_id = :userId ORDER BY updated_at DESC';
+        $sql = 'SELECT c.* FROM categories AS c
+                LEFT JOIN activities AS a ON c.id = a.category_id
+                LEFT JOIN records AS r ON a.id = r.activity_id
+                WHERE c.user_id = :userId
+                GROUP BY c.id, c.name
+                ORDER BY MAX(r.created_at) DESC NULLS LAST';
         $categories = $entityManager->getConnection()->executeQuery($sql, [
             'userId' => $user->getId(),
         ])->fetchAllAssociative();
@@ -37,8 +42,20 @@ final class DashboardController extends AbstractController
     }
 
     #[Route('/magazine', name: 'dashboard_magazine')]
-    public function magazine(EntityManagerInterface $entityManager): Response
+    public function magazine(Request $request, EntityManagerInterface $entityManager): Response
     {
+        $filter = $request->request->get('filter', self::FILTER_PERIOD_WEEK);
+
+        $now = new DateTimeImmutable();
+        $dateFrom = match ($filter) {
+            self::FILTER_PERIOD_WEEK   => $now->modify('-7 days'),
+            self::FILTER_PERIOD_HALF_YEAR   => $now->modify('-6 months'),
+            self::FILTER_PERIOD_YEAR   => $now->modify('-1 year'),
+            self::FILTER_PERIOD_ALL_TIME    => null,
+            self::FILTER_PERIOD_MONTH  => $now->modify('-1 month'),
+            default  => $now->modify('-7 days'),
+        };
+
         $user = $this->getUser();
 
         $sql = 'SELECT a.id, a.name 
@@ -47,7 +64,7 @@ final class DashboardController extends AbstractController
             WHERE c.user_id = :userId
             ORDER BY a.name ASC'
         ;
-        $activities = $entityManager->getConnection()->executeQuery($sql, [
+        $activity = $entityManager->getConnection()->executeQuery($sql, [
             'userId' => $user->getId(),
         ])->fetchAllAssociative();
 
@@ -63,8 +80,9 @@ final class DashboardController extends AbstractController
         ])->fetchAllAssociative();
 
         return $this->render('dashboard/magazine.html.twig', [
-            'activities' => $activities,
+            'activity' => $activity,
             'records' => $records,
+            'filter' => $filter,
         ]);
     }
 

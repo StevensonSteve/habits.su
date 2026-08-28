@@ -97,7 +97,11 @@ final class CategoryController extends AbstractController
         $activityCount = $entityManager->getConnection()->executeQuery($sql)
             ->fetchAllKeyValue();
 
-        $sql = 'SELECT * FROM activities WHERE category_id = :categoryId ORDER BY updated_at DESC';
+        $sql = 'SELECT a.* FROM activities AS a
+                LEFT JOIN records AS r ON a.id = r.activity_id
+                WHERE a.category_id = :categoryId
+                GROUP BY a.id, a.name, a.unit
+                ORDER BY MAX(r.created_at) DESC NULLS LAST';
         $activities = $entityManager->getConnection()->executeQuery($sql, [
             'categoryId' => $id,
         ])->fetchAllAssociative();
