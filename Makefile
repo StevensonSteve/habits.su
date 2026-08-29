@@ -26,8 +26,11 @@ prod-migrate:
 prod-cache-clear:
 	docker compose -f docker-compose.prod.yml exec -T php-fpm php bin/console cache:clear --env=prod --no-interaction
 
-prod-deploy:
-	git pull origin master --ff-only prod-cache-clear
+prod-git-pull:
+	git pull origin master --ff-only 
+
+prod-update:
+	prod-git-pull prod-cache-clear
 
 deploy: prod-build prod-up prod-composer-install prod-migrate prod-cache-clear
 

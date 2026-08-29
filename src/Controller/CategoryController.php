@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/category')]
-#[IsGranted('IS_AUTHENTICATED_FULLY')] 
+#[IsGranted('IS_AUTHENTICATED')] 
 final class CategoryController extends AbstractController
 {   
     #[Route('/delete/{id}', name: 'category_delete')]
