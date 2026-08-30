@@ -16,10 +16,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('IS_AUTHENTICATED')]
 final class ActivityController extends AbstractController
 {
+    private const FILTER_PERIOD_TODAY = 'today';
+    private const FILTER_PERIOD_YESTERDAY = 'yesterday';
     private const FILTER_PERIOD_WEEK = 'week';
     private const FILTER_PERIOD_MONTH = 'month';
-    private const FILTER_PERIOD_HALF_YEAR = 'half-year';
-    private const FILTER_PERIOD_YEAR = 'year';
     private const FILTER_PERIOD_ALL_TIME = 'all-time';
 
     #[Route('/{id}', name: 'activity_view')]
@@ -35,12 +35,12 @@ final class ActivityController extends AbstractController
 
         $now = new DateTimeImmutable();
         $dateFrom = match ($filter) {
+            self::FILTER_PERIOD_TODAY   => $now,
+            self::FILTER_PERIOD_YESTERDAY   => $now->modify('-1 days'),
             self::FILTER_PERIOD_WEEK   => $now->modify('-7 days'),
-            self::FILTER_PERIOD_HALF_YEAR   => $now->modify('-6 months'),
-            self::FILTER_PERIOD_YEAR   => $now->modify('-1 year'),
-            self::FILTER_PERIOD_ALL_TIME    => null,
             self::FILTER_PERIOD_MONTH  => $now->modify('-1 month'),
-            default  => $now->modify('-7 days'),
+            self::FILTER_PERIOD_ALL_TIME    => null,
+            default  => $now,
         };
 
         $sql = 'SELECT * FROM records WHERE activity_id = :activityId AND created_at >= :dateFrom  ORDER BY created_at DESC';        

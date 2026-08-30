@@ -10,9 +10,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('')]
+#[Route('activity-log')]
 #[IsGranted('IS_AUTHENTICATED')] 
-final class DashboardController extends AbstractController
+final class ActivityLogController extends AbstractController
 {
     private const FILTER_PERIOD_TODAY = 'today';
     private const FILTER_PERIOD_YESTERDAY = 'yesterday';
@@ -20,38 +20,26 @@ final class DashboardController extends AbstractController
     private const FILTER_PERIOD_MONTH = 'month';
     private const FILTER_PERIOD_ALL_TIME = 'all-time';
 
-    #[Route('', name: 'dashboard_index')]
-    public function index(EntityManagerInterface $entityManager): Response 
+    #[Route('', name: 'activity_log_index')]
+    public function index(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $user = $this->getUser();
-
-        $sql = 'SELECT c.* FROM categories AS c
-                LEFT JOIN activities AS a ON c.id = a.category_id
-                LEFT JOIN records AS r ON a.id = r.activity_id
-                WHERE c.user_id = :userId
-                GROUP BY c.id, c.name
-                ORDER BY MAX(r.created_at) DESC NULLS LAST';
-        $categories = $entityManager->getConnection()->executeQuery($sql, [
-            'userId' => $user->getId(),
-        ])->fetchAllAssociative();
-        
-        return $this->render('dashboard/index.html.twig', [
-            'categories' => $categories,
-            'user' => $user,
-        ]);
-    }
-
-    #[Route('/activity-log', name: 'dashboard_activity_log')]
-    public function magazine(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $filter = $request->request->get('filter', self::FILTER_PERIOD_WEEK);
+        $filter = $request->request->get('filter', self::FILTER_PERIOD_TODAY);
 
         $now = new DateTimeImmutable();
         $dateFrom = match ($filter) {
             self::FILTER_PERIOD_TODAY   => $now,
             self::FILTER_PERIOD_YESTERDAY   => $now->modify('-1 days'),
-            self::FILTER_PERIOD_WEEK   => $now->modify('-7 days'),
+            self::FILTER_PERIOD_WEEK   => $now->modify('-6 days'),
             self::FILTER_PERIOD_MONTH  => $now->modify('-1 month'),
+            self::FILTER_PERIOD_ALL_TIME    => null,
+            default  => $now,
+        };
+
+        $dateTo = match ($filter) {
+            self::FILTER_PERIOD_TODAY   => $now,
+            self::FILTER_PERIOD_YESTERDAY   => $now->modify('-1 days'),
+            self::FILTER_PERIOD_WEEK   => $now,
+            self::FILTER_PERIOD_MONTH  => $now,
             self::FILTER_PERIOD_ALL_TIME    => null,
             default  => $now,
         };
@@ -68,18 +56,29 @@ final class DashboardController extends AbstractController
             'userId' => $user->getId(),
         ])->fetchAllAssociative();
 
-        $sql ='SELECT r.id, r.amount, r.created_at, a.name FROM records AS r
-               INNER JOIN activities AS a ON a.id = r.activity_id
-               INNER JOIN categories AS c ON c.id = a.category_id
-               WHERE c.user_id = :userId
-               ORDER BY r.created_at DESC';
-
+        $sql ='SELECT CAST(r.created_at AS DATE) AS date_group, r.activity_id, SUM(r.amount) AS sum, a.name 
+                FROM records AS r
+                INNER JOIN activities AS a ON a.id = r.activity_id
+                INNER JOIN categories AS c ON c.id = a.category_id
+                WHERE c.user_id = :userId AND r.created_at >= :dateFrom AND r.created_at <= :dateTo
+                GROUP BY date_group, r.activity_id, a.name
+                ORDER BY date_group DESC';
         ;
+
+        // dd([
+        //     'dateFrom' => $dateFrom->format('Y-m-d 00:00:00'),
+        //     'dateTo' => $dateTo->format('Y-m-d 23:59:59'),
+        // ]);
+
         $records = $entityManager->getConnection()->executeQuery($sql, [
             'userId' => $user->getId(),
+            'dateFrom' => $dateFrom->format('Y-m-d 00:00:00'),
+            'dateTo' => $dateTo->format('Y-m-d 23:59:59'),
         ])->fetchAllAssociative();
 
-        return $this->render('dashboard/magazine.html.twig', [
+        // dd($records);
+
+        return $this->render('activity-log/index.html.twig', [
             'activity' => $activity,
             'records' => $records,
             'filter' => $filter,
