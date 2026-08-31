@@ -26,7 +26,7 @@ final class ActivityController extends AbstractController
     #[IsGranted(ActivityVoter::MANAGE, subject: 'id')]
     public function view(int $id, Request $request, EntityManagerInterface $entityManager): Response 
     {
-        $filter = $request->request->get('filter', self::FILTER_PERIOD_WEEK);
+        $filter = $request->request->get('filter', self::FILTER_PERIOD_TODAY);
 
         $sql = 'SELECT * FROM activities WHERE id = :id';
         $activity = $entityManager->getConnection()->executeQuery($sql, [
@@ -37,16 +37,26 @@ final class ActivityController extends AbstractController
         $dateFrom = match ($filter) {
             self::FILTER_PERIOD_TODAY   => $now,
             self::FILTER_PERIOD_YESTERDAY   => $now->modify('-1 days'),
-            self::FILTER_PERIOD_WEEK   => $now->modify('-7 days'),
+            self::FILTER_PERIOD_WEEK   => $now->modify('-6 days'),
             self::FILTER_PERIOD_MONTH  => $now->modify('-1 month'),
             self::FILTER_PERIOD_ALL_TIME    => null,
             default  => $now,
         };
 
-        $sql = 'SELECT * FROM records WHERE activity_id = :activityId AND created_at >= :dateFrom  ORDER BY created_at DESC';        
+        $dateTo = match ($filter) {
+            self::FILTER_PERIOD_TODAY   => $now,
+            self::FILTER_PERIOD_YESTERDAY   => $now->modify('-1 days'),
+            self::FILTER_PERIOD_WEEK   => $now,
+            self::FILTER_PERIOD_MONTH  => $now,
+            self::FILTER_PERIOD_ALL_TIME    => null,
+            default  => $now,
+        };
+
+        $sql = 'SELECT * FROM records WHERE activity_id = :activityId AND created_at >= :dateFrom AND created_at <= :dateTo ORDER BY created_at DESC';        
         $records = $entityManager->getConnection()->executeQuery($sql, [
             'activityId' => $activity['id'],
             'dateFrom' => $dateFrom->format('Y-m-d 00:00:00'),
+            'dateTo' => $dateTo->format('Y-m-d 23:59:59'),
         ])->fetchAllAssociative();
 
         $sql = 'SELECT COUNT(*) AS count
@@ -56,15 +66,17 @@ final class ActivityController extends AbstractController
         $activityCount = $entityManager->getConnection()->executeQuery($sql, [
             'activityId' => $id,
             'dateFrom' => $dateFrom->format('Y-m-d 00:00:00'),
+            'dateTo' => $dateTo->format('Y-m-d 23:59:59'),
         ])->fetchAssociative();
 
         $sql = 'SELECT SUM(amount) AS sum
             FROM records 
-            WHERE activity_id = :activityId AND created_at >= :dateFrom;
+            WHERE activity_id = :activityId AND created_at >= :dateFrom AND created_at <= :dateTo;
         ';
         $activitySum = $entityManager->getConnection()->executeQuery($sql, [
             'activityId' => $id,
             'dateFrom' => $dateFrom->format('Y-m-d 00:00:00'),
+            'dateTo' => $dateTo->format('Y-m-d 23:59:59'),
         ])->fetchAssociative();
 
         $sql = 'SELECT * FROM categories WHERE id = :id';

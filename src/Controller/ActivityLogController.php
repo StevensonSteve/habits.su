@@ -46,7 +46,7 @@ final class ActivityLogController extends AbstractController
 
         $user = $this->getUser();
 
-        $sql = 'SELECT a.id, a.name 
+        $sql = 'SELECT a.id, a.name
             FROM activities AS a
             INNER JOIN categories AS c ON c.id = a.category_id
             WHERE c.user_id = :userId
@@ -56,12 +56,12 @@ final class ActivityLogController extends AbstractController
             'userId' => $user->getId(),
         ])->fetchAllAssociative();
 
-        $sql ='SELECT CAST(r.created_at AS DATE) AS date_group, r.activity_id, SUM(r.amount) AS sum, a.name 
+        $sql ='SELECT CAST(r.created_at AS DATE) AS date_group, r.activity_id, SUM(r.amount) AS sum, a.name, a.unit 
                 FROM records AS r
                 INNER JOIN activities AS a ON a.id = r.activity_id
                 INNER JOIN categories AS c ON c.id = a.category_id
                 WHERE c.user_id = :userId AND r.created_at >= :dateFrom AND r.created_at <= :dateTo
-                GROUP BY date_group, r.activity_id, a.name
+                GROUP BY date_group, r.activity_id, a.name, a.unit
                 ORDER BY date_group DESC';
         ;
 

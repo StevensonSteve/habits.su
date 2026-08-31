@@ -29,6 +29,28 @@
         <p class="mb-2 mt-4 text-xs font-medium uppercase tracking-wide text-muted">история</p>
         <div class="flex flex-wrap gap-1.5">
             <form action="{{ path('activity_view', {'id': activity.id}) }}" method="POST" class="flex-1">
+                <input type="hidden" name="filter" value="today">
+            
+                <button type="submit" 
+                        class="w-full rounded-full px-3 py-1.5 text-xs  
+                            {{filter == 'today' 
+                                ? 'font-medium bg-brand text-white' 
+                                : 'text-muted hover:bg-brand-soft' }}">
+                    сегодня
+                </button>
+            </form>
+            <form action="{{ path('activity_view', {'id': activity.id}) }}" method="POST" class="flex-1">
+                <input type="hidden" name="filter" value="yesterday">
+            
+                <button type="submit" 
+                        class="w-full rounded-full px-3 py-1.5 text-xs  
+                            {{filter == 'yesterday' 
+                                ? 'font-medium bg-brand text-white' 
+                                : 'text-muted hover:bg-brand-soft' }}">
+                    вчера
+                </button>
+            </form>
+            <form action="{{ path('activity_view', {'id': activity.id}) }}" method="POST" class="flex-1">
                 <input type="hidden" name="filter" value="week">
             
                 <button type="submit" 
@@ -50,28 +72,6 @@
                     месяц
                 </button>
             </form>
-            <form action="{{ path('activity_view', {'id': activity.id}) }}" method="POST" class="flex-1">
-                <input type="hidden" name="filter" value="half-year">
-            
-                <button type="submit" 
-                        class="w-full rounded-full px-3 py-1.5 text-xs  
-                            {{filter == 'half-year' 
-                                ? 'font-medium bg-brand text-white' 
-                                : 'text-muted hover:bg-brand-soft' }}">
-                    полгода
-                </button>
-            </form>
-            <form action="{{ path('activity_view', {'id': activity.id}) }}" method="POST" class="flex-1">
-                <input type="hidden" name="filter" value="year">
-            
-                <button type="submit" 
-                        class="w-full rounded-full px-3 py-1.5 text-xs  
-                            {{filter == 'year' 
-                                ? 'font-medium bg-brand text-white' 
-                                : 'text-muted hover:bg-brand-soft' }}">
-                    год
-                </button>
-            </form>
             <a class="rounded-full px-3 py-1.5 text-xs text-muted hover:bg-brand-soft text-center flex-1" href="#" onclick="show('custom-filter');return false;">свой</a>
         </div>
         
@@ -83,7 +83,7 @@
             <ul class="divide-y divide-line overflow-hidden rounded-2xl border border-line bg-white">
             {% for record in records %}  
                 <li class="flex justify-between px-3 py-2.5 text-sm md:text-base text-slate-700">
-                    <span>{{ record.created_at|date('d M')|trans }} · <b>{{ record.amount }}</b> {{ activity.unit == 1 ? 'раз' : (activity.unit == 2 ? 'км' : 'мин') }}</span>
+                    <span>{{ record.created_at|date('d M')|trans }} · <b>{{ record.amount }}</b> {{ activity.unit == 1 ? 'раз' : (activity.unit == 2 ? 'км' : (activity.unit == 3 ? 'мин' : 'стр')) }}</span>
                     <span class="text-xs md:text-sm flex items-center"><a class="text-bad hover:underline" href="{{ path('record_delete', {'id': record.id}) }}" onclick="return confirm('Удалить запись?');">уд.</a></span>
                 </li>
             {% endfor %}
