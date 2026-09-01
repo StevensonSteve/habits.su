@@ -31,7 +31,9 @@
                   <span class="text-line">|</span>
                   <a class="text-muted hover:text-danger transition-colors" href="{{ path('activity_delete', {'id': activity.id}) }}" onclick="return confirm('Удалить активность?');">удл.</a>
                 </div>
-                <span class="rounded-full bg-brand-soft px-2.5 py-1 text-xs font-medium text-brand">{{activity.count}}/20</span>
+                {% if activity.goal > 0 %}
+                  <span class="{{activity.goal <= activity.count ? 'bg-green-200' : ''}} rounded-full bg-brand-soft px-2.5 py-1 text-xs font-medium text-brand">{{activity.count}}/{{activity.goal}}</span>
+                {% endif %}
               </div>
               
               <div class="mt-4 flex flex-wrap gap-2">

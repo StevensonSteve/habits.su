@@ -17,6 +17,12 @@
                placeholder="Например: Бег, Плавание...">
       </div>
       <div>
+        <label for="goal" class="mb-1 block text-xs font-medium text-muted">цель на день</label>
+        <input type="number" name="goal" value="{{activity.goal}}" required
+              min="0"
+              class="w-full rounded-xl border border-line bg-page px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand transition-all">
+      </div>
+      <div>
         <label class="mb-1 block text-xs font-medium text-muted">единица</label>
         <select name="unit" required
               class="w-full appearance-none rounded-xl border border-line bg-page pl-3 pr-10 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand transition-all">

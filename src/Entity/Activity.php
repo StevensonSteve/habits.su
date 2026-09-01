@@ -26,6 +26,10 @@ class Activity
     #[ORM\Column(type: Types::INTEGER)]
     private int $unit;
 
+    #[ORM\Column(type: Types::INTEGER, options: ['default' => 0])]
+    private int $goal = 0;
+
+
     #[ORM\Column(name: 'created_at', type: Types::DATETIME_IMMUTABLE)]
     private DateTimeImmutable $createdAt;
 

@@ -119,14 +119,16 @@ final class ActivityController extends AbstractController
         if ($request->getMethod() == 'POST') {
             $name = $request->request->get('name');
             $unit = $request->request->get('unit');
+            $goal = $request->request->get('goal', 0);
 
-            $sql = "INSERT INTO activities (name, category_id, unit, created_at, updated_at)
-                VALUES (:name, :categoryId, :unit, :createdAt, :updatedAt)";
+            $sql = "INSERT INTO activities (name, category_id, unit, goal, created_at, updated_at)
+                VALUES (:name, :categoryId, :unit, :goal, :createdAt, :updatedAt)";
 
             $entityManager->getConnection()->executeQuery($sql , [
                 'name' => $name,
                 'categoryId' => $id,
                 'unit' => $unit,
+                'goal' => $goal,
                 'createdAt' => new DateTimeImmutable()->format("Y-m-d H:i:s"),
                 'updatedAt' => new DateTimeImmutable()->format("Y-m-d H:i:s"),
             ]);
@@ -156,12 +158,14 @@ final class ActivityController extends AbstractController
         if ($request->getMethod() == 'POST') {
             $name = $request->request->get('name');
             $unit = $request->request->get('unit');
+            $goal = $request->request->get('goal');
 
-            $sql = "UPDATE activities SET name = :name, unit = :unit, updated_at = :updatedAt WHERE id = :id";
+            $sql = "UPDATE activities SET name = :name, unit = :unit, goal = :goal, updated_at = :updatedAt WHERE id = :id";
             $entityManager->getConnection()->executeQuery($sql , [
                 'id' => $id,
                 'name' => $name,
                 'unit' => $unit,
+                'goal' => $goal,
                 'updatedAt' => new DateTimeImmutable()->format("Y-m-d H:i:s"),
             ]);
 
