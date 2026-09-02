@@ -24,7 +24,7 @@
               <div class="flex items-start justify-between gap-2">
                 <div>
                   <a class="font-semibold text-slate-700 hover:text-brand transition-colors" href="{{ path('activity_view', {'id': activity.id}) }}" onclick="show('activity');return false;">{{ activity.name }}</a>
-                  <p class="mt-0.5 text-xs text-muted">сегодня: {{activity.count}} {{ activity.unit == 1 ? 'раз' : (activity.unit == 2 ? 'метр' : (activity.unit == 3 ? 'мин' : 'стр')) }}</p>
+                  <p class="mt-0.5 text-xs text-muted">сегодня: {{activity.count + 0}} {{ activity.unit == 1 ? 'раз' : (activity.unit == 2 ? 'км' : (activity.unit == 3 ? 'мин' : 'стр')) }}</p>
                 </div>
                 <div class="flex items-center gap-3 text-xs">
                   <a class="text-muted hover:text-brand transition-colors" href="{{ path('activity_update', {'id': activity.id}) }}">изм.</a>
@@ -32,43 +32,46 @@
                   <a class="text-muted hover:text-danger transition-colors" href="{{ path('activity_delete', {'id': activity.id}) }}" onclick="return confirm('Удалить активность?');">удл.</a>
                 </div>
                 {% if activity.goal > 0 %}
-                  <span class="{{activity.goal <= activity.count ? 'bg-green-200' : ''}} rounded-full bg-brand-soft px-2.5 py-1 text-xs font-medium text-brand">{{activity.count}}/{{activity.goal}}</span>
+                  <span class="{{activity.goal <= activity.count ? 'bg-green-200' : ''}} rounded-full bg-brand-soft px-2.5 py-1 text-xs font-medium text-brand">{{activity.count + 0}}/{{activity.goal}}</span>
                 {% endif %}
               </div>
               
               <div class="mt-4 flex flex-wrap gap-2">
                 <form action="{{ path('record_new', {'id': activity.id}) }}" method="POST" class="flex-1">
-                  <input type="hidden" name="amount" value={{ activity.unit == 1 ? "1" : (activity.unit == 2 ? "100" : (activity.unit == 3 ? "5" : "1")) }}>
+                  <input type="hidden" name="amount" value={{ activity.unit == 1 ? "1" : (activity.unit == 2 ? "0.1" : (activity.unit == 3 ? "5" : "1")) }}>
                 
                   <button type="submit" 
-                          onclick="toast('+{{ activity.unit == 1 ? "1" : (activity.unit == 2 ? "100" : (activity.unit == 3 ? "5" : "1")) }}')" 
+                          onclick="toast('+{{ activity.unit == 1 ? "1" : (activity.unit == 2 ? "0.1" : (activity.unit == 3 ? "5" : "1")) }}')" 
                           class="w-full min-h-11 rounded-xl bg-brand font-medium text-white shadow-md shadow-brand/10 transition-colors hover:bg-brand-dark">
-                      +{{ activity.unit == 1 ? "1" : (activity.unit == 2 ? "100" : (activity.unit == 3 ? "5" : "1")) }}
+                      +{{ activity.unit == 1 ? "1" : (activity.unit == 2 ? "0.1" : (activity.unit == 3 ? "5" : "1")) }}
                   </button>
                 </form>
                 <form action="{{ path('record_new', {'id': activity.id}) }}" method="POST" class="flex-1">
-                  <input type="hidden" name="amount" value={{ activity.unit == 5 ? "1" : (activity.unit == 2 ? "500" : (activity.unit == 3 ? "15" : "5")) }}>
+                  <input type="hidden" name="amount" value={{ activity.unit == 5 ? "1" : (activity.unit == 2 ? "0.5" : (activity.unit == 3 ? "15" : "5")) }}>
                   
                   <button type="submit" 
-                          onclick="toast('+{{ activity.unit == 1 ? "5" : (activity.unit == 2 ? "500" : (activity.unit == 3 ? "15" : "5")) }}')" 
+                          onclick="toast('+{{ activity.unit == 1 ? "5" : (activity.unit == 2 ? "0.5" : (activity.unit == 3 ? "15" : "5")) }}')" 
                           class="w-full min-h-11 rounded-xl bg-brand font-medium text-white shadow-md shadow-brand/10 transition-colors hover:bg-brand-dark">
-                      +{{ activity.unit == 5 ? "1" : (activity.unit == 2 ? "500" : (activity.unit == 3 ? "15" : "5")) }}
+                      +{{ activity.unit == 5 ? "1" : (activity.unit == 2 ? "0.5" : (activity.unit == 3 ? "15" : "5")) }}
                   </button>
                 </form>
                 <form action="{{ path('record_new', {'id': activity.id}) }}" method="POST" class="flex-1">
-                  <input type="hidden" name="amount" value={{ activity.unit == 1 ? "15" : (activity.unit == 2 ? "1000" : (activity.unit == 3 ? "30" : "15")) }}>
+                  <input type="hidden" name="amount" value={{ activity.unit == 1 ? "15" : (activity.unit == 2 ? "1" : (activity.unit == 3 ? "30" : "15")) }}>
                   
                   <button type="submit" 
-                          onclick="toast('+{{ activity.unit == 1 ? "15" : (activity.unit == 2 ? "1000" : (activity.unit == 3 ? "30" : "15")) }}')" 
+                          onclick="toast('+{{ activity.unit == 1 ? "15" : (activity.unit == 2 ? "1" : (activity.unit == 3 ? "30" : "15")) }}')" 
                           class="w-full min-h-11 rounded-xl bg-brand font-medium text-white shadow-md shadow-brand/10 transition-colors hover:bg-brand-dark">
-                      +{{ activity.unit == 1 ? "15" : (activity.unit == 2 ? "1000" : (activity.unit == 3 ? "30" : "15")) }}
+                      +{{ activity.unit == 1 ? "15" : (activity.unit == 2 ? "1" : (activity.unit == 3 ? "30" : "15")) }}
                   </button>
                 </form>
                 <form action="{{ path('record_new', {'id': activity.id}) }}" method="POST" class="w-full mt-2 flex gap-2">
                   <div class="relative flex-1">
                     <input type="number" name="amount" 
                           required
-                          min="1"
+                           {% if activity.unit == 2 %}
+                          min="0.01"
+                          step="0.01"
+                          {% endif %}   
                           placeholder="свой вариант" 
                           class="w-full min-h-11 px-4 rounded-xl border border-line bg-transparent text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand transition-all">
                   </div>

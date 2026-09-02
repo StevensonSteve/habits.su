@@ -17,8 +17,8 @@ class Record
     #[ORM\Column(type: Types::INTEGER)]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::INTEGER)]
-    private int $amount;
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    private string $amount;
     
     #[ORM\Column(name: 'activity_id', type: Types::INTEGER)]
     private int $activityId;

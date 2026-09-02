@@ -79,7 +79,7 @@
             <li class="flex justify-between px-3 py-2.5 text-sm md:text-base text-slate-700 hover:bg-slate-50 transition-colors">
                 <span>
                     <b>{{ record.date_group|date('d M')|trans }} · </b>
-                    <b>{{ record.sum }} {{ record.unit == 1 ? 'раз' : (record.unit == 2 ? 'км' : (record.unit == 3 ? 'мин' : 'стр')) }}</b> · 
+                    <b>{{ record.sum + 0 }} {{ record.unit == 1 ? 'раз' : (record.unit == 2 ? 'км' : (record.unit == 3 ? 'мин' : 'стр')) }}</b> · 
                     <b>{{ record.name }}</b>
                 </span>
                 <span class="text-xs md:text-sm flex items-center">
