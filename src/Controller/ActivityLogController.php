@@ -56,7 +56,7 @@ final class ActivityLogController extends AbstractController
             'userId' => $user->getId(),
         ])->fetchAllAssociative();
 
-        $sql ='SELECT CAST(r.created_at AS DATE) AS date_group, r.activity_id, SUM(r.amount) AS sum, a.name, a.unit 
+        $sql ='SELECT CAST(r.created_at AS TIMESTAMP) AS date_group, r.activity_id, SUM(r.amount) AS sum, a.name, a.unit 
                 FROM records AS r
                 INNER JOIN activities AS a ON a.id = r.activity_id
                 INNER JOIN categories AS c ON c.id = a.category_id

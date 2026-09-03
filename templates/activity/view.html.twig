@@ -6,15 +6,19 @@
     <div class="flex-shrink-0 border-b border-line px-4 py-3">
         <a class="text-sm text-brand" href="{{ path('category_view', {'id': category.id}) }}" onclick="show('category');return false;">← {{category.name}}</a>
         <h2 class="text-xl font-semibold text-slate-800">{{activity.name}}</h2>
-        <p class="text-xs text-muted">ед.: км · шаг: 1 · цель/день: 5</p>
     </div>
+
+    {{ include('_partials/_flash_messages.html.twig') }}
     
     <div class="flex-shrink-0 p-4 pb-0">
         <form id="activity-form" action="{{ path('record_new', {'id': activity.id}) }}" method="POST" class="rounded-2xl border border-line bg-page p-4">
             <div class="grid grid-cols-2 gap-2">
                 <div>
                     <label class="mb-1 block text-xs text-muted">значение</label>
-                    <input name="amount" placeholder="значение" class="w-full rounded-xl border border-line bg-white px-3 py-2.5" type="number" step="any" value="" required>
+                    {% include '_partials/_amount_input.html.twig' with {
+                        'placeholder': 'значение',
+                        'input_class': 'w-full rounded-xl border border-line bg-white px-3 py-2.5'
+                    } %}
                 </div>
                 <div>
                     <label class="mb-1 block text-xs text-muted">дата</label>
@@ -75,7 +79,7 @@
             <a class="rounded-full px-3 py-1.5 text-xs text-muted hover:bg-brand-soft text-center flex-1" href="#" onclick="show('custom-filter');return false;">свой</a>
         </div>
         
-        <div class="mt-3 rounded-xl bg-brand-soft px-3 py-2 text-sm text-brand">Σ = {{activitySum.sum}} {{ activity.unit == 1 ? 'раз' : (activity.unit == 2 ? 'км' : 'мин') }} · {{activityCount.count + 0}} записей</div>
+        <div class="mt-3 rounded-xl bg-brand-soft px-3 py-2 text-sm text-brand">Σ = {{activitySum.sum + 0}} {{ activity.unit == 1 ? 'раз' : (activity.unit == 2 ? 'км' : 'мин') }} · {{activityCount.count + 0}} записей</div>
     </div>
 
     <div class="flex-1 overflow-y-auto p-4 pt-3">
@@ -98,8 +102,8 @@
 </section>
 
 <script>
-document.getElementById('activity-form').addEventListener('submit', function(e) {
-    const dateInput = document.getElementById('date-input').value;
-});
+    document.getElementById('activity-form').addEventListener('submit', function(e) {
+        const dateInput = document.getElementById('date-input').value;
+    });
 </script>
 {% endblock %}

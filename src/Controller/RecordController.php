@@ -20,27 +20,43 @@ final class RecordController extends AbstractController
     #[IsGranted(ActivityVoter::MANAGE, subject: 'id')]
     public function new(int $id, Request $request, EntityManagerInterface $entityManager): Response 
     {
-        $amount = $request->request->get('amount', 0);
+        $amount = (float) $request->request->get('amount', 0);
         $date = $request->request->get('date', 0);
-
-        $createdAt = $date 
-            ? (new DateTimeImmutable($date . ' ' . date('H:i:s')))->format("Y-m-d H:i:s")
-            : (new DateTimeImmutable())->format("Y-m-d H:i:s");
-
-        $sql = "INSERT INTO records (amount, activity_id, created_at, updated_at) 
-            VALUES (:amount, :activityId, :createdAt, :updatedAt)";
-
-        $entityManager->getConnection()->executeQuery($sql , [
-            'amount' => $amount,
-            'activityId' => $id,
-            'createdAt' => $createdAt,
-            'updatedAt' => new DateTimeImmutable()->format("Y-m-d H:i:s"),
-        ]);
-
+        
         $sql = 'SELECT * FROM activities WHERE id = :id';
         $activity = $entityManager->getConnection()->executeQuery($sql, [
             'id' => $id,
         ])->fetchAssociative();
+            
+        if (
+            (fmod($amount, 1) == 0 && $activity['unit'] != 2)
+            || $activity['unit'] == 2
+        ) {
+            $createdAt = $date 
+                ? (new DateTimeImmutable($date . ' ' . date('H:i:s')))->format("Y-m-d H:i:s")
+                : (new DateTimeImmutable())->format("Y-m-d H:i:s");
+
+            $sql = "INSERT INTO records (amount, activity_id, created_at, updated_at) 
+                VALUES (:amount, :activityId, :createdAt, :updatedAt)";
+    
+            $entityManager->getConnection()->executeQuery($sql , [
+                'amount' => $amount,
+                'activityId' => $id,
+                'createdAt' => $createdAt,
+                'updatedAt' => new DateTimeImmutable()->format("Y-m-d H:i:s"),
+            ]);
+            
+            $this->addFlash(
+                'notice',
+                'Создана запись: ' . $activity['name'] . ' · ' . $amount . ' ' 
+                . ($activity['unit'] == 1 ? 'раз' : ($activity['unit'] == 2 ? 'км' : ($activity['unit'] == 3 ? 'мин' : 'стр')))
+            );
+        } else {
+            $this->addFlash(
+                'error',
+                'Значение должно быть целым!' 
+            );
+        }
 
         if(!$date) {
             return $this->redirectToRoute('category_view', ['id' => $activity['category_id']]);
