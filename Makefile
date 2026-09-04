@@ -7,6 +7,8 @@ build:
 
 init: build up composer-install migrate fixtures
 
+prod-deploy: prod-build prod-up prod-composer-install prod-migrate prod-cache-clear
+
 prod-build:
 	docker compose -f docker-compose.prod.yml build \
 		--build-arg USER_ID=$(shell id -u) \
@@ -16,6 +18,9 @@ prod-build:
 
 prod-up:
 	docker compose -f docker-compose.prod.yml up -d
+
+prod-down:
+	docker compose -f docker-compose.prod.yml down
 
 prod-composer-install:
 	docker compose -f docker-compose.prod.yml exec -T php-fpm composer install --no-dev --optimize-autoloader --no-interaction
@@ -30,8 +35,6 @@ prod-git-pull:
 	git pull origin master --ff-only
 
 prod-update: prod-git-pull prod-cache-clear
-
-deploy: prod-build prod-up prod-composer-install prod-migrate prod-cache-clear
 
 up:
 	docker compose up -d
