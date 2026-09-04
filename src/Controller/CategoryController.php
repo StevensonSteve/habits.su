@@ -89,13 +89,16 @@ final class CategoryController extends AbstractController
             'id' => $id,
         ])->fetchAssociative();
 
+        $today = new DateTimeImmutable('today');
         $sql = 'SELECT activity_id, SUM(amount) AS count
             FROM records 
-            WHERE DATE(created_at) = CURRENT_DATE 
+            WHERE created_at >= :dateFrom AND created_at < :dateTo
             GROUP BY activity_id;
         ';
-        $activityCount = $entityManager->getConnection()->executeQuery($sql)
-            ->fetchAllKeyValue();
+        $activityCount = $entityManager->getConnection()->executeQuery($sql, [
+            'dateFrom' => $today->format('Y-m-d 00:00:00'),
+            'dateTo' => $today->modify('+1 day')->format('Y-m-d 00:00:00'),
+        ])->fetchAllKeyValue();
 
         $sql = 'SELECT a.* FROM activities AS a
                 LEFT JOIN records AS r ON a.id = r.activity_id

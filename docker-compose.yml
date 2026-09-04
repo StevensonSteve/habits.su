@@ -1,9 +1,9 @@
-version: '3.8'
-
 services:
   php-fpm:
     build:
       context: ./docker/php-fpm
+    environment:
+      TZ: ${TIMEZONE}
     volumes:
       - .:/var/www
       - ./docker/php-fpm/php.ini:/usr/local/etc/php/conf.d/custom.ini
@@ -46,6 +46,7 @@ services:
   postgres:
     build: ./docker/postgres
     environment:
+      TZ: ${TIMEZONE}
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}

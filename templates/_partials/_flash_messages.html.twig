@@ -1,11 +1,13 @@
 {% if app.session.flashbag.peek('notice')|length > 0 %}
     {% for message in app.flashes('notice') %}
-        <div class="js-flash-toast px-5 pt-5 md:px-6 md:py-6">
-            <div class="rounded-xl border-2 border-flash bg-flash-soft px-3 py-2 text-ok ring-2 ring-flash/20">
-                <div class="flex items-center justify-between gap-2">
-                    <span data-flash-text="">{{ message }}</span>
-                    <div class="flex items-center gap-2">
-                        <button type="button" class="text-muted hover:text-ink text-lg leading-none px-1" aria-label="закрыть" onclick="this.closest('.js-flash-toast').remove()">×</button>
+        <div class="js-flash-toast pointer-events-none relative z-20 h-0 min-h-0 w-full shrink-0">
+            <div class="pointer-events-auto absolute inset-x-0 pt-2 px-5 md:px-6">
+                <div class="rounded-xl border-2 border-flash bg-flash-soft px-3 py-2 text-ok ring-2 ring-flash/20">
+                    <div class="flex items-center justify-between gap-2">
+                        <span data-flash-text="">{{ message }}</span>
+                        <div class="flex items-center gap-2">
+                            <button type="button" class="text-muted hover:text-ink text-lg leading-none px-1" aria-label="закрыть" onclick="this.closest('.js-flash-toast').remove()">×</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -21,12 +23,14 @@
     </script>
 {% elseif app.session.flashbag.peek('error')|length > 0 %}
     {% for message in app.flashes('error') %}
-        <div class="js-flash-toast px-5 pt-5 md:px-6 md:py-6">
-            <div class="rounded-xl border-2 border-flash-bad bg-flash-bad-soft px-3 py-2 text-bad ring-2 ring-flash-bad/20">
-                <div class="flex items-center justify-between gap-2">
-                    <span data-flash-text="">{{ message }}</span>
-                    <div class="flex items-center gap-2">
-                        <button type="button" class="text-muted hover:text-ink text-lg leading-none px-1" aria-label="закрыть" onclick="this.closest('.js-flash-toast').remove()">×</button>
+        <div class="js-flash-toast pointer-events-none relative z-20 h-0 min-h-0 w-full shrink-0">
+            <div class="pointer-events-auto absolute inset-x-0 pt-2 px-5 md:px-6">
+                <div class="rounded-xl border-2 border-flash-bad bg-flash-bad-soft px-3 py-2 text-bad ring-2 ring-flash-bad/20">
+                    <div class="flex items-center justify-between gap-2">
+                        <span data-flash-text="">{{ message }}</span>
+                        <div class="flex items-center gap-2">
+                            <button type="button" class="text-muted hover:text-ink text-lg leading-none px-1" aria-label="закрыть" onclick="this.closest('.js-flash-toast').remove()">×</button>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -7,6 +7,8 @@ services:
         USER_NAME: ${USER_NAME:-www-data}
         GROUP_ID: ${GROUP_ID:-1000}
         GROUP_NAME: ${GROUP_NAME:-www-data}
+    environment:
+      TZ: ${TIMEZONE}
     volumes:
       - .:/var/www
       - ../shared:/var/shared:ro
@@ -66,6 +68,7 @@ services:
   postgres:
     build: ./docker/postgres
     environment:
+      TZ: ${TIMEZONE}
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
