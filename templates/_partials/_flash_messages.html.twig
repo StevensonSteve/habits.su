@@ -1,5 +1,5 @@
-{% if app.session.flashbag.peek('notice')|length > 0 %}
-    {% for message in app.flashes('notice') %}
+{% if app.session.flashbag.peek('success')|length > 0 %}
+    {% for message in app.flashes('success') %}
         <div class="js-flash-toast pointer-events-none relative z-20 h-0 min-h-0 w-full shrink-0">
             <div class="pointer-events-auto absolute inset-x-0 pt-2 px-5 md:px-6">
                 <div class="rounded-xl border-2 border-flash bg-flash-soft px-3 py-2 text-ok ring-2 ring-flash/20">

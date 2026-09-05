@@ -27,6 +27,11 @@
                 <div>
                   <a class="font-semibold text-slate-700 hover:text-brand transition-colors" href="{{ path('activity_view', {'id': activity.id}) }}" onclick="show('activity');return false;">{{ activity.name }}</a>
                   <p class="mt-0.5 text-xs text-muted">сегодня: {{activity.count + 0}} {{ activity.unit == 1 ? 'раз' : (activity.unit == 2 ? 'км' : (activity.unit == 3 ? 'мин' : 'стр')) }}</p>
+                  {% if activity.strike > 0 %}
+                    <p class="mt-1.5 inline-flex items-center gap-2 rounded-xl border-2 border-flash bg-flash-soft px-3 text-sm font-semibold text-ok ring-2 ring-flash/20">
+                      <span>🔥 {{activity.strike + 0}} дней подряд!</span>
+                    </p>
+                  {% endif %}
                 </div>
                 <div class="flex items-center gap-3 text-xs">
                   <a class="text-muted hover:text-brand transition-colors" href="{{ path('activity_update', {'id': activity.id}) }}">изм.</a>

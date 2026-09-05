@@ -27,14 +27,23 @@ final class RecordController extends AbstractController
         $activity = $entityManager->getConnection()->executeQuery($sql, [
             'id' => $id,
         ])->fetchAssociative();
-            
-        if (
-            (fmod($amount, 1) == 0 && $activity['unit'] != 2)
-            || $activity['unit'] == 2
+
+        $createdAt = $date 
+            ? (new DateTimeImmutable($date . ' ' . date('H:i:s')))->format("Y-m-d H:i:s")
+            : (new DateTimeImmutable())->format("Y-m-d H:i:s");
+
+            $today = (new DateTimeImmutable())->format("Y-m-d H:i:s");
+        // ToDo сделать нормальную валидацию
+        if ($createdAt > $today) {
+            $this->addFlash(
+                'error',
+                'Дата не должна быть в будущем!' 
+            );
+        } elseif (
+            ((fmod($amount, 1) == 0 && $activity['unit'] != 2) || $activity['unit'] == 2) 
+            && $amount > 0
         ) {
-            $createdAt = $date 
-                ? (new DateTimeImmutable($date . ' ' . date('H:i:s')))->format("Y-m-d H:i:s")
-                : (new DateTimeImmutable())->format("Y-m-d H:i:s");
+
 
             $sql = "INSERT INTO records (amount, activity_id, created_at, updated_at) 
                 VALUES (:amount, :activityId, :createdAt, :updatedAt)";
@@ -47,14 +56,14 @@ final class RecordController extends AbstractController
             ]);
             
             $this->addFlash(
-                'notice',
+                'success',
                 'Создана запись: ' . $activity['name'] . ' · ' . $amount . ' ' 
                 . ($activity['unit'] == 1 ? 'раз' : ($activity['unit'] == 2 ? 'км' : ($activity['unit'] == 3 ? 'мин' : 'стр')))
             );
         } else {
             $this->addFlash(
                 'error',
-                'Значение должно быть целым!' 
+                'Значение должно быть целым положительным числом!' 
             );
         }
 

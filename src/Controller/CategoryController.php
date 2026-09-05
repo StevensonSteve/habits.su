@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Security\CategoryVoter;
+use App\Service\StrikeService;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -82,7 +83,7 @@ final class CategoryController extends AbstractController
 
     #[Route('/{id}', name: 'category_view')]
     #[IsGranted(CategoryVoter::MANAGE, subject: 'id')]
-    public function activity(int $id, EntityManagerInterface $entityManager): Response 
+    public function activity(int $id, EntityManagerInterface $entityManager, StrikeService $strikeService): Response 
     {
         $sql = 'SELECT * FROM categories WHERE id = :id';
         $category = $entityManager->getConnection()->executeQuery($sql, [
@@ -109,7 +110,10 @@ final class CategoryController extends AbstractController
             'categoryId' => $id,
         ])->fetchAllAssociative();
 
+        $strikes = $strikeService->getStrikes($category['id']);
+
         foreach ($activities as $index => $activity) {
+            $activities[$index]['strike'] = $strikes[$activity['id']] ?? 0;
             $activities[$index]['count'] = $activityCount[$activity['id']] ?? 0;
         }
         
