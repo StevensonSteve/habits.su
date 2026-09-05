@@ -29,7 +29,7 @@ final class StrikeService
                   AND r.created_at <= :dateTo
                   AND c.id = :catrgoryId
                 GROUP BY r.activity_id, CAST(r.created_at AS DATE)
-                HAVING COUNT(r.created_at) > 0 AND SUM(r.amount) >= MIN(a.goal)
+                HAVING COUNT(r.created_at) > 0 AND SUM(r.amount) >= MIN(a.goal) AND MIN(a.goal) > 0
                 ORDER BY date_group DESC;
         ';
 
