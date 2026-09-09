@@ -16,7 +16,7 @@ class RecordRepository extends ServiceEntityRepository
         parent::__construct($registry, Record::class);
     }
 
-    public function getPopularRecordsByActivityId(int $id): array
+    public function getPopularRecordsByActivityId(int $id, int $limit = 3): array
     {
         $sql = 'SELECT sub.amount 
                 FROM (
@@ -26,12 +26,13 @@ class RecordRepository extends ServiceEntityRepository
                     WHERE r.activity_id = :id
                     GROUP BY r.amount
                     ORDER BY COUNT(r.amount) DESC 
-                    LIMIT 3
+                    LIMIT :limitRows
                 ) AS sub
                 ORDER BY sub.amount ASC';
 
         $records = $this->getEntityManager()->getConnection()->executeQuery($sql, [
             'id' => $id,
+            'limitRows' => $limit,
         ])->fetchAllAssociative();
 
         return $records;

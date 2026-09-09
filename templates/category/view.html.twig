@@ -44,27 +44,18 @@
               </div>
               
               <div class="mt-4 flex flex-wrap gap-2">
-              {% for i in 0..2 %}
-                <form action="{{ path('record_new', {'id': activity.id}) }}" method="POST" class="flex-1">
-                  <input type="hidden" name="amount" value=
-                  {% if activity.popularRecords|length >= 3 %}
-                    {{activity.popularRecords[i].amount + 0 }}
-                  {% else %}
-                    {{ activity.unit == 5 ? "1" : (activity.unit == 2 ? "0.5" : (activity.unit == 3 ? "15" : "5")) }}
-                  {% endif %}
-                  >
-                  
-                  <button type="submit" 
-                          onclick="toast('+{{ activity.unit == 1 ? "15" : (activity.unit == 2 ? "1" : (activity.unit == 3 ? "30" : "15")) }}')" 
-                          class="w-full min-h-11 rounded-xl bg-brand font-medium text-white shadow-md shadow-brand/10 transition-colors hover:bg-brand-dark">
-                      +{% if activity.popularRecords|length >= 3 %}
-                        {{activity.popularRecords[i].amount + 0 }}
-                      {% else %}
-                        {{ activity.unit == 1 ? 1 * (i + 1) : (activity.unit == 2 ? 0.1 * (i + 1) : (activity.unit == 3 ? 5 * (i + 1) : 1 * (i + 1))) }}
-                      {% endif %}
-                  </button>
-                </form>
-              {% endfor %}
+              {% if activity.popularRecords|length > 0 %}
+                {% for i in 0..(activity.popularRecords|length - 1) %}
+                  <form action="{{ path('record_new', {'id': activity.id}) }}" method="POST" class="flex-1">
+                    <input type="hidden" name="amount" value=
+                    {{activity.popularRecords[i].amount + 0 }}>
+                    <button type="submit" 
+                            class="w-full min-h-11 rounded-xl bg-brand font-medium text-white shadow-md shadow-brand/10 transition-colors hover:bg-brand-dark">
+                        +{{ activity.popularRecords[i].amount + 0 }}
+                    </button>
+                  </form>
+                {% endfor %}
+              {% endif %}
               
                 <form action="{{ path('record_new', {'id': activity.id}) }}" method="POST" class="w-full mt-2 flex gap-2">
                   <div class="relative flex-1">

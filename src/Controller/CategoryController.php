@@ -114,7 +114,7 @@ final class CategoryController extends AbstractController
         $strikes = $strikeService->getStrikes($category['id']);
 
         foreach ($activities as $index => $activity) {
-            $popularRecords = $this->recordRepository->getPopularRecordsByActivityId($activity['id']);
+            $popularRecords = $this->recordRepository->getPopularRecordsByActivityId($activity['id'], 4);
             
             $activities[$index]['strike'] = $strikes[$activity['id']] ?? 0;
             $activities[$index]['count'] = $activityCount[$activity['id']] ?? 0;
