@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Repository\CategoryRepository;
+use App\Repository\RecordRepository;
 use App\Security\CategoryVoter;
 use App\Service\StrikeService;
 use DateTimeImmutable;
@@ -16,6 +18,11 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('IS_AUTHENTICATED')] 
 final class CategoryController extends AbstractController
 {   
+    public function __construct(
+        private readonly CategoryRepository $categoryRepository,
+        private readonly RecordRepository $recordRepository,
+    ) {}
+
     #[Route('/delete/{id}', name: 'category_delete')]
     #[IsGranted(CategoryVoter::MANAGE, subject: 'id')] 
     public function delete(int $id, EntityManagerInterface $entityManager): Response 
@@ -71,10 +78,7 @@ final class CategoryController extends AbstractController
             return $this->redirectToRoute('dashboard_index');
         }
 
-        $sql = 'SELECT * FROM categories WHERE id = :id';
-        $category = $entityManager->getConnection()->executeQuery($sql, [
-            'id' => $id,
-        ])->fetchAssociative();
+        $category = $this->categoryRepository->getCategoryById($id);
 
         return $this->render('category/update.html.twig', [
             'category' => $category,
@@ -83,12 +87,9 @@ final class CategoryController extends AbstractController
 
     #[Route('/{id}', name: 'category_view')]
     #[IsGranted(CategoryVoter::MANAGE, subject: 'id')]
-    public function activity(int $id, EntityManagerInterface $entityManager, StrikeService $strikeService): Response 
+    public function view(int $id, EntityManagerInterface $entityManager, StrikeService $strikeService): Response 
     {
-        $sql = 'SELECT * FROM categories WHERE id = :id';
-        $category = $entityManager->getConnection()->executeQuery($sql, [
-            'id' => $id,
-        ])->fetchAssociative();
+        $category = $this->categoryRepository->getCategoryById($id);
 
         $today = new DateTimeImmutable('today');
         $sql = 'SELECT activity_id, SUM(amount) AS count
@@ -113,8 +114,11 @@ final class CategoryController extends AbstractController
         $strikes = $strikeService->getStrikes($category['id']);
 
         foreach ($activities as $index => $activity) {
+            $popularRecords = $this->recordRepository->getPopularRecordsByActivityId($activity['id']);
+            
             $activities[$index]['strike'] = $strikes[$activity['id']] ?? 0;
             $activities[$index]['count'] = $activityCount[$activity['id']] ?? 0;
+            $activities[$index]['popularRecords'] = $popularRecords;
         }
         
         return $this->render('category/view.html.twig', [

@@ -2,6 +2,9 @@
 
 namespace App\Controller;
 
+use App\Repository\ActivityRepository;
+use App\Repository\CategoryRepository;
+use App\Repository\RecordRepository;
 use App\Security\ActivityVoter;
 use App\Security\CategoryVoter;
 use DateTimeImmutable;
@@ -16,6 +19,11 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('IS_AUTHENTICATED')]
 final class ActivityController extends AbstractController
 {
+    public function __construct(
+        private readonly CategoryRepository $categoryRepository,
+        private readonly ActivityRepository $activityRepository,
+    ) {}
+
     private const FILTER_PERIOD_TODAY = 'today';
     private const FILTER_PERIOD_YESTERDAY = 'yesterday';
     private const FILTER_PERIOD_WEEK = 'week';
@@ -28,10 +36,7 @@ final class ActivityController extends AbstractController
     {
         $filter = $request->request->get('filter', self::FILTER_PERIOD_TODAY);
 
-        $sql = 'SELECT * FROM activities WHERE id = :id';
-        $activity = $entityManager->getConnection()->executeQuery($sql, [
-            'id' => $id,
-        ])->fetchAssociative();
+        $activity = $this->activityRepository->getActivityById($id);
 
         $now = new DateTimeImmutable();
         $dateFrom = match ($filter) {
@@ -79,11 +84,9 @@ final class ActivityController extends AbstractController
             'dateTo' => $dateTo->format('Y-m-d 23:59:59'),
         ])->fetchAssociative();
 
-        $sql = 'SELECT * FROM categories WHERE id = :id';
-        $category = $entityManager->getConnection()->executeQuery($sql, [
-            'id' => $activity['category_id'],
-        ])->fetchAssociative(); 
-        
+        $category = $this->categoryRepository->getCategoryById($activity['category_id']);
+
+
 
         return $this->render('activity/view.html.twig', [
             'activity' => $activity,
@@ -99,10 +102,7 @@ final class ActivityController extends AbstractController
     #[IsGranted(ActivityVoter::MANAGE, subject: 'id')]
     public function delete(int $id, EntityManagerInterface $entityManager): Response 
     {
-        $sql = 'SELECT * FROM activities WHERE id = :id';
-        $activity = $entityManager->getConnection()->executeQuery($sql, [
-            'id' => $id
-        ])->fetchAssociative();
+        $activity = $this->activityRepository->getActivityById($id);
 
         $sql = 'DELETE FROM activities WHERE id = :id';
         $entityManager->getConnection()->executeQuery($sql, [
@@ -136,10 +136,7 @@ final class ActivityController extends AbstractController
             return $this->redirectToRoute('category_view', ['id' => $id]);
         }
     
-        $sql = 'SELECT * FROM categories WHERE id = :id';
-        $category = $entityManager->getConnection()->executeQuery($sql, [
-            'id' => $id,
-        ])->fetchAssociative();
+        $category = $this->categoryRepository->getCategoryById($id);
 
         return $this->render('activity/new.html.twig', [
             'category' => $category,
@@ -150,10 +147,7 @@ final class ActivityController extends AbstractController
     #[IsGranted(ActivityVoter::MANAGE, subject: 'id')]
     public function update(int $id, Request $request, EntityManagerInterface $entityManager): Response 
     {
-        $sql = 'SELECT * FROM activities WHERE id = :id';
-        $activity = $entityManager->getConnection()->executeQuery($sql, [
-            'id' => $id
-        ])->fetchAssociative();
+        $activity = $this->activityRepository->getActivityById($id);
 
         if ($request->getMethod() == 'POST') {
             $name = $request->request->get('name');
@@ -172,10 +166,7 @@ final class ActivityController extends AbstractController
             return $this->redirectToRoute('category_view', ['id' => $activity['category_id']]);
         }
     
-        $sql = 'SELECT * FROM categories WHERE id = :id';
-        $category = $entityManager->getConnection()->executeQuery($sql, [
-            'id' => $activity['category_id'],
-        ])->fetchAssociative();
+        $category = $this->categoryRepository->getCategoryById($activity['category_id']);
 
         return $this->render('activity/update.html.twig', [
             'category' => $category,

@@ -15,4 +15,13 @@ class CategoryRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Category::class);
     }
+
+    public function getCategoryById(int $id): array|false 
+    {
+        $sql = 'SELECT * FROM categories WHERE id = :id';
+
+        return $this->getEntityManager()->getConnection()->executeQuery($sql, [
+            'id' => $id,
+        ])->fetchAssociative();
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Repository\ActivityRepository;
 use App\Security\ActivityVoter;
 use App\Security\RecordVoter;
 use DateTimeImmutable;
@@ -16,6 +17,11 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('IS_AUTHENTICATED')]
 final class RecordController extends AbstractController
 {
+
+    public function __construct(
+        private readonly ActivityRepository $activityRepository,
+    ) {}
+
     #[Route('/new/activity/{id}', name: 'record_new')]
     #[IsGranted(ActivityVoter::MANAGE, subject: 'id')]
     public function new(int $id, Request $request, EntityManagerInterface $entityManager): Response 
@@ -23,10 +29,7 @@ final class RecordController extends AbstractController
         $amount = (float) $request->request->get('amount', 0);
         $date = $request->request->get('date', 0);
         
-        $sql = 'SELECT * FROM activities WHERE id = :id';
-        $activity = $entityManager->getConnection()->executeQuery($sql, [
-            'id' => $id,
-        ])->fetchAssociative();
+        $activity = $this->activityRepository->getActivityById($id);
 
         $createdAt = $date 
             ? (new DateTimeImmutable($date . ' ' . date('H:i:s')))->format("Y-m-d H:i:s")
