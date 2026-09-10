@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Repository\CategoryRepository;
 use App\Repository\RecordRepository;
 use App\Security\CategoryVoter;
+use App\Service\CategoryService;
 use App\Service\StrikeService;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
@@ -19,22 +20,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class CategoryController extends AbstractController
 {   
     public function __construct(
+        private readonly CategoryService $categoryService,
         private readonly CategoryRepository $categoryRepository,
         private readonly RecordRepository $recordRepository,
     ) {}
-
-    #[Route('/delete/{id}', name: 'category_delete')]
-    #[IsGranted(CategoryVoter::MANAGE, subject: 'id')] 
-    public function delete(int $id, EntityManagerInterface $entityManager): Response 
-    {
-        $sql = 'DELETE FROM categories WHERE id = :id';
-
-        $entityManager->getConnection()->executeQuery($sql, [
-            'id' => $id
-        ]);
-
-        return $this->redirectToRoute('dashboard_index');
-    }
 
     #[Route('/new', name: 'category_new')]
     public function new(Request $request, EntityManagerInterface $entityManager): Response 
@@ -42,15 +31,7 @@ final class CategoryController extends AbstractController
         if ($request->getMethod() == 'POST') {
             $name = $request->request->get('name');
 
-            $sql = "INSERT INTO categories (name, user_id, created_at, updated_at) 
-                VALUES (:name, :userId, :createdAt, :updatedAt)";
-
-            $entityManager->getConnection()->executeQuery($sql , [
-                'name' => $name,
-                'userId' => $this->getUser()->getId(),
-                'createdAt' => new DateTimeImmutable()->format("Y-m-d H:i:s"),
-                'updatedAt' => new DateTimeImmutable()->format("Y-m-d H:i:s"),
-            ]);
+            $this->categoryService->create($name);
 
             return $this->redirectToRoute('dashboard_index');
         }
@@ -67,13 +48,7 @@ final class CategoryController extends AbstractController
         if ($request->getMethod() == 'POST') {
             $name = $request->request->get('name');
 
-            $sql = "UPDATE categories SET name = :name, updated_at = :updatedAt WHERE id = :id";
-
-            $entityManager->getConnection()->executeQuery($sql , [
-                'name' => $name,
-                'id' => $id,
-                'updatedAt' => new DateTimeImmutable()->format("Y-m-d H:i:s"),
-            ])->fetchAllAssociative();
+            $this->categoryService->update($id, $name);
 
             return $this->redirectToRoute('dashboard_index');
         }
@@ -125,5 +100,14 @@ final class CategoryController extends AbstractController
             'category' => $category,
             'activities' => $activities,
         ]);
+    }
+
+    #[Route('/delete/{id}', name: 'category_delete')]
+    #[IsGranted(CategoryVoter::MANAGE, subject: 'id')] 
+    public function delete(int $id, EntityManagerInterface $entityManager): Response 
+    {
+        $this->categoryService->delete($id);
+
+        return $this->redirectToRoute('dashboard_index');
     }
 }
