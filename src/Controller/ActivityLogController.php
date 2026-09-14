@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Repository\ActivityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use DateTimeImmutable;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,6 +20,10 @@ final class ActivityLogController extends AbstractController
     private const FILTER_PERIOD_WEEK = 'week';
     private const FILTER_PERIOD_MONTH = 'month';
     private const FILTER_PERIOD_ALL_TIME = 'all-time';
+
+    public function __construct(
+        private readonly ActivityRepository $activityRepository,
+    ) {}
 
     #[Route('', name: 'activity_log_index')]
     public function index(Request $request, EntityManagerInterface $entityManager): Response
@@ -56,13 +61,20 @@ final class ActivityLogController extends AbstractController
             'userId' => $user->getId(),
         ])->fetchAllAssociative();
 
+        $recordSums = $this->activityRepository->getAmountSums(
+            (int) $user->getId(),
+            $dateFrom,
+            $dateTo
+        );
+        // dd($recordSuma);
+
         $sql ='SELECT CAST(r.created_at AS TIMESTAMP) AS date_group, r.activity_id, SUM(r.amount) AS sum, a.name, a.unit 
                 FROM records AS r
                 INNER JOIN activities AS a ON a.id = r.activity_id
                 INNER JOIN categories AS c ON c.id = a.category_id
                 WHERE c.user_id = :userId AND r.created_at >= :dateFrom AND r.created_at <= :dateTo
                 GROUP BY date_group, r.activity_id, a.name, a.unit
-                ORDER BY date_group DESC';
+                ORDER BY date_group DESC'
         ;
 
         $records = $entityManager->getConnection()->executeQuery($sql, [
@@ -73,6 +85,7 @@ final class ActivityLogController extends AbstractController
 
         return $this->render('activity-log/index.html.twig', [
             'activity' => $activity,
+            'recordSums' => $recordSums,
             'records' => $records,
             'filter' => $filter,
         ]);

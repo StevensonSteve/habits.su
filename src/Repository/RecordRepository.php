@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Record;
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -36,5 +37,28 @@ class RecordRepository extends ServiceEntityRepository
         ])->fetchAllAssociative();
 
         return $records;
+    }
+
+    public function getRecordSumFromToday(): array
+    {
+        $today = new DateTimeImmutable('today');
+        $sql = 'SELECT activity_id, SUM(amount) AS count
+            FROM records    
+            WHERE created_at >= :dateFrom AND created_at < :dateTo
+            GROUP BY activity_id;
+        ';
+        
+        return $this->getEntityManager()->getConnection()->executeQuery($sql, [
+            'dateFrom' => $today->format('Y-m-d 00:00:00'),
+            'dateTo' => $today->modify('+1 day')->format('Y-m-d 00:00:00'),
+        ])->fetchAllKeyValue();
+    }
+
+    public function getActivityId(int $id): mixed
+    {
+        $sql = 'SELECT activity_id FROM records WHERE id = :id';
+        return $this->getEntityManager()->getConnection()->executeQuery($sql, [
+            'id' => $id,
+        ])->fetchOne();
     }
 }

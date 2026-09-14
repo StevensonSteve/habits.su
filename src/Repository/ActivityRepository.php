@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Activity;
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -23,5 +24,35 @@ class ActivityRepository extends ServiceEntityRepository
         return $this->getEntityManager()->getConnection()->executeQuery($sql, [
             'id' => $id,
         ])->fetchAssociative();
+    }
+
+    public function getLatestReportedActivitiesByCategoryId(int $categoryId)
+    {
+        $sql = 'SELECT a.* 
+                FROM activities AS a
+                LEFT JOIN records AS r ON a.id = r.activity_id
+                WHERE a.category_id = :categoryId
+                GROUP BY a.id, a.name, a.unit
+                ORDER BY MAX(r.created_at) DESC NULLS LAST';
+
+        return $this->getEntityManager()->getConnection()->executeQuery($sql, [
+            'categoryId' => $categoryId,
+        ])->fetchAllAssociative();
+    }
+
+    public function getAmountSums(int $userId, DateTimeImmutable $dateFrom, DateTimeImmutable $dateTo): array|false 
+    {
+        $sql = 'SELECT a.name, a.unit, SUM(r.amount) AS sum 
+                FROM activities AS a
+                INNER JOIN records AS r ON a.id = r.activity_id
+                INNER JOIN categories AS c ON c.id = a.category_id
+                WHERE c.user_id = :userId AND r.created_at >= :dateFrom AND r.created_at <= :dateTo
+                GROUP BY a.name, a.unit';
+
+        return $this->getEntityManager()->getConnection()->executeQuery($sql, [
+            'userId' => $userId,
+            'dateFrom' => $dateFrom->format('Y-m-d 00:00:00'),
+            'dateTo' => $dateTo->format('Y-m-d 23:59:59')
+        ])->fetchAllAssociative();
     }
 }

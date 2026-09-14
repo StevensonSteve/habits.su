@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 use App\Repository\ActivityRepository;
+use App\Repository\RecordRepository;
 use App\Security\ActivityVoter;
 use App\Security\RecordVoter;
+use App\Service\RecordService;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,6 +22,8 @@ final class RecordController extends AbstractController
 
     public function __construct(
         private readonly ActivityRepository $activityRepository,
+        private readonly RecordRepository $recordRepository,
+        private readonly RecordService $recordService,
     ) {}
 
     #[Route('/new/activity/{id}', name: 'record_new')]
@@ -46,17 +50,7 @@ final class RecordController extends AbstractController
             ((fmod($amount, 1) == 0 && $activity['unit'] != 2) || $activity['unit'] == 2) 
             && $amount > 0
         ) {
-
-
-            $sql = "INSERT INTO records (amount, activity_id, created_at, updated_at) 
-                VALUES (:amount, :activityId, :createdAt, :updatedAt)";
-    
-            $entityManager->getConnection()->executeQuery($sql , [
-                'amount' => $amount,
-                'activityId' => $id,
-                'createdAt' => $createdAt,
-                'updatedAt' => new DateTimeImmutable()->format("Y-m-d H:i:s"),
-            ]);
+            $this->recordService->create($amount, $id, $createdAt);
             
             $this->addFlash(
                 'success',
@@ -81,15 +75,8 @@ final class RecordController extends AbstractController
     #[IsGranted(RecordVoter::MANAGE, subject: 'id')]
     public function delete(int $id, EntityManagerInterface $entityManager): Response 
     {
-        $sql = 'SELECT activity_id FROM records WHERE id = :id';
-        $activityId = $entityManager->getConnection()->executeQuery($sql, [
-            'id' => $id,
-        ])->fetchOne();
-
-        $sql = 'DELETE FROM records WHERE id = :id';
-        $entityManager->getConnection()->executeQuery($sql, [
-            'id' => $id
-        ]);
+        $activityId = $this->recordRepository->getActivityId($id);
+        $this->recordService->delete($id);
 
         return $this->redirectToRoute('activity_view', ['id' => $activityId]);
     }

@@ -173,6 +173,5 @@ final class ActivityController extends AbstractController
             'activity' => $activity,
         ]);
     }
-
 }
 

@@ -2,12 +2,12 @@
 
 namespace App\Controller;
 
+use App\Repository\ActivityRepository;
 use App\Repository\CategoryRepository;
 use App\Repository\RecordRepository;
 use App\Security\CategoryVoter;
 use App\Service\CategoryService;
 use App\Service\StrikeService;
-use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,10 +23,11 @@ final class CategoryController extends AbstractController
         private readonly CategoryService $categoryService,
         private readonly CategoryRepository $categoryRepository,
         private readonly RecordRepository $recordRepository,
+        private readonly ActivityRepository $activityRepository,
     ) {}
 
     #[Route('/new', name: 'category_new')]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response 
+    public function new(Request $request): Response 
     {
         if ($request->getMethod() == 'POST') {
             $name = $request->request->get('name');
@@ -43,7 +44,7 @@ final class CategoryController extends AbstractController
 
     #[Route('/update/{id}', name: 'category_update')]
     #[IsGranted(CategoryVoter::MANAGE, subject: 'id')]
-    public function update(int $id, Request $request, EntityManagerInterface $entityManager): Response 
+    public function update(int $id, Request $request): Response 
     {
         if ($request->getMethod() == 'POST') {
             $name = $request->request->get('name');
@@ -62,30 +63,11 @@ final class CategoryController extends AbstractController
 
     #[Route('/{id}', name: 'category_view')]
     #[IsGranted(CategoryVoter::MANAGE, subject: 'id')]
-    public function view(int $id, EntityManagerInterface $entityManager, StrikeService $strikeService): Response 
+    public function view(int $id, StrikeService $strikeService): Response 
     {
         $category = $this->categoryRepository->getCategoryById($id);
-
-        $today = new DateTimeImmutable('today');
-        $sql = 'SELECT activity_id, SUM(amount) AS count
-            FROM records 
-            WHERE created_at >= :dateFrom AND created_at < :dateTo
-            GROUP BY activity_id;
-        ';
-        $activityCount = $entityManager->getConnection()->executeQuery($sql, [
-            'dateFrom' => $today->format('Y-m-d 00:00:00'),
-            'dateTo' => $today->modify('+1 day')->format('Y-m-d 00:00:00'),
-        ])->fetchAllKeyValue();
-
-        $sql = 'SELECT a.* FROM activities AS a
-                LEFT JOIN records AS r ON a.id = r.activity_id
-                WHERE a.category_id = :categoryId
-                GROUP BY a.id, a.name, a.unit
-                ORDER BY MAX(r.created_at) DESC NULLS LAST';
-        $activities = $entityManager->getConnection()->executeQuery($sql, [
-            'categoryId' => $id,
-        ])->fetchAllAssociative();
-
+        $activityCount = $this->recordRepository->getRecordSumFromToday();
+        $activities = $this->activityRepository->getLatestReportedActivitiesByCategoryId($category['id']);
         $strikes = $strikeService->getStrikes($category['id']);
 
         foreach ($activities as $index => $activity) {
@@ -104,7 +86,7 @@ final class CategoryController extends AbstractController
 
     #[Route('/delete/{id}', name: 'category_delete')]
     #[IsGranted(CategoryVoter::MANAGE, subject: 'id')] 
-    public function delete(int $id, EntityManagerInterface $entityManager): Response 
+    public function delete(int $id): Response 
     {
         $this->categoryService->delete($id);
 
