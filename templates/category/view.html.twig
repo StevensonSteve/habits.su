@@ -39,7 +39,7 @@
                   <a class="text-muted hover:text-danger transition-colors" href="{{ path('activity_delete', {'id': activity.id}) }}" onclick="return confirm('Удалить активность?');">удл.</a>
                 </div>
                 {% if activity.goal > 0 %}
-                  <span class="{{activity.goal <= activity.count ? 'bg-green-200' : ''}} mt-1.5 inline-flex items-center gap-2 rounded-xl border-2 border-flash bg-flash-soft px-3 text-sm font-semibold text-ok ring-2 ring-flash/20">{{activity.count + 0}}/{{activity.goal}}</span>
+                  <span class="{{activity.goal <= activity.count ? 'border-2 border-flash bg-flash-soft text-ok' : ''}} mt-1.5 inline-flex items-center gap-2 rounded-xl px-3 text-sm text-brand font-semibold ring-2 ring-flash/20">{{activity.count + 0}}/{{activity.goal}}</span>
                 {% endif %}
               </div>
               
