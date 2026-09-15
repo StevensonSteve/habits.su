@@ -42,12 +42,13 @@ class ActivityRepository extends ServiceEntityRepository
 
     public function getAmountSums(int $userId, DateTimeImmutable $dateFrom, DateTimeImmutable $dateTo): array|false 
     {
-        $sql = 'SELECT a.name, a.unit, SUM(r.amount) AS sum 
+        $sql = 'SELECT a.name, a.unit, a.id, SUM(r.amount) AS sum 
                 FROM activities AS a
                 INNER JOIN records AS r ON a.id = r.activity_id
                 INNER JOIN categories AS c ON c.id = a.category_id
                 WHERE c.user_id = :userId AND r.created_at >= :dateFrom AND r.created_at <= :dateTo
-                GROUP BY a.name, a.unit';
+                GROUP BY a.name, a.unit, a.id
+                ORDER BY SUM(r.amount) DESC';
 
         return $this->getEntityManager()->getConnection()->executeQuery($sql, [
             'userId' => $userId,
