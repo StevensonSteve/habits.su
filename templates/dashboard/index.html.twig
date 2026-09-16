@@ -31,16 +31,24 @@
       <div class="space-y-2 md:space-y-0 md:grid md:grid-cols-2 md:gap-4">
         {% if categories is not empty %}
             {% for category in categories %}                 
-              <div class="flex items-center justify-between rounded-xl border border-line bg-page hover:shadow-sm transition-shadow min-h-[56px]">
-                <a class="flex-1 px-3 py-3 hover:text-brand transition-colors text-lg md:text-xl font-bold text-slate-700 truncate" href="{{ path('category_view', {'id': category.id}) }}">
-                  {{ category.name }}
-                </a>
-                <div class="flex items-center gap-3 text-xs md:text-sm pr-4 shrink-0">
-                  <a class="text-muted hover:text-brand transition-colors py-1" href="{{ path('category_update', {'id': category.id}) }}">изм.</a>
-                  <span class="text-line">|</span>
-                  <a class="text-muted hover:text-bad transition-colors py-1" href="{{ path('category_delete', {'id': category.id}) }}" onclick="return confirm('Удалить категорию?');">удл.</a>
+              <a href="{{ path('category_view', {'id': category.id}) }}" class="block w-full rounded-xl border border-line bg-page p-3 text-left hover:border-brand hover:shadow-sm transition-all min-h-[56px]">
+                <div class="flex justify-between items-center">
+                  <span class="font-bold text-slate-700 text-lg md:text-xl truncate">{{ category.name }}</span>
+                  {% if category.goals > 0 %}
+                    <span class="
+                        rounded-full px-3 py-0.5 text-xs font-semibold whitespace-nowrap ml-2
+                        {{ category.goalsCompleted > 0 ? "border-flash bg-flash-soft text-flash border-2" : "text-brand ring-line ring-2" }}"
+                    >
+                      {{ category.goalsCompleted }}/{{ category.goals }}
+                    </span>
+                  {% endif %}
                 </div>
-              </div>
+                {% if category.goals > 0 %}
+                  <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-blue-100">
+                    <div class="h-full w-{{ category.goalsCompleted }}/{{ category.goals }} rounded-full bg-flash"></div>
+                  </div>
+                {% endif %}
+              </a>
             {% endfor %}
         {% else %}
             <div class="md:col-span-2 rounded-xl border border-dashed border-line p-8 text-center text-xs md:text-sm text-muted">

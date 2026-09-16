@@ -87,7 +87,7 @@
             <ul class="divide-y divide-line overflow-hidden rounded-2xl border border-line bg-white">
             {% for record in records %}  
                 <li class="flex justify-between px-3 py-2.5 text-sm md:text-base text-slate-700">
-                    <span>{{ record.created_at|date('d M')|trans }} · <b>{{ record.amount + 0}}</b> {{ activity.unit == 1 ? 'раз' : (activity.unit == 2 ? 'км' : (activity.unit == 3 ? 'мин' : 'стр')) }}</span>
+                    <span>{{ record.created_at|date('d M H:i:s')|trans }} · <b>{{ record.amount + 0}}</b> {{ activity.unit == 1 ? 'раз' : (activity.unit == 2 ? 'км' : (activity.unit == 3 ? 'мин' : 'стр')) }}</span>
                     <span class="text-xs md:text-sm flex items-center"><a class="text-bad hover:underline" href="{{ path('record_delete', {'id': record.id}) }}" onclick="return confirm('Удалить запись?');">уд.</a></span>
                 </li>
             {% endfor %}

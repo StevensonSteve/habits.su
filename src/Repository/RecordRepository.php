@@ -41,6 +41,8 @@ class RecordRepository extends ServiceEntityRepository
 
     public function getRecordSumFromToday(): array
     {
+
+    //ToDo отсечь клиентов по id
         $today = new DateTimeImmutable('today');
         $sql = 'SELECT activity_id, SUM(amount) AS count
             FROM records    

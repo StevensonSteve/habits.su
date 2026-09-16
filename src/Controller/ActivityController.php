@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Repository\ActivityRepository;
 use App\Repository\CategoryRepository;
-use App\Repository\RecordRepository;
 use App\Security\ActivityVoter;
 use App\Security\CategoryVoter;
 use DateTimeImmutable;
