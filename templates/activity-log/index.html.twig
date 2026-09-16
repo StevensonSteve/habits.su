@@ -10,7 +10,7 @@
     <div class="text-lg font-semibold">Журнал</div>
 </div>
 
-<div class="flex mb-2 mt-4 flex-wrap gap-1.5">
+<div class="flex p-2 mb-2 mt-2 flex-wrap gap-1.5">
     <form action="{{ path('activity_log_index') }}" method="POST" class="flex-1">
         <input type="hidden" name="filter" value="today">
     
@@ -74,6 +74,12 @@
                     {% endfor %}
                 </div>
             </div>
+        {% else %}
+            <div class="p-4 pt-3">
+                <div class="rounded-xl border border-dashed border-line p-8 text-center text-xs md:text-sm text-muted">
+                    История записей пуста
+                </div>
+            </div>
         </div>
     {% endif %}
    
@@ -83,21 +89,14 @@
             {% for record in records %}  
                 <li class="flex justify-between px-3 py-2.5 text-sm md:text-base text-slate-700 hover:bg-slate-50 transition-colors">
                     <span>
-                        <b>{{ record.date_group|date('d M H:i:s')|trans }} · </b>
+                        <b>{{ record.date_group|date('d M')|trans }} · </b>
                         <b>{{ record.sum + 0 }} {{ record.unit == 1 ? 'раз' : (record.unit == 2 ? 'км' : (record.unit == 3 ? 'мин' : 'стр')) }}</b> · 
                         <b>{{ record.name }}</b>
-                    </span>
-                    <span class="text-xs md:text-sm flex items-center">
-                        {# <a class="text-bad hover:underline" href="{{ path('record_delete', {'id': record.id}) }}" onclick="return confirm('Удалить запись?');">уд.</a> #}
                     </span>
                 </li>
             {% endfor %}
             </ul>
-        {% else %}
-        <div class="rounded-xl border border-dashed border-line p-8 text-center text-xs md:text-sm text-muted">
-            История записей пуста
         </div>
-    </div>
     {% endif %}
 </div>
 

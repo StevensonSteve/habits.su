@@ -8,7 +8,6 @@ use App\Repository\RecordRepository;
 use App\Security\CategoryVoter;
 use App\Service\CategoryService;
 use App\Service\StrikeService;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -46,15 +45,15 @@ final class CategoryController extends AbstractController
     #[IsGranted(CategoryVoter::MANAGE, subject: 'id')]
     public function update(int $id, Request $request): Response 
     {
+        $category = $this->categoryRepository->getCategoryById($id);
+
         if ($request->getMethod() == 'POST') {
             $name = $request->request->get('name');
 
             $this->categoryService->update($id, $name);
 
-            return $this->redirectToRoute('dashboard_index');
+            return $this->redirectToRoute('category_view', ['id' => $category['id']]);
         }
-
-        $category = $this->categoryRepository->getCategoryById($id);
 
         return $this->render('category/update.html.twig', [
             'category' => $category,
@@ -72,7 +71,7 @@ final class CategoryController extends AbstractController
 
         foreach ($activities as $index => $activity) {
             $popularRecords = $this->recordRepository->getPopularRecordsByActivityId($activity['id'], 4);
-            
+
             $activities[$index]['strike'] = $strikes[$activity['id']] ?? 0;
             $activities[$index]['count'] = $activityCount[$activity['id']] ?? 0;
             $activities[$index]['popularRecords'] = $popularRecords;

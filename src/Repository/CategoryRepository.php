@@ -24,4 +24,17 @@ class CategoryRepository extends ServiceEntityRepository
             'id' => $id,
         ])->fetchAssociative();
     }
+
+    public function getUserCategoriesSortedByLastRecord(int $userId): array
+    {
+        $sql = 'SELECT c.* FROM categories AS c
+            LEFT JOIN activities AS a ON c.id = a.category_id
+            LEFT JOIN records AS r ON a.id = r.activity_id
+            WHERE c.user_id = :userId
+            GROUP BY c.id, c.name
+            ORDER BY MAX(r.created_at) DESC NULLS LAST';
+        return $this->getEntityManager()->getConnection()->executeQuery($sql, [
+            'userId' => $userId,
+        ])->fetchAllAssociative();
+    }
 }

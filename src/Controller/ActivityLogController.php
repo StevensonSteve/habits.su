@@ -68,20 +68,26 @@ final class ActivityLogController extends AbstractController
         );
         // dd($recordSuma);
 
-        $sql ='SELECT CAST(r.created_at AS TIMESTAMP) AS date_group, r.activity_id, SUM(r.amount) AS sum, a.name, a.unit 
-                FROM records AS r
-                INNER JOIN activities AS a ON a.id = r.activity_id
-                INNER JOIN categories AS c ON c.id = a.category_id
-                WHERE c.user_id = :userId AND r.created_at >= :dateFrom AND r.created_at <= :dateTo
-                GROUP BY date_group, r.activity_id, a.name, a.unit
-                ORDER BY date_group DESC'
-        ;
+        $records = [];
 
-        $records = $entityManager->getConnection()->executeQuery($sql, [
-            'userId' => $user->getId(),
-            'dateFrom' => $dateFrom->format('Y-m-d 00:00:00'),
-            'dateTo' => $dateTo->format('Y-m-d 23:59:59'),
-        ])->fetchAllAssociative();
+        if (!in_array($filter, [self::FILTER_PERIOD_TODAY, self::FILTER_PERIOD_YESTERDAY])) {
+            $sql ='SELECT CAST(r.created_at AS DATE) AS date_group, r.activity_id, SUM(r.amount) AS sum, a.name, a.unit 
+                    FROM records AS r
+                    INNER JOIN activities AS a ON a.id = r.activity_id
+                    INNER JOIN categories AS c ON c.id = a.category_id
+                    WHERE c.user_id = :userId AND r.created_at >= :dateFrom AND r.created_at <= :dateTo
+                    GROUP BY date_group, r.activity_id, a.name, a.unit
+                    ORDER BY date_group DESC'
+            ;
+
+            $records = $entityManager->getConnection()->executeQuery($sql, [
+                'userId' => $user->getId(),
+                'dateFrom' => $dateFrom->format('Y-m-d 00:00:00'),
+                'dateTo' => $dateTo->format('Y-m-d 23:59:59'),
+            ])->fetchAllAssociative();
+        }
+
+
 
         return $this->render('activity-log/index.html.twig', [
             'activity' => $activity,

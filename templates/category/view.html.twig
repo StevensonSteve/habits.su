@@ -14,9 +14,14 @@
 
   {{ include('_partials/_flash_messages.html.twig') }}
 
-  <div class="flex-shrink-0 p-5 pb-2 md:p-6 md:pb-2">
-    <h2 class="text-xl font-semibold text-slate-800">{{ category.name }}</h2>
-  </div>
+  <div class="flex items-center justify-between flex-shrink-0 p-5 pb-2 md:p-6 md:pb-2">
+      <h2 class="text-xl font-semibold text-slate-800">{{ category.name }}</h2>
+      <div class="flex items-center gap-3 text-xs md:text-sm shrink-0">
+          <a class="text-muted hover:text-brand transition-colors py-1" href="{{ path('category_update', {'id': category.id}) }}">изм.</a>
+          <span class="text-line">|</span>
+          <a class="text-muted hover:text-bad transition-colors py-1" href="{{ path('category_delete', {'id': category.id}) }}" onclick="return confirm('Удалить категорию?');">удл.</a>
+      </div>
+  </div> 
     
   <div class="flex-1 overflow-y-auto px-5 md:px-6 pb-4">
     <div class="space-y-3">
@@ -28,7 +33,7 @@
                   <a class="font-semibold text-slate-700 hover:text-brand transition-colors" href="{{ path('activity_view', {'id': activity.id}) }}" onclick="show('activity');return false;">{{ activity.name }}</a>
                   <p class="mt-0.5 text-xs text-muted">сегодня: {{activity.count + 0}} {{ activity.unit == 1 ? 'раз' : (activity.unit == 2 ? 'км' : (activity.unit == 3 ? 'мин' : 'стр')) }}</p>
                   {% if activity.strike > 0 %}
-                    <p class="mt-1.5 inline-flex items-center gap-2 rounded-xl border-2 border-flash bg-flash-soft px-3 text-sm font-semibold text-ok ring-2 ring-flash/20">
+                    <p class="mt-1.5 inline-flex items-center gap-2 rounded-xl border-2 border-flash bg-flash-soft px-3 text-sm font-semibold text-ok">
                       <span>🔥 {{activity.strike + 0}} дней подряд!</span>
                     </p>
                   {% endif %}
@@ -39,7 +44,7 @@
                   <a class="text-muted hover:text-danger transition-colors" href="{{ path('activity_delete', {'id': activity.id}) }}" onclick="return confirm('Удалить активность?');">удл.</a>
                 </div>
                 {% if activity.goal > 0 %}
-                  <span class="{{activity.goal <= activity.count ? 'border-2 border-flash bg-flash-soft text-ok' : ''}} mt-1.5 inline-flex items-center gap-2 rounded-xl px-3 text-sm text-brand font-semibold ring-2 ring-flash/20">{{activity.count + 0}}/{{activity.goal}}</span>
+                  <span class="{{activity.goal <= activity.count ? 'border-2 border-flash bg-flash-soft text-ok' : 'ring-2 ring-line'}} mt-1.5 inline-flex items-center gap-2 rounded-xl px-3 text-sm text-brand font-semibold">{{activity.count + 0}}/{{activity.goal}}</span>
                 {% endif %}
               </div>
               
