@@ -39,18 +39,21 @@ class RecordRepository extends ServiceEntityRepository
         return $records;
     }
 
-    public function getRecordSumFromToday(): array
+    public function getRecordSumFromToday(int $userId): array
     {
-
-    //ToDo отсечь клиентов по id
         $today = new DateTimeImmutable('today');
-        $sql = 'SELECT activity_id, SUM(amount) AS count
-            FROM records    
-            WHERE created_at >= :dateFrom AND created_at < :dateTo
-            GROUP BY activity_id;
+        $sql = 'SELECT r.activity_id, SUM(r.amount) AS count
+            FROM records AS r
+            INNER JOIN activities AS a ON a.id = r.activity_id
+            INNER JOIN categories AS c ON c.id = a.category_id
+            WHERE c.user_id = :userId
+                AND r.created_at >= :dateFrom
+                AND r.created_at < :dateTo
+            GROUP BY r.activity_id;
         ';
         
         return $this->getEntityManager()->getConnection()->executeQuery($sql, [
+            'userId' => $userId,
             'dateFrom' => $today->format('Y-m-d 00:00:00'),
             'dateTo' => $today->modify('+1 day')->format('Y-m-d 00:00:00'),
         ])->fetchAllKeyValue();
@@ -62,5 +65,22 @@ class RecordRepository extends ServiceEntityRepository
         return $this->getEntityManager()->getConnection()->executeQuery($sql, [
             'id' => $id,
         ])->fetchOne();
+    }
+
+    public function getActivityAndAmountSum(int $userId, DateTimeImmutable $dateFrom, DateTimeImmutable $dateTo): array
+    {
+        $sql ='SELECT CAST(r.created_at AS DATE) AS date_group, r.activity_id, SUM(r.amount) AS sum, a.name, a.unit 
+                    FROM records AS r
+                    INNER JOIN activities AS a ON a.id = r.activity_id
+                    INNER JOIN categories AS c ON c.id = a.category_id
+                    WHERE c.user_id = :userId AND r.created_at >= :dateFrom AND r.created_at <= :dateTo
+                    GROUP BY date_group, r.activity_id, a.name, a.unit
+                    ORDER BY date_group DESC';
+
+            return $this->getEntityManager()->getConnection()->executeQuery($sql, [
+                'userId' => $userId,
+                'dateFrom' => $dateFrom->format('Y-m-d 00:00:00'),
+                'dateTo' => $dateTo->format('Y-m-d 23:59:59'),
+            ])->fetchAllAssociative();
     }
 }

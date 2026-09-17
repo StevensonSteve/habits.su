@@ -8,7 +8,6 @@ use App\Security\ActivityVoter;
 use App\Security\RecordVoter;
 use App\Service\RecordService;
 use DateTimeImmutable;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,7 +27,7 @@ final class RecordController extends AbstractController
 
     #[Route('/new/activity/{id}', name: 'record_new')]
     #[IsGranted(ActivityVoter::MANAGE, subject: 'id')]
-    public function new(int $id, Request $request, EntityManagerInterface $entityManager): Response 
+    public function new(int $id, Request $request): Response 
     {
         $amount = (float) $request->request->get('amount', 0);
         $date = $request->request->get('date', 0);
@@ -73,7 +72,7 @@ final class RecordController extends AbstractController
 
     #[Route('/delete/{id}', name: 'record_delete')]
     #[IsGranted(RecordVoter::MANAGE, subject: 'id')]
-    public function delete(int $id, EntityManagerInterface $entityManager): Response 
+    public function delete(int $id): Response 
     {
         $activityId = $this->recordRepository->getActivityId($id);
         $this->recordService->delete($id);

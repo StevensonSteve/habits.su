@@ -56,7 +56,13 @@ final class ActivityController extends AbstractController
             default  => $now,
         };
 
-        $sql = 'SELECT * FROM records WHERE activity_id = :activityId AND created_at >= :dateFrom AND created_at <= :dateTo ORDER BY created_at DESC';        
+        $sql = 'SELECT *
+            FROM records
+            WHERE activity_id = :activityId 
+                AND created_at >= :dateFrom 
+                AND created_at <= :dateTo
+            ORDER BY created_at DESC';
+
         $records = $entityManager->getConnection()->executeQuery($sql, [
             'activityId' => $activity['id'],
             'dateFrom' => $dateFrom->format('Y-m-d 00:00:00'),
@@ -65,8 +71,9 @@ final class ActivityController extends AbstractController
 
         $sql = 'SELECT COUNT(*) AS count
             FROM records 
-            WHERE activity_id = :activityId AND created_at >= :dateFrom;
-        ';
+            WHERE activity_id = :activityId 
+                AND created_at >= :dateFrom;';
+
         $activityCount = $entityManager->getConnection()->executeQuery($sql, [
             'activityId' => $id,
             'dateFrom' => $dateFrom->format('Y-m-d 00:00:00'),

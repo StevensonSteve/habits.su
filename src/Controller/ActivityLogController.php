@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Repository\ActivityRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\RecordRepository;
 use DateTimeImmutable;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,10 +23,11 @@ final class ActivityLogController extends AbstractController
 
     public function __construct(
         private readonly ActivityRepository $activityRepository,
+        private readonly RecordRepository $recordRepository,
     ) {}
 
     #[Route('', name: 'activity_log_index')]
-    public function index(Request $request, EntityManagerInterface $entityManager): Response
+    public function index(Request $request): Response
     {
         $filter = $request->request->get('filter', self::FILTER_PERIOD_TODAY);
 
@@ -51,44 +52,21 @@ final class ActivityLogController extends AbstractController
 
         $user = $this->getUser();
 
-        $sql = 'SELECT a.id, a.name
-            FROM activities AS a
-            INNER JOIN categories AS c ON c.id = a.category_id
-            WHERE c.user_id = :userId
-            ORDER BY a.name ASC'
-        ;
-        $activity = $entityManager->getConnection()->executeQuery($sql, [
-            'userId' => $user->getId(),
-        ])->fetchAllAssociative();
+        $activity = $this->activityRepository->getActivityByUserId($user->getId());
 
         $recordSums = $this->activityRepository->getAmountSums(
-            (int) $user->getId(),
+            $user->getId(),
             $dateFrom,
             $dateTo
         );
-        // dd($recordSuma);
 
         $records = [];
 
         if (!in_array($filter, [self::FILTER_PERIOD_TODAY, self::FILTER_PERIOD_YESTERDAY])) {
-            $sql ='SELECT CAST(r.created_at AS DATE) AS date_group, r.activity_id, SUM(r.amount) AS sum, a.name, a.unit 
-                    FROM records AS r
-                    INNER JOIN activities AS a ON a.id = r.activity_id
-                    INNER JOIN categories AS c ON c.id = a.category_id
-                    WHERE c.user_id = :userId AND r.created_at >= :dateFrom AND r.created_at <= :dateTo
-                    GROUP BY date_group, r.activity_id, a.name, a.unit
-                    ORDER BY date_group DESC'
-            ;
-
-            $records = $entityManager->getConnection()->executeQuery($sql, [
-                'userId' => $user->getId(),
-                'dateFrom' => $dateFrom->format('Y-m-d 00:00:00'),
-                'dateTo' => $dateTo->format('Y-m-d 23:59:59'),
-            ])->fetchAllAssociative();
+            $records = $this->recordRepository
+            ->getActivityAndAmountSum($user->getId(), $dateFrom, $dateTo);
         }
-
-
-
+        
         return $this->render('activity-log/index.html.twig', [
             'activity' => $activity,
             'recordSums' => $recordSums,

@@ -26,7 +26,19 @@ class ActivityRepository extends ServiceEntityRepository
         ])->fetchAssociative();
     }
 
-    public function getLatestReportedActivitiesByCategoryId(int $categoryId)
+    public function getActivityGoalsByCategoryId(int $categoryId): array
+    {
+        $sql = 'SELECT a.id, a.goal
+            FROM activities AS a
+            INNER JOIN categories AS c ON a.category_id = c.id 
+            WHERE a.category_id = :categoryId';
+
+        return $this->getEntityManager()->getConnection()->executeQuery($sql, [
+            'categoryId' => $categoryId,
+        ])->fetchAllAssociative();
+    }
+
+    public function getLatestReportedActivitiesByCategoryId(int $categoryId): array
     {
         $sql = 'SELECT a.* 
                 FROM activities AS a
@@ -54,6 +66,19 @@ class ActivityRepository extends ServiceEntityRepository
             'userId' => $userId,
             'dateFrom' => $dateFrom->format('Y-m-d 00:00:00'),
             'dateTo' => $dateTo->format('Y-m-d 23:59:59')
+        ])->fetchAllAssociative();
+    }
+
+    public function getActivityByUserId(int $userId)
+    {
+        $sql = 'SELECT *
+            FROM activities AS a
+            INNER JOIN categories AS c ON c.id = a.category_id
+            WHERE c.user_id = :userId
+            ORDER BY a.name ASC';
+
+        return $this->getEntityManager()->getConnection()->executeQuery($sql, [
+            'userId' => $userId,
         ])->fetchAllAssociative();
     }
 }

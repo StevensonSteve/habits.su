@@ -67,10 +67,10 @@
                 </div>
                 <div class="space-y-2">
                     {% for recordSum in recordSums %}  
-                        <div class="flex justify-between rounded-xl border border-line bg-white px-3 py-2.5">
-                            <a class="text-sm font-medium text-slate-700" href="{{ path('activity_view', {'id': recordSum.id}) }}"><b>{{ recordSum.name }}</b></a>
-                            <dd class="font-semibold text-brand"><b>{{ recordSum.sum + 0}} {{ recordSum.unit == 1 ? 'раз' : (recordSum.unit == 2 ? 'км' : (recordSum.unit == 3 ? 'мин' : 'стр')) }}</b></dd>
-                        </div>
+                        <a href="{{ path('activity_view', {'id': recordSum.id}) }}" class="flex justify-between rounded-xl border border-line bg-white px-3 py-2.5 transition-colors hover:bg-slate-50">
+                <span class="text-sm font-medium text-slate-700"><b>{{ recordSum.name }}</b></span>
+                <span class="font-semibold text-brand"><b>{{ recordSum.sum + 0}} {{ recordSum.unit == 1 ? 'раз' : (recordSum.unit == 2 ? 'км' : (recordSum.unit == 3 ? 'мин' : 'стр')) }}</b></span>
+            </a>
                     {% endfor %}
                 </div>
             </div>

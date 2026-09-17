@@ -16,12 +16,12 @@ final class DashboardController extends AbstractController
         private readonly DashboardService $dashboardService,
     ) {}
 
-    #[Route('', name: 'dashboard_index')]
+    #[Route('', name: 'dashboard_index', methods:['GET'])]
     public function index(): Response
     {
         $user = $this->getUser();
 
-        $categories = $this->dashboardService->getCategories();
+        $categories = $this->dashboardService->getCategories($user);
 
         return $this->render('dashboard/index.html.twig', [
             'categories' => $categories,

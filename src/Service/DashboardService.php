@@ -5,7 +5,7 @@ namespace App\Service;
 use App\Repository\ActivityRepository;
 use App\Repository\CategoryRepository;
 use App\Repository\RecordRepository;
-use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 final class DashboardService
 {
@@ -13,26 +13,18 @@ final class DashboardService
         private readonly CategoryRepository $categoryRepository,
         private readonly ActivityRepository $activityRepository,
         private readonly RecordRepository $recordRepository,
-        private readonly Security $security,
     ) {}
 
-    public function getCategories(): array
+    public function getCategories(UserInterface $user): array
     {
-        $user = $this->security->getUser();
-
         $categories = $this->categoryRepository->getUserCategoriesSortedByLastRecord($user->getId());
-
-        $activityCount = $this->recordRepository->getRecordSumFromToday();
+        $activityCount = $this->recordRepository->getRecordSumFromToday($user->getId());
 
         foreach ($categories as $index => $category) {
-            $activities = $this->activityRepository->getLatestReportedActivitiesByCategoryId($category['id']);
+            $activities = $this->activityRepository->getActivityGoalsByCategoryId($category['id']);
 
-            if (!isset($categories[$index]['goals'])) {
-                $categories[$index]['goals'] = 0;
-            }
-            if (!isset($categories[$index]['goalsCompleted'])) {
-                $categories[$index]['goalsCompleted'] = 0;
-            }
+            $categories[$index]['goals'] = 0;
+            $categories[$index]['goalsCompleted'] = 0;
 
             foreach ($activities as $activity) {
                 if ($activity['goal'] > 0) {

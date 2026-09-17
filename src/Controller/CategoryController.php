@@ -64,8 +64,10 @@ final class CategoryController extends AbstractController
     #[IsGranted(CategoryVoter::MANAGE, subject: 'id')]
     public function view(int $id, StrikeService $strikeService): Response 
     {
+        $user = $this->getUser();
+
         $category = $this->categoryRepository->getCategoryById($id);
-        $activityCount = $this->recordRepository->getRecordSumFromToday();
+        $activityCount = $this->recordRepository->getRecordSumFromToday($user->getId());
         $activities = $this->activityRepository->getLatestReportedActivitiesByCategoryId($category['id']);
         $strikes = $strikeService->getStrikes($category['id']);
 
