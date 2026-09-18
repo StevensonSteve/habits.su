@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Security;
 
 use Doctrine\DBAL\Connection;
@@ -13,7 +15,7 @@ class RecordVoter extends Voter
     public const MANAGE = 'RECORD_MANAGE';
 
     public function __construct(
-        private Connection $connection
+        private Connection $connection,
     ) {}
 
     protected function supports(string $attribute, mixed $subject): bool
@@ -25,7 +27,7 @@ class RecordVoter extends Voter
     {
         /** @var $user User */
         $user = $token->getUser();
-        if (!$user instanceof UserInterface) {
+        if (! $user instanceof UserInterface) {
             return false;
         }
 
@@ -37,14 +39,15 @@ class RecordVoter extends Voter
                     INNER JOIN records AS r ON a.id = r.activity_id
                     WHERE r.id = :id'
         ;
-        $userId = $this->connection->executeQuery($sql, ['id' => $recordId])->fetchOne();
+        $userId = $this->connection->executeQuery($sql, [
+            'id' => $recordId,
+        ])->fetchOne();
 
 
-        if (!$userId) {
+        if (! $userId) {
             return false;
         }
 
         return (int) $userId === $user->getId();
     }
 }
-

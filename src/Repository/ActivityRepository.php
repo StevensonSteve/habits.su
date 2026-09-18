@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Activity;
@@ -16,8 +18,8 @@ class ActivityRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Activity::class);
     }
-    
-    public function getActivityById(int $id): array|false 
+
+    public function getActivityById(int $id): array|false
     {
         $sql = 'SELECT * FROM activities WHERE id = :id';
 
@@ -52,7 +54,7 @@ class ActivityRepository extends ServiceEntityRepository
         ])->fetchAllAssociative();
     }
 
-    public function getAmountSums(int $userId, DateTimeImmutable $dateFrom, DateTimeImmutable $dateTo): array|false 
+    public function getAmountSums(int $userId, DateTimeImmutable $dateFrom, DateTimeImmutable $dateTo): array|false
     {
         $sql = 'SELECT a.name, a.unit, a.id, SUM(r.amount) AS sum 
                 FROM activities AS a
@@ -65,7 +67,7 @@ class ActivityRepository extends ServiceEntityRepository
         return $this->getEntityManager()->getConnection()->executeQuery($sql, [
             'userId' => $userId,
             'dateFrom' => $dateFrom->format('Y-m-d 00:00:00'),
-            'dateTo' => $dateTo->format('Y-m-d 23:59:59')
+            'dateTo' => $dateTo->format('Y-m-d 23:59:59'),
         ])->fetchAllAssociative();
     }
 

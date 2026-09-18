@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\RecordRepository;
@@ -19,7 +21,7 @@ class Record
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     private string $amount;
-    
+
     #[ORM\Column(name: 'activity_id', type: Types::INTEGER)]
     private int $activityId;
 

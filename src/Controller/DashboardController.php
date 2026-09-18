@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Service\DashboardService;
@@ -9,14 +11,14 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('')]
-#[IsGranted('IS_AUTHENTICATED')] 
+#[IsGranted('IS_AUTHENTICATED')]
 final class DashboardController extends AbstractController
 {
     public function __construct(
         private readonly DashboardService $dashboardService,
     ) {}
 
-    #[Route('', name: 'dashboard_index', methods:['GET'])]
+    #[Route('', name: 'dashboard_index', methods: ['GET'])]
     public function index(): Response
     {
         $user = $this->getUser();

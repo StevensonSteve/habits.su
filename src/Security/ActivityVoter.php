@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Security;
 
 use Doctrine\DBAL\Connection;
@@ -13,7 +15,7 @@ class ActivityVoter extends Voter
     public const MANAGE = 'ACTIVITY_MANAGE';
 
     public function __construct(
-        private Connection $connection
+        private Connection $connection,
     ) {}
 
     protected function supports(string $attribute, mixed $subject): bool
@@ -25,7 +27,7 @@ class ActivityVoter extends Voter
     {
         /** @var $user User */
         $user = $token->getUser();
-        if (!$user instanceof UserInterface) {
+        if (! $user instanceof UserInterface) {
             return false;
         }
 
@@ -36,13 +38,14 @@ class ActivityVoter extends Voter
                     INNER JOIN categories AS c ON a.category_id = c.id
                     WHERE a.id = :id'
         ;
-        $userId = $this->connection->executeQuery($sql, ['id' => $activityId])->fetchOne();
+        $userId = $this->connection->executeQuery($sql, [
+            'id' => $activityId,
+        ])->fetchOne();
 
-        if (!$userId) {
+        if (! $userId) {
             return false;
         }
 
         return (int) $userId === $user->getId();
     }
 }
-

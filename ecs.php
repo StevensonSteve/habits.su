@@ -3,6 +3,9 @@
 declare(strict_types=1);
 
 use PhpCsFixer\Fixer\Import\NoUnusedImportsFixer;
+use PhpCsFixer\Fixer\Strict\DeclareStrictTypesFixer;
+use PhpCsFixer\Fixer\Strict\StrictComparisonFixer;
+use PhpCsFixer\Fixer\Strict\StrictParamFixer;
 use Symplify\EasyCodingStandard\Config\ECSConfig;
 
 return ECSConfig::configure()
@@ -18,6 +21,9 @@ return ECSConfig::configure()
     // add a single rule
     ->withRules([
         NoUnusedImportsFixer::class,
+        DeclareStrictTypesFixer::class,
+        StrictComparisonFixer::class,
+        StrictParamFixer::class,
     ])
     ->withPreparedSets(
         psr12: true,

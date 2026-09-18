@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\ActivityRepository;
@@ -19,16 +21,17 @@ class Activity
 
     #[ORM\Column(length: 255)]
     private string $name;
-    
+
     #[ORM\Column(name: 'category_id', type: Types::INTEGER)]
     private int $categoryId;
 
     #[ORM\Column(type: Types::INTEGER)]
     private int $unit;
 
-    #[ORM\Column(type: Types::INTEGER, options: ['default' => 0])]
+    #[ORM\Column(type: Types::INTEGER, options: [
+        'default' => 0,
+    ])]
     private int $goal = 0;
-
 
     #[ORM\Column(name: 'created_at', type: Types::DATETIME_IMMUTABLE)]
     private DateTimeImmutable $createdAt;

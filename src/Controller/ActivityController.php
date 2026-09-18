@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Repository\ActivityRepository;
@@ -24,14 +26,18 @@ final class ActivityController extends AbstractController
     ) {}
 
     private const FILTER_PERIOD_TODAY = 'today';
+
     private const FILTER_PERIOD_YESTERDAY = 'yesterday';
+
     private const FILTER_PERIOD_WEEK = 'week';
+
     private const FILTER_PERIOD_MONTH = 'month';
+
     private const FILTER_PERIOD_ALL_TIME = 'all-time';
 
     #[Route('/{id}', name: 'activity_view')]
     #[IsGranted(ActivityVoter::MANAGE, subject: 'id')]
-    public function view(int $id, Request $request, EntityManagerInterface $entityManager): Response 
+    public function view(int $id, Request $request, EntityManagerInterface $entityManager): Response
     {
         $filter = $request->request->get('filter', self::FILTER_PERIOD_TODAY);
 
@@ -106,23 +112,25 @@ final class ActivityController extends AbstractController
 
     #[Route('/delete/{id}', name: 'activity_delete')]
     #[IsGranted(ActivityVoter::MANAGE, subject: 'id')]
-    public function delete(int $id, EntityManagerInterface $entityManager): Response 
+    public function delete(int $id, EntityManagerInterface $entityManager): Response
     {
         $activity = $this->activityRepository->getActivityById($id);
 
         $sql = 'DELETE FROM activities WHERE id = :id';
         $entityManager->getConnection()->executeQuery($sql, [
-            'id' => $id
+            'id' => $id,
         ]);
 
-        return $this->redirectToRoute('category_view', ['id' => $activity['category_id']]);
+        return $this->redirectToRoute('category_view', [
+            'id' => $activity['category_id'],
+        ]);
     }
 
     #[Route('/new/category/{id}', name: 'activity_new')]
     #[IsGranted(CategoryVoter::MANAGE, subject: 'id')]
-    public function new(int $id, Request $request, EntityManagerInterface $entityManager): Response 
+    public function new(int $id, Request $request, EntityManagerInterface $entityManager): Response
     {
-        if ($request->getMethod() == 'POST') {
+        if ($request->getMethod() === 'POST') {
             $name = $request->request->get('name');
             $unit = $request->request->get('unit');
             $goal = $request->request->get('goal', 0);
@@ -130,7 +138,7 @@ final class ActivityController extends AbstractController
             $sql = "INSERT INTO activities (name, category_id, unit, goal, created_at, updated_at)
                 VALUES (:name, :categoryId, :unit, :goal, :createdAt, :updatedAt)";
 
-            $entityManager->getConnection()->executeQuery($sql , [
+            $entityManager->getConnection()->executeQuery($sql, [
                 'name' => $name,
                 'categoryId' => $id,
                 'unit' => $unit,
@@ -139,9 +147,11 @@ final class ActivityController extends AbstractController
                 'updatedAt' => new DateTimeImmutable()->format("Y-m-d H:i:s"),
             ]);
 
-            return $this->redirectToRoute('category_view', ['id' => $id]);
+            return $this->redirectToRoute('category_view', [
+                'id' => $id,
+            ]);
         }
-    
+
         $category = $this->categoryRepository->getCategoryById($id);
 
         return $this->render('activity/new.html.twig', [
@@ -151,17 +161,17 @@ final class ActivityController extends AbstractController
 
     #[Route('/update/{id}', name: 'activity_update')]
     #[IsGranted(ActivityVoter::MANAGE, subject: 'id')]
-    public function update(int $id, Request $request, EntityManagerInterface $entityManager): Response 
+    public function update(int $id, Request $request, EntityManagerInterface $entityManager): Response
     {
         $activity = $this->activityRepository->getActivityById($id);
 
-        if ($request->getMethod() == 'POST') {
+        if ($request->getMethod() === 'POST') {
             $name = $request->request->get('name');
             $unit = $request->request->get('unit');
             $goal = $request->request->get('goal');
 
             $sql = "UPDATE activities SET name = :name, unit = :unit, goal = :goal, updated_at = :updatedAt WHERE id = :id";
-            $entityManager->getConnection()->executeQuery($sql , [
+            $entityManager->getConnection()->executeQuery($sql, [
                 'id' => $id,
                 'name' => $name,
                 'unit' => $unit,
@@ -169,9 +179,11 @@ final class ActivityController extends AbstractController
                 'updatedAt' => new DateTimeImmutable()->format("Y-m-d H:i:s"),
             ]);
 
-            return $this->redirectToRoute('category_view', ['id' => $activity['category_id']]);
+            return $this->redirectToRoute('category_view', [
+                'id' => $activity['category_id'],
+            ]);
         }
-    
+
         $category = $this->categoryRepository->getCategoryById($activity['category_id']);
 
         return $this->render('activity/update.html.twig', [
@@ -180,4 +192,3 @@ final class ActivityController extends AbstractController
         ]);
     }
 }
-

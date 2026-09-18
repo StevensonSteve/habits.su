@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service;
 
 use DateTimeImmutable;
@@ -15,8 +17,8 @@ final class RecordService
     {
         $sql = "INSERT INTO records (amount, activity_id, created_at, updated_at) 
                 VALUES (:amount, :activityId, :createdAt, :updatedAt)";
-    
-        $this->entityManager->getConnection()->executeQuery($sql , [
+
+        $this->entityManager->getConnection()->executeQuery($sql, [
             'amount' => $amount,
             'activityId' => $id,
             'createdAt' => $createdAt,
@@ -28,7 +30,7 @@ final class RecordService
     {
         $sql = 'DELETE FROM records WHERE id = :id';
         $this->entityManager->getConnection()->executeQuery($sql, [
-            'id' => $id
+            'id' => $id,
         ]);
     }
 }

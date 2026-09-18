@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Record;
@@ -51,7 +53,7 @@ class RecordRepository extends ServiceEntityRepository
                 AND r.created_at < :dateTo
             GROUP BY r.activity_id;
         ';
-        
+
         return $this->getEntityManager()->getConnection()->executeQuery($sql, [
             'userId' => $userId,
             'dateFrom' => $today->format('Y-m-d 00:00:00'),
@@ -69,7 +71,7 @@ class RecordRepository extends ServiceEntityRepository
 
     public function getActivityAndAmountSum(int $userId, DateTimeImmutable $dateFrom, DateTimeImmutable $dateTo): array
     {
-        $sql ='SELECT CAST(r.created_at AS DATE) AS date_group, r.activity_id, SUM(r.amount) AS sum, a.name, a.unit 
+        $sql = 'SELECT CAST(r.created_at AS DATE) AS date_group, r.activity_id, SUM(r.amount) AS sum, a.name, a.unit 
                     FROM records AS r
                     INNER JOIN activities AS a ON a.id = r.activity_id
                     INNER JOIN categories AS c ON c.id = a.category_id
@@ -77,10 +79,10 @@ class RecordRepository extends ServiceEntityRepository
                     GROUP BY date_group, r.activity_id, a.name, a.unit
                     ORDER BY date_group DESC';
 
-            return $this->getEntityManager()->getConnection()->executeQuery($sql, [
-                'userId' => $userId,
-                'dateFrom' => $dateFrom->format('Y-m-d 00:00:00'),
-                'dateTo' => $dateTo->format('Y-m-d 23:59:59'),
-            ])->fetchAllAssociative();
+        return $this->getEntityManager()->getConnection()->executeQuery($sql, [
+            'userId' => $userId,
+            'dateFrom' => $dateFrom->format('Y-m-d 00:00:00'),
+            'dateTo' => $dateTo->format('Y-m-d 23:59:59'),
+        ])->fetchAllAssociative();
     }
 }

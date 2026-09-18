@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Repository\ActivityRepository;
@@ -12,13 +14,17 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('activity-log')]
-#[IsGranted('IS_AUTHENTICATED')] 
+#[IsGranted('IS_AUTHENTICATED')]
 final class ActivityLogController extends AbstractController
 {
     private const FILTER_PERIOD_TODAY = 'today';
+
     private const FILTER_PERIOD_YESTERDAY = 'yesterday';
+
     private const FILTER_PERIOD_WEEK = 'week';
+
     private const FILTER_PERIOD_MONTH = 'month';
+
     private const FILTER_PERIOD_ALL_TIME = 'all-time';
 
     public function __construct(
@@ -57,16 +63,16 @@ final class ActivityLogController extends AbstractController
         $recordSums = $this->activityRepository->getAmountSums(
             $user->getId(),
             $dateFrom,
-            $dateTo
+            $dateTo,
         );
 
         $records = [];
 
-        if (!in_array($filter, [self::FILTER_PERIOD_TODAY, self::FILTER_PERIOD_YESTERDAY])) {
+        if (! in_array($filter, [self::FILTER_PERIOD_TODAY, self::FILTER_PERIOD_YESTERDAY], true)) {
             $records = $this->recordRepository
-            ->getActivityAndAmountSum($user->getId(), $dateFrom, $dateTo);
+                ->getActivityAndAmountSum($user->getId(), $dateFrom, $dateTo);
         }
-        
+
         return $this->render('activity-log/index.html.twig', [
             'activity' => $activity,
             'recordSums' => $recordSums,

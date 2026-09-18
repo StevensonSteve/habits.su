@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service;
 
 use DateTimeImmutable;
@@ -10,13 +12,13 @@ final class StrikeService
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly Security $security
+        private readonly Security $security,
     ) {}
 
     public function getStrikes(int $categoryId): array
     {
         $strikes = [];
-        
+
         $user = $this->security->getUser();
 
         $today = new DateTimeImmutable('yesterday');
@@ -44,7 +46,7 @@ final class StrikeService
         $previosData = $yesterday->format('Y-m-d');
 
         foreach ($rawData as $index => $date) {
-            if ($previosData == $date['date_group']) {
+            if ($previosData === $date['date_group']) {
                 $strikes[$date['activity_id']] = 1;
                 unset($rawData[$index]);
             }
@@ -53,7 +55,7 @@ final class StrikeService
         foreach ($strikes as $activityId => $count) {
             $previosData = $yesterday->modify('-1 day')->format('Y-m-d');
             foreach ($rawData as $index => $date) {
-                if ($activityId == $date['activity_id'] && $previosData == $date['date_group']) {
+                if ($activityId === $date['activity_id'] && $previosData === $date['date_group']) {
                     $strikes[$date['activity_id']] += 1;
                     unset($rawData[$index]);
                     $previosData = $yesterday->modify('-' . $strikes[$date['activity_id']] . ' day')->format('Y-m-d');

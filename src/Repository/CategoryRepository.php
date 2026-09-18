@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Category;
@@ -16,7 +18,7 @@ class CategoryRepository extends ServiceEntityRepository
         parent::__construct($registry, Category::class);
     }
 
-    public function getCategoryById(int $id): array|false 
+    public function getCategoryById(int $id): array|false
     {
         $sql = 'SELECT * FROM categories WHERE id = :id';
 

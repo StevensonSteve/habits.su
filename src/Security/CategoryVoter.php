@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Security;
 
 use Doctrine\DBAL\Connection;
@@ -13,7 +15,7 @@ class CategoryVoter extends Voter
     public const MANAGE = 'CATEGORY_MANAGE';
 
     public function __construct(
-        private Connection $connection
+        private Connection $connection,
     ) {}
 
     protected function supports(string $attribute, mixed $subject): bool
@@ -25,20 +27,21 @@ class CategoryVoter extends Voter
     {
         /** @var $user User */
         $user = $token->getUser();
-        if (!$user instanceof UserInterface) {
+        if (! $user instanceof UserInterface) {
             return false;
         }
 
         $categoryId = (int) $subject;
 
         $sql = 'SELECT user_id FROM categories WHERE id = :id';
-        $userId = $this->connection->executeQuery($sql, ['id' => $categoryId])->fetchOne();
+        $userId = $this->connection->executeQuery($sql, [
+            'id' => $categoryId,
+        ])->fetchOne();
 
-        if (!$userId) {
+        if (! $userId) {
             return false;
         }
 
         return (int) $userId === $user->getId();
     }
 }
-
