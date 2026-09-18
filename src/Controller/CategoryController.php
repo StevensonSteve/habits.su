@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Repository\ActivityRepository;
 use App\Repository\CategoryRepository;
-use App\Repository\RecordRepository;
 use App\Security\CategoryVoter;
+use App\Service\ActivityService;
 use App\Service\CategoryService;
-use App\Service\StrikeService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,11 +21,10 @@ final class CategoryController extends AbstractController
     public function __construct(
         private readonly CategoryService $categoryService,
         private readonly CategoryRepository $categoryRepository,
-        private readonly RecordRepository $recordRepository,
-        private readonly ActivityRepository $activityRepository,
+        private readonly ActivityService $activityService,
     ) {}
 
-    #[Route('/new', name: 'category_new')]
+    #[Route('/new', name: 'category_new', methods: ['GET', 'POST'])]
     public function new(Request $request): Response
     {
         if ($request->getMethod() === 'POST') {
@@ -43,7 +40,7 @@ final class CategoryController extends AbstractController
         ]);
     }
 
-    #[Route('/update/{id}', name: 'category_update')]
+    #[Route('/update/{id}', name: 'category_update', methods: ['GET', 'POST'])]
     #[IsGranted(CategoryVoter::MANAGE, subject: 'id')]
     public function update(int $id, Request $request): Response
     {
@@ -64,24 +61,13 @@ final class CategoryController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'category_view')]
+    #[Route('/{id}', name: 'category_view', methods: ['GET'])]
     #[IsGranted(CategoryVoter::MANAGE, subject: 'id')]
-    public function view(int $id, StrikeService $strikeService): Response
+    public function view(int $id): Response
     {
         $user = $this->getUser();
-
         $category = $this->categoryRepository->getCategoryById($id);
-        $activityCount = $this->recordRepository->getRecordSumFromToday($user->getId());
-        $activities = $this->activityRepository->getLatestReportedActivitiesByCategoryId($category['id']);
-        $strikes = $strikeService->getStrikes($category['id']);
-
-        foreach ($activities as $index => $activity) {
-            $popularRecords = $this->recordRepository->getPopularRecordsByActivityId($activity['id'], 4);
-
-            $activities[$index]['strike'] = $strikes[$activity['id']] ?? 0;
-            $activities[$index]['count'] = $activityCount[$activity['id']] ?? 0;
-            $activities[$index]['popularRecords'] = $popularRecords;
-        }
+        $activities = $this->activityService->getActivitiesWithStats($category['id'], $user);
 
         return $this->render('category/view.html.twig', [
             'category' => $category,
@@ -89,7 +75,7 @@ final class CategoryController extends AbstractController
         ]);
     }
 
-    #[Route('/delete/{id}', name: 'category_delete')]
+    #[Route('/delete/{id}', name: 'category_delete', methods: ['GET'])]
     #[IsGranted(CategoryVoter::MANAGE, subject: 'id')]
     public function delete(int $id): Response
     {
