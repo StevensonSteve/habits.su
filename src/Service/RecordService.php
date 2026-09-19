@@ -4,12 +4,27 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Repository\ActivityRepository;
+use App\Repository\RecordRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 final class RecordService
 {
+    public const FILTER_PERIOD_TODAY = 'today';
+
+    private const FILTER_PERIOD_YESTERDAY = 'yesterday';
+
+    private const FILTER_PERIOD_WEEK = 'week';
+
+    private const FILTER_PERIOD_MONTH = 'month';
+
+    private const FILTER_PERIOD_ALL_TIME = 'all-time';
+
     public function __construct(
+        private readonly ActivityRepository $activityRepository,
+        private readonly RecordRepository $recordRepository,
         private readonly EntityManagerInterface $entityManager,
     ) {}
 
@@ -32,5 +47,56 @@ final class RecordService
         $this->entityManager->getConnection()->executeQuery($sql, [
             'id' => $id,
         ]);
+    }
+
+    public function getRecords(UserInterface $user, string $filter): array
+    {
+        $records = [];
+
+        if (! in_array($filter, [self::FILTER_PERIOD_TODAY, self::FILTER_PERIOD_YESTERDAY], true)) {
+            $records = $this->recordRepository
+                ->getActivityAndAmountSum(
+                    $user->getId(), 
+                    $this->getDateFrom($filter), 
+                    $this->getDateTo($filter)
+                );
+        }
+
+        return $records;
+    }
+
+    public function getRecordsSum(UserInterface $user, string $filter): array
+    {
+        return $this->activityRepository->getAmountSums(
+            $user->getId(), 
+            $this->getDateFrom($filter), 
+            $this->getDateTo($filter)
+        );
+    }
+
+    public function getDateFrom(string $filter): DateTimeImmutable
+    {
+        $now = new DateTimeImmutable();
+        return match ($filter) {
+            self::FILTER_PERIOD_TODAY   => $now,
+            self::FILTER_PERIOD_YESTERDAY   => $now->modify('-1 days'),
+            self::FILTER_PERIOD_WEEK   => $now->modify('-6 days'),
+            self::FILTER_PERIOD_MONTH  => $now->modify('-1 month'),
+            self::FILTER_PERIOD_ALL_TIME    => null,
+            default  => $now,
+        };
+    }
+
+    public function getDateTo(string $filter): DateTimeImmutable
+    {
+        $now = new DateTimeImmutable();
+        return match ($filter) {
+            self::FILTER_PERIOD_TODAY   => $now,
+            self::FILTER_PERIOD_YESTERDAY   => $now->modify('-1 days'),
+            self::FILTER_PERIOD_WEEK   => $now,
+            self::FILTER_PERIOD_MONTH  => $now,
+            self::FILTER_PERIOD_ALL_TIME    => null,
+            default  => $now,
+        };
     }
 }

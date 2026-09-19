@@ -85,4 +85,47 @@ class RecordRepository extends ServiceEntityRepository
             'dateTo' => $dateTo->format('Y-m-d 23:59:59'),
         ])->fetchAllAssociative();
     }
+
+    public function getRecordsByActivityId(int $activityId, DateTimeImmutable $dateFrom, DateTimeImmutable $dateTo)
+    {
+        $sql = 'SELECT *
+            FROM records
+            WHERE activity_id = :activityId 
+                AND created_at >= :dateFrom 
+                AND created_at <= :dateTo
+            ORDER BY created_at DESC';
+
+        return $this->getEntityManager()->getConnection()->executeQuery($sql, [
+            'activityId' => $activityId,
+            'dateFrom' => $dateFrom->format('Y-m-d 00:00:00'),
+            'dateTo' => $dateTo->format('Y-m-d 23:59:59'),
+        ])->fetchAllAssociative();
+    }
+
+    public function getActivityCountFromRecords(int $activityId, DateTimeImmutable $dateFrom, DateTimeImmutable $dateTo)
+    {
+        $sql = 'SELECT COUNT(*) AS count
+            FROM records 
+            WHERE activity_id = :activityId 
+                AND created_at >= :dateFrom;';
+
+        return $this->getEntityManager()->getConnection()->executeQuery($sql, [
+            'activityId' => $activityId,
+            'dateFrom' => $dateFrom->format('Y-m-d 00:00:00'),
+            'dateTo' => $dateTo->format('Y-m-d 23:59:59'),
+        ])->fetchAssociative();
+    }
+
+    public function getActivitySumFromFecords(int $activityId, DateTimeImmutable $dateFrom, DateTimeImmutable $dateTo)
+    {
+        $sql = 'SELECT SUM(amount) AS sum
+            FROM records 
+            WHERE activity_id = :activityId AND created_at >= :dateFrom AND created_at <= :dateTo;
+        ';
+        return $this->getEntityManager()->getConnection()->executeQuery($sql, [
+            'activityId' => $activityId,
+            'dateFrom' => $dateFrom->format('Y-m-d 00:00:00'),
+            'dateTo' => $dateTo->format('Y-m-d 23:59:59'),
+        ])->fetchAssociative();
+    }
 }

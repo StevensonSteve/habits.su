@@ -33,7 +33,10 @@ final class DashboardService
                     $categories[$index]['goals']++;
                 }
                 if (isset($activityCount[$activity['id']])) {
-                    if ($activityCount[$activity['id']] >= $activity['goal']) {
+                    if (
+                        $activityCount[$activity['id']] >= $activity['goal']
+                        && $activity['goal'] > 0
+                    ) {
                         $categories[$index]['goalsCompleted']++;
                     }
                 }

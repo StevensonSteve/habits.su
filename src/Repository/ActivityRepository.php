@@ -71,7 +71,7 @@ class ActivityRepository extends ServiceEntityRepository
         ])->fetchAllAssociative();
     }
 
-    public function getActivityByUserId(int $userId)
+    public function getActivitiesByUserId(int $userId)
     {
         $sql = 'SELECT *
             FROM activities AS a
@@ -81,6 +81,18 @@ class ActivityRepository extends ServiceEntityRepository
 
         return $this->getEntityManager()->getConnection()->executeQuery($sql, [
             'userId' => $userId,
+        ])->fetchAllAssociative();
+    }
+
+    public function getActivitiesByCategoryId(int $categoryId)
+    {
+        $sql = 'SELECT *
+            FROM activities AS a
+            WHERE a.category_id = :categoryId
+            ORDER BY a.name ASC';
+
+        return $this->getEntityManager()->getConnection()->executeQuery($sql, [
+            'categoryId' => $categoryId,
         ])->fetchAllAssociative();
     }
 }

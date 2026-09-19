@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Enum\ActivityUnit;
 use App\Repository\ActivityRepository;
 use App\Repository\CategoryRepository;
+use App\Repository\RecordRepository;
 use App\Security\ActivityVoter;
 use App\Security\CategoryVoter;
-use DateTimeImmutable;
+use App\Service\ActivityService;
+use App\Service\RecordService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,82 +26,24 @@ final class ActivityController extends AbstractController
     public function __construct(
         private readonly CategoryRepository $categoryRepository,
         private readonly ActivityRepository $activityRepository,
+        private readonly ActivityService $activityService,
+        private readonly RecordRepository $recordRepository,
+        private readonly RecordService $recordService,
     ) {}
-
-    private const FILTER_PERIOD_TODAY = 'today';
-
-    private const FILTER_PERIOD_YESTERDAY = 'yesterday';
-
-    private const FILTER_PERIOD_WEEK = 'week';
-
-    private const FILTER_PERIOD_MONTH = 'month';
-
-    private const FILTER_PERIOD_ALL_TIME = 'all-time';
 
     #[Route('/{id}', name: 'activity_view')]
     #[IsGranted(ActivityVoter::MANAGE, subject: 'id')]
     public function view(int $id, Request $request, EntityManagerInterface $entityManager): Response
     {
-        $filter = $request->request->get('filter', self::FILTER_PERIOD_TODAY);
+        $filter = $request->request->get('filter', RecordService::FILTER_PERIOD_TODAY);
 
         $activity = $this->activityRepository->getActivityById($id);
-
-        $now = new DateTimeImmutable();
-        $dateFrom = match ($filter) {
-            self::FILTER_PERIOD_TODAY   => $now,
-            self::FILTER_PERIOD_YESTERDAY   => $now->modify('-1 days'),
-            self::FILTER_PERIOD_WEEK   => $now->modify('-6 days'),
-            self::FILTER_PERIOD_MONTH  => $now->modify('-1 month'),
-            self::FILTER_PERIOD_ALL_TIME    => null,
-            default  => $now,
-        };
-
-        $dateTo = match ($filter) {
-            self::FILTER_PERIOD_TODAY   => $now,
-            self::FILTER_PERIOD_YESTERDAY   => $now->modify('-1 days'),
-            self::FILTER_PERIOD_WEEK   => $now,
-            self::FILTER_PERIOD_MONTH  => $now,
-            self::FILTER_PERIOD_ALL_TIME    => null,
-            default  => $now,
-        };
-
-        $sql = 'SELECT *
-            FROM records
-            WHERE activity_id = :activityId 
-                AND created_at >= :dateFrom 
-                AND created_at <= :dateTo
-            ORDER BY created_at DESC';
-
-        $records = $entityManager->getConnection()->executeQuery($sql, [
-            'activityId' => $activity['id'],
-            'dateFrom' => $dateFrom->format('Y-m-d 00:00:00'),
-            'dateTo' => $dateTo->format('Y-m-d 23:59:59'),
-        ])->fetchAllAssociative();
-
-        $sql = 'SELECT COUNT(*) AS count
-            FROM records 
-            WHERE activity_id = :activityId 
-                AND created_at >= :dateFrom;';
-
-        $activityCount = $entityManager->getConnection()->executeQuery($sql, [
-            'activityId' => $id,
-            'dateFrom' => $dateFrom->format('Y-m-d 00:00:00'),
-            'dateTo' => $dateTo->format('Y-m-d 23:59:59'),
-        ])->fetchAssociative();
-
-        $sql = 'SELECT SUM(amount) AS sum
-            FROM records 
-            WHERE activity_id = :activityId AND created_at >= :dateFrom AND created_at <= :dateTo;
-        ';
-        $activitySum = $entityManager->getConnection()->executeQuery($sql, [
-            'activityId' => $id,
-            'dateFrom' => $dateFrom->format('Y-m-d 00:00:00'),
-            'dateTo' => $dateTo->format('Y-m-d 23:59:59'),
-        ])->fetchAssociative();
-
+        $dateFrom = $this->recordService->getDateFrom($filter);
+        $dateTo = $this->recordService->getDateTo($filter);
+        $records = $this->recordRepository->getRecordsByActivityId($activity['id'], $dateFrom, $dateTo);
+        $activityCount = $this->recordRepository->getActivityCountFromRecords($id, $dateFrom, $dateTo);
+        $activitySum = $this->recordRepository->getActivitySumFromFecords($id, $dateFrom, $dateTo);
         $category = $this->categoryRepository->getCategoryById($activity['category_id']);
-
-
 
         return $this->render('activity/view.html.twig', [
             'activity' => $activity,
@@ -112,14 +57,11 @@ final class ActivityController extends AbstractController
 
     #[Route('/delete/{id}', name: 'activity_delete')]
     #[IsGranted(ActivityVoter::MANAGE, subject: 'id')]
-    public function delete(int $id, EntityManagerInterface $entityManager): Response
+    public function delete(int $id): Response
     {
         $activity = $this->activityRepository->getActivityById($id);
 
-        $sql = 'DELETE FROM activities WHERE id = :id';
-        $entityManager->getConnection()->executeQuery($sql, [
-            'id' => $id,
-        ]);
+        $this->activityService->delete($id);
 
         return $this->redirectToRoute('category_view', [
             'id' => $activity['category_id'],
@@ -128,24 +70,15 @@ final class ActivityController extends AbstractController
 
     #[Route('/new/category/{id}', name: 'activity_new')]
     #[IsGranted(CategoryVoter::MANAGE, subject: 'id')]
-    public function new(int $id, Request $request, EntityManagerInterface $entityManager): Response
+    public function new(int $id, Request $request): Response
     {
         if ($request->getMethod() === 'POST') {
             $name = $request->request->get('name');
-            $unit = $request->request->get('unit');
-            $goal = $request->request->get('goal', 0);
+            $unit = (int) $request->request->get('unit');
+            $goal = (int) $request->request->get('goal');
 
-            $sql = "INSERT INTO activities (name, category_id, unit, goal, created_at, updated_at)
-                VALUES (:name, :categoryId, :unit, :goal, :createdAt, :updatedAt)";
-
-            $entityManager->getConnection()->executeQuery($sql, [
-                'name' => $name,
-                'categoryId' => $id,
-                'unit' => $unit,
-                'goal' => $goal,
-                'createdAt' => new DateTimeImmutable()->format("Y-m-d H:i:s"),
-                'updatedAt' => new DateTimeImmutable()->format("Y-m-d H:i:s"),
-            ]);
+            $unit = ActivityUnit::from($unit);
+            $this->activityService->create($name, $id, $unit, $goal);
 
             return $this->redirectToRoute('category_view', [
                 'id' => $id,
@@ -161,23 +94,17 @@ final class ActivityController extends AbstractController
 
     #[Route('/update/{id}', name: 'activity_update')]
     #[IsGranted(ActivityVoter::MANAGE, subject: 'id')]
-    public function update(int $id, Request $request, EntityManagerInterface $entityManager): Response
+    public function update(int $id, Request $request): Response
     {
         $activity = $this->activityRepository->getActivityById($id);
 
         if ($request->getMethod() === 'POST') {
             $name = $request->request->get('name');
-            $unit = $request->request->get('unit');
-            $goal = $request->request->get('goal');
+            $unit = (int) $request->request->get('unit');
+            $goal = (int) $request->request->get('goal');
 
-            $sql = "UPDATE activities SET name = :name, unit = :unit, goal = :goal, updated_at = :updatedAt WHERE id = :id";
-            $entityManager->getConnection()->executeQuery($sql, [
-                'id' => $id,
-                'name' => $name,
-                'unit' => $unit,
-                'goal' => $goal,
-                'updatedAt' => new DateTimeImmutable()->format("Y-m-d H:i:s"),
-            ]);
+            $unit = ActivityUnit::from($unit);
+            $this->activityService->update($name, $id, $unit, $goal);
 
             return $this->redirectToRoute('category_view', [
                 'id' => $activity['category_id'],
