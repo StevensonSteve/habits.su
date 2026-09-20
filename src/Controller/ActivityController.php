@@ -12,7 +12,6 @@ use App\Security\ActivityVoter;
 use App\Security\CategoryVoter;
 use App\Service\ActivityService;
 use App\Service\RecordService;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,13 +32,14 @@ final class ActivityController extends AbstractController
 
     #[Route('/{id}', name: 'activity_view')]
     #[IsGranted(ActivityVoter::MANAGE, subject: 'id')]
-    public function view(int $id, Request $request, EntityManagerInterface $entityManager): Response
+    public function view(int $id, Request $request): Response
     {
         $filter = $request->request->get('filter', RecordService::FILTER_PERIOD_TODAY);
 
         $activity = $this->activityRepository->getActivityById($id);
-        $dateFrom = $this->recordService->getDateFrom($filter);
-        $dateTo = $this->recordService->getDateTo($filter);
+        [$dateFrom, $dateTo] = $this->recordService->getDateRange($filter);
+        // $dateFrom = $this->recordService->getDateFrom($filter);
+        // $dateTo = $this->recordService->getDateTo($filter);
         $records = $this->recordRepository->getRecordsByActivityId($activity['id'], $dateFrom, $dateTo);
         $activityCount = $this->recordRepository->getActivityCountFromRecords($id, $dateFrom, $dateTo);
         $activitySum = $this->recordRepository->getActivitySumFromFecords($id, $dateFrom, $dateTo);
@@ -96,18 +96,23 @@ final class ActivityController extends AbstractController
     #[IsGranted(ActivityVoter::MANAGE, subject: 'id')]
     public function update(int $id, Request $request): Response
     {
+        $user = $this->getUser();
+
         $activity = $this->activityRepository->getActivityById($id);
+        $categories = $this->categoryRepository->getUserCategoriesSortedByLastRecord($user->getId());
+
 
         if ($request->getMethod() === 'POST') {
             $name = $request->request->get('name');
+            $categoryId = (int) $request->request->get('category_id');
             $unit = (int) $request->request->get('unit');
             $goal = (int) $request->request->get('goal');
 
             $unit = ActivityUnit::from($unit);
-            $this->activityService->update($name, $id, $unit, $goal);
+            $this->activityService->update($name, $id, $unit, $goal, $categoryId);
 
             return $this->redirectToRoute('category_view', [
-                'id' => $activity['category_id'],
+                'id' => $categoryId,
             ]);
         }
 
@@ -116,6 +121,7 @@ final class ActivityController extends AbstractController
         return $this->render('activity/update.html.twig', [
             'category' => $category,
             'activity' => $activity,
+            'categories' => $categories,
         ]);
     }
 }

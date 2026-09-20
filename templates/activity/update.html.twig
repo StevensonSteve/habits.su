@@ -32,6 +32,21 @@
         <option value="4" {{ activity.unit == 4 ? "selected" : '' }}>стр</option>
       </select>
       </div>
+      <div>
+        <label for="category_id" class="mb-1 block text-xs font-medium text-muted">изменить категорию</label>
+        <select name="category_id" id="category_id" required
+          class="w-full appearance-none rounded-xl border border-line bg-page pl-3 pr-10 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand transition-all">
+            
+          <option value="" disabled>Выберите категорию</option>
+          {% for category in categories %}
+              {% set is_selected = (category.id == activity.category_id) %}
+              <option value="{{ category.id }}" {{ is_selected ? 'selected' : '' }}>
+                  {{ category.name }}
+              </option>
+          {% endfor %}
+            
+        </select>
+      </div>
       
       <button type="submit" class="min-h-11 w-full rounded-xl bg-brand font-medium text-white hover:bg-brand-dark transition-colors shadow-md shadow-brand/10">
         сохранить изменения

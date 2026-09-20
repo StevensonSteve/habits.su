@@ -37,9 +37,10 @@ final class ActivityService
         ]);
     }
 
-    public function update(string $name, int $id, ActivityUnit $unit, int $goal): void{
+    public function update(string $name, int $id, ActivityUnit $unit, int $goal, int $categoryId): void
+    {
         $sql = "UPDATE activities 
-            SET name = :name, unit = :unit, goal = :goal, updated_at = :updatedAt 
+            SET name = :name, unit = :unit, goal = :goal, category_id = :categoryId, updated_at = :updatedAt
             WHERE id = :id";
 
         $this->entityManager->getConnection()->executeQuery($sql, [
@@ -47,6 +48,7 @@ final class ActivityService
             'name' => $name,
             'unit' => $unit->value,
             'goal' => $goal,
+            'categoryId' => $categoryId,
             'updatedAt' => new DateTimeImmutable()->format("Y-m-d H:i:s"),
         ]);
     }
