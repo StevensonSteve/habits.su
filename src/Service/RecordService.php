@@ -52,13 +52,14 @@ final class RecordService
     public function getRecords(UserInterface $user, string $filter): array
     {
         $records = [];
+        [$dateFrom, $dateTo] = $this->getDateRange($filter);
 
         if (! in_array($filter, [self::FILTER_PERIOD_TODAY, self::FILTER_PERIOD_YESTERDAY], true)) {
             $records = $this->recordRepository
                 ->getActivityAndAmountSum(
                     $user->getId(),
-                    $this->getDateFrom($filter),
-                    $this->getDateTo($filter),
+                    $dateFrom,
+                    $dateTo,    
                 );
         }
 
@@ -67,10 +68,12 @@ final class RecordService
 
     public function getRecordsSum(UserInterface $user, string $filter): array
     {
+        [$dateFrom, $dateTo] = $this->getDateRange($filter);
+
         return $this->activityRepository->getAmountSums(
             $user->getId(),
-            $this->getDateFrom($filter),
-            $this->getDateTo($filter),
+            $dateFrom,
+            $dateTo,
         );
     }
 
@@ -81,8 +84,8 @@ final class RecordService
             self::FILTER_PERIOD_TODAY   => $now,
             self::FILTER_PERIOD_YESTERDAY   => $now->modify('-1 days'),
             self::FILTER_PERIOD_WEEK   => $now->modify('-6 days'),
-            self::FILTER_PERIOD_MONTH  => $now->modify('-1 month'),
-            self::FILTER_PERIOD_ALL_TIME    => null,
+            self::FILTER_PERIOD_MONTH  => $now->modify('first day of this month'),
+            self::FILTER_PERIOD_ALL_TIME    => $now->modify('-20 years'),
             default  => $now,
         };
         $dateTo = match ($filter) {
@@ -90,36 +93,10 @@ final class RecordService
             self::FILTER_PERIOD_YESTERDAY   => $now->modify('-1 days'),
             self::FILTER_PERIOD_WEEK   => $now,
             self::FILTER_PERIOD_MONTH  => $now,
-            self::FILTER_PERIOD_ALL_TIME    => null,
+            self::FILTER_PERIOD_ALL_TIME    => $now,
             default  => $now,
         };
 
         return [$dateFrom, $dateTo];
-    }
-
-    public function getDateFrom(string $filter): DateTimeImmutable
-    {
-        $now = new DateTimeImmutable();
-        return match ($filter) {
-            self::FILTER_PERIOD_TODAY   => $now,
-            self::FILTER_PERIOD_YESTERDAY   => $now->modify('-1 days'),
-            self::FILTER_PERIOD_WEEK   => $now->modify('-6 days'),
-            self::FILTER_PERIOD_MONTH  => $now->modify('-1 month'),
-            self::FILTER_PERIOD_ALL_TIME    => null,
-            default  => $now,
-        };
-    }
-
-    public function getDateTo(string $filter): DateTimeImmutable
-    {
-        $now = new DateTimeImmutable();
-        return match ($filter) {
-            self::FILTER_PERIOD_TODAY   => $now,
-            self::FILTER_PERIOD_YESTERDAY   => $now->modify('-1 days'),
-            self::FILTER_PERIOD_WEEK   => $now,
-            self::FILTER_PERIOD_MONTH  => $now,
-            self::FILTER_PERIOD_ALL_TIME    => null,
-            default  => $now,
-        };
     }
 }

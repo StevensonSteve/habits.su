@@ -38,8 +38,6 @@ final class ActivityController extends AbstractController
 
         $activity = $this->activityRepository->getActivityById($id);
         [$dateFrom, $dateTo] = $this->recordService->getDateRange($filter);
-        // $dateFrom = $this->recordService->getDateFrom($filter);
-        // $dateTo = $this->recordService->getDateTo($filter);
         $records = $this->recordRepository->getRecordsByActivityId($activity['id'], $dateFrom, $dateTo);
         $activityCount = $this->recordRepository->getActivityCountFromRecords($id, $dateFrom, $dateTo);
         $activitySum = $this->recordRepository->getActivitySumFromFecords($id, $dateFrom, $dateTo);

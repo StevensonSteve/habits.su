@@ -73,7 +73,18 @@
                             {{filter == 'month' 
                                 ? 'font-medium bg-brand text-white' 
                                 : 'text-muted hover:bg-brand-soft' }}">
-                    месяц
+                    с 1го числа месяца
+                </button>
+            </form>
+            <form action="{{ path('activity_view', {'id': activity.id}) }}" method="POST" class="flex-1">
+                <input type="hidden" name="filter" value="all-time">
+            
+                <button type="submit" 
+                        class="w-full rounded-full px-3 py-1.5 text-xs  
+                            {{filter == 'all-time' 
+                                ? 'font-medium bg-brand text-white' 
+                                : 'text-muted hover:bg-brand-soft' }}">
+                    за всё время
                 </button>
             </form>
             <a class="rounded-full px-3 py-1.5 text-xs text-muted hover:bg-brand-soft text-center flex-1" href="#" onclick="show('custom-filter');return false;">свой</a>
