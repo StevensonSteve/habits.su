@@ -4,8 +4,17 @@
 <section class="w-full max-w-md md:max-w-4xl mx-auto mt-0 md:mt-6 h-screen md:h-[90vh] flex flex-col overflow-hidden rounded-b-2xl md:rounded-2xl border-x border-b md:border border-line bg-card shadow-lg shadow-blue-100/80" id="screen-home">
     
     <div class="flex-shrink-0 border-b border-line px-4 py-3">
-        <a class="text-sm text-brand" href="{{ path('category_view', {'id': category.id}) }}" onclick="show('category');return false;">← {{category.name}}</a>
-        <h2 class="text-xl font-semibold text-slate-800">{{activity.name}}</h2>
+        <div class="mb-1">
+            <a class="text-sm text-brand" href="{{ path('category_view', {'id': category.id}) }}" onclick="show('category');return false;">← {{category.name}}</a>
+        </div>
+        <div class="flex items-center justify-between gap-4">
+            <h2 class="text-xl font-semibold text-slate-800 m-0">{{activity.name}}</h2>
+            <div class="flex items-center gap-3 text-xs whitespace-nowrap">
+                <a class="text-muted hover:text-brand transition-colors" href="{{ path('activity_update', {'id': activity.id}) }}">изм.</a>
+                <span class="text-line">|</span>
+                <a class="text-muted hover:text-danger transition-colors" href="{{ path('activity_delete', {'id': activity.id}) }}" onclick="return confirm('Удалить активность?');">удл.</a>
+            </div>
+        </div>
     </div>
 
     {{ include('_partials/_flash_messages.html.twig') }}
@@ -73,7 +82,7 @@
                             {{filter == 'month' 
                                 ? 'font-medium bg-brand text-white' 
                                 : 'text-muted hover:bg-brand-soft' }}">
-                    с 1го числа месяца
+                    с 1-го
                 </button>
             </form>
             <form action="{{ path('activity_view', {'id': activity.id}) }}" method="POST" class="flex-1">
@@ -82,13 +91,43 @@
                 <button type="submit" 
                         class="w-full rounded-full px-3 py-1.5 text-xs  
                             {{filter == 'all-time' 
-                                ? 'font-medium bg-brand text-white' 
-                                : 'text-muted hover:bg-brand-soft' }}">
+                                ? 'font-medium bg-brbgand text-white' 
+                                : 'text-muted hover:-brand-soft' }}">
                     за всё время
                 </button>
             </form>
             <a class="rounded-full px-3 py-1.5 text-xs text-muted hover:bg-brand-soft text-center flex-1" href="#" onclick="show('custom-filter');return false;">свой</a>
         </div>
+
+    {# <div class="grid grid-cols-3 gap-1.5 w-full">
+        {% set buttons = [
+            {'value': 'today', 'label': 'сегодня'},
+            {'value': 'yesterday', 'label': 'вчера'},
+            {'value': 'week', 'label': 'неделя'},
+            {'value': 'month', 'label': 'с 1-го'},
+            {'value': 'all-time', 'label': 'за всё время'}
+        ] %}
+
+        {% for btn in buttons %}
+            <form action="{{ path('activity_view', {'id': activity.id}) }}" method="POST" class="w-full">
+                <input type="hidden" name="filter" value="{{ btn.value }}">
+            
+                <button type="submit" 
+                        class="w-full rounded-full px-2 py-1.5 text-xs text-center transition-colors
+                            {{ filter == btn.value 
+                                ? 'font-medium bg-brand text-white' 
+                                : 'text-muted hover:bg-brand-soft bg-gray-50' }}">
+                    {{ btn.label }}
+                </button>
+            </form>
+        {% endfor %}
+
+        <a href="#" 
+        onclick="show('custom-filter');return false;"
+        class="w-full rounded-full px-2 py-1.5 text-xs text-muted hover:bg-brand-soft bg-gray-50 text-center flex items-center justify-center transition-colors">
+            свой
+        </a>
+    </div> #}
         
         <div class="mt-3 rounded-xl bg-brand-soft px-3 py-2 text-sm text-brand">Σ = {{activitySum.sum + 0}} {{ activity.unit == 1 ? 'раз' : (activity.unit == 2 ? 'км' : (activity.unit == 3 ? 'мин' : 'стр')) }} · {{activityCount.count + 0}} записей</div>
     </div>

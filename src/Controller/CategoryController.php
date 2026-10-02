@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Repository\CategoryRepository;
+use App\Repository\RecordRepository;
 use App\Security\CategoryVoter;
 use App\Service\ActivityService;
 use App\Service\CategoryService;
@@ -21,6 +22,7 @@ final class CategoryController extends AbstractController
     public function __construct(
         private readonly CategoryService $categoryService,
         private readonly CategoryRepository $categoryRepository,
+        private readonly RecordRepository $recordRepository,
         private readonly ActivityService $activityService,
     ) {}
 
@@ -68,6 +70,24 @@ final class CategoryController extends AbstractController
         $user = $this->getUser();
         $category = $this->categoryRepository->getCategoryById($id);
         $activities = $this->activityService->getActivitiesWithStats($category['id'], $user);
+        $activityCount = $this->recordRepository->getRecordSumFromToday($user->getId());
+
+        $category['goals'] = 0;
+        $category['goalsCompleted'] = 0;
+
+        foreach ($activities as $activity) {
+            if ($activity['goal'] > 0) {
+                $category['goals']++;
+            }
+            if (isset($activityCount[$activity['id']])) {
+                if (
+                    $activityCount[$activity['id']] >= $activity['goal']
+                    && $activity['goal'] > 0
+                ) {
+                    $category['goalsCompleted']++;
+                }
+            }
+        }
 
         return $this->render('category/view.html.twig', [
             'category' => $category,

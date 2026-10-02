@@ -8,6 +8,7 @@ use App\Repository\RecordRepository;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert; 
 
 #[ORM\Entity(repositoryClass: RecordRepository::class)]
 #[ORM\Table(name: 'records')]
@@ -24,6 +25,13 @@ class Record
 
     #[ORM\Column(name: 'activity_id', type: Types::INTEGER)]
     private int $activityId;
+
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: 'Описание не должно превышать {{ limit }} символов'
+    )]
+    private ?string $description = null;
 
     #[ORM\Column(name: 'created_at', type: Types::DATETIME_IMMUTABLE)]
     private DateTimeImmutable $createdAt;
@@ -50,6 +58,17 @@ class Record
     public function setAmount(string $amount): void
     {
         $this->amount = $amount;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): self
+    {
+        $this->description = $description;
+        return $this;
     }
 
     public function getCreatedAt(): DateTimeImmutable
