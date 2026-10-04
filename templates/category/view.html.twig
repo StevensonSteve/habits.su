@@ -25,7 +25,7 @@
     
   <div class="flex-1 overflow-y-auto px-5 md:px-6 pb-4">
 
-  {% if category.goalsCompleted >= category.goals %}
+  {% if category.goalsCompleted >= category.goals and category.goals > 0 %}
     <div class="mt-1.5 mb-4 rounded-2xl border border-line bg-flash-soft p-5 pb-2 md:p-6 md:pb-2 text-center shadow-sm">
         <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-page border-2 border-flash text-3xl shadow-sm">
             🎉
