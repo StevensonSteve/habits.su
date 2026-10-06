@@ -33,6 +33,7 @@ final class RecordController extends AbstractController
     {
         $amount = (float) $request->request->get('amount', 0);
         $date = $request->request->get('date', 0);
+        $description = (string) $request->request->get('description', '');
 
         $activity = $this->activityRepository->getActivityById($id);
 
@@ -53,7 +54,7 @@ final class RecordController extends AbstractController
                 || $activity['unit'] === ActivityUnit::KILOMETERS->value
             ) && $amount > 0.0
         ) {
-            $this->recordService->create($amount, $id, $createdAt);
+            $this->recordService->create($amount, $id, $createdAt, $description);
 
             $this->addFlash(
                 'success',

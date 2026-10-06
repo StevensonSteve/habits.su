@@ -3,20 +3,6 @@
 {% block title %}Трекер привычек{% endblock %}
 
 {% block body %}
-  <section class="w-full max-w-md md:max-w-4xl mx-auto mt-0 md:mt-6 h-screen md:h-[90vh] flex flex-col overflow-hidden rounded-b-2xl md:rounded-2xl border-x border-b md:border border-line bg-card shadow-lg shadow-blue-100/80" id="screen-home">
-
-    <div class="flex flex-col shrink-0 border-b border-line">
-      <div class="flex items-center justify-between bg-gradient-to-r from-blue-600 to-sky-500 px-4 py-3 md:px-6 md:py-4 text-white">
-        <div>
-          <div class="text-lg md:text-xl font-semibold">Трекер привычек</div>
-        </div>
-        <div>
-          <div class="text-sm md:text-base text-white/90 font-medium">Здравствуйте <b>{{user.name}}</b>!</div>
-          <div class="text-sm md:text-base text-white/90 font-medium">
-            Сегодня: {{ "now"|date('d ') }}{{ "now"|date('M')|trans }}
-          </div>      
-        </div>
-      </div>
 
       <div class="flex px-4 py-2 md:p-5 items-center justify-between bg-card">
         <h2 class="text-lg md:text-xl font-semibold text-slate-800">Категории</h2>
@@ -37,7 +23,7 @@
                   {% if category.goals > 0 %}
                     <span class="
                         rounded-full px-3 py-0.5 text-xs font-semibold whitespace-nowrap ml-2
-                        {{ category.goalsCompleted > 0 ? "border-flash bg-flash-soft text-flash border-2" : "text-brand ring-line ring-2" }}"
+                        {{ category.goalsCompleted > 0 ? "border-brand bg-brand-soft text-brand border-2" : "text-brand ring-line ring-2" }}"
                     >
                       {{ category.goalsCompleted }}/{{ category.goals }}
                     </span>
@@ -45,7 +31,7 @@
                 </div>
                 {% if category.goals > 0 %}
                   <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-blue-100">
-                    <div class="h-full w-{{ category.goalsCompleted }}/{{ category.goals }} rounded-full bg-flash"></div>
+                    <div class="h-full w-{{ category.goalsCompleted }}/{{ category.goals }} rounded-full bg-brand"></div>
                   </div>
                 {% endif %}
               </a>
@@ -64,5 +50,4 @@
       <a class="text-muted hover:text-bad transition-colors py-1 px-2" href="{{ path('app_logout') }}" onclick="show('login');return false;">выйти</a>
     </nav>
 
-  </section>
 {% endblock %}

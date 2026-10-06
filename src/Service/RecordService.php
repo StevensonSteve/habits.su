@@ -28,14 +28,15 @@ final class RecordService
         private readonly EntityManagerInterface $entityManager,
     ) {}
 
-    public function create(float $amount, int $id, string $createdAt): void
+    public function create(float $amount, int $id, string $createdAt, string $description): void
     {
-        $sql = "INSERT INTO records (amount, activity_id, created_at, updated_at) 
-                VALUES (:amount, :activityId, :createdAt, :updatedAt)";
+        $sql = "INSERT INTO records (amount, activity_id, description, created_at, updated_at) 
+                VALUES (:amount, :activityId, :description, :createdAt, :updatedAt)";
 
         $this->entityManager->getConnection()->executeQuery($sql, [
             'amount' => $amount,
             'activityId' => $id,
+            'description' => $description,
             'createdAt' => $createdAt,
             'updatedAt' => new DateTimeImmutable()->format("Y-m-d H:i:s"),
         ]);

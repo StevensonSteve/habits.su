@@ -25,6 +25,11 @@ class Activity
     #[ORM\Column(name: 'category_id', type: Types::INTEGER)]
     private int $categoryId;
 
+    #[ORM\Column(name: 'description_enabled', type: Types::BOOLEAN, options: [
+        'default' => false
+    ])]
+    private bool $isDescriptionEnabled = false;
+
     #[ORM\Column(type: Types::INTEGER)]
     private int $unit;
 
@@ -58,6 +63,16 @@ class Activity
     public function setName(string $name): void
     {
         $this->name = $name;
+    }
+
+    public function getIsDescriptionEnabled(): bool
+    {
+        return $this->isDescriptionEnabled;
+    }
+
+    public function setIsDescriptionEnabled(bool $isDescriptionEnabled): void
+    {
+        $this->isDescriptionEnabled = $isDescriptionEnabled;
     }
 
     public function getCreatedAt(): DateTimeImmutable

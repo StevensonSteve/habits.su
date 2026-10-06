@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <link rel="icon" type="image/png" href="{{ asset('pen.png') }}">
-  
+
   <title>
-      {% block title %}{% endblock %}
+    {% block title %}{% endblock %}
   </title>
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <style type="text/tailwindcss">
@@ -31,7 +31,10 @@
     }
   </style>
 </head>
-    <body>
-        {% block body %}{% endblock %}
-    </body>
+<body>
+  <section class="w-full max-w-md md:max-w-4xl mx-auto mt-0 md:mt-6 h-screen md:h-[90vh] flex flex-col overflow-hidden rounded-b-2xl md:rounded-2xl border-x border-b md:border border-line bg-card shadow-lg shadow-blue-100/80" id="screen-home">
+    {{ include('_partials/header.html.twig') }}
+    {% block body %}{% endblock %}
+  </section>
+</body>
 </html>

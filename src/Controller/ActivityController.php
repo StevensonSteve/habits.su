@@ -74,9 +74,10 @@ final class ActivityController extends AbstractController
             $name = $request->request->get('name');
             $unit = (int) $request->request->get('unit');
             $goal = (int) $request->request->get('goal');
+            $isDescriptionEnabled = (bool) $request->request->has('description_enabled');
 
             $unit = ActivityUnit::from($unit);
-            $this->activityService->create($name, $id, $unit, $goal);
+            $this->activityService->create($name, $id, $unit, $goal, $isDescriptionEnabled);
 
             return $this->redirectToRoute('category_view', [
                 'id' => $id,
@@ -105,12 +106,13 @@ final class ActivityController extends AbstractController
             $categoryId = (int) $request->request->get('category_id');
             $unit = (int) $request->request->get('unit');
             $goal = (int) $request->request->get('goal');
+            $isDescriptionEnabled = (bool) $request->request->has('description_enabled');
 
             $unit = ActivityUnit::from($unit);
-            $this->activityService->update($name, $id, $unit, $goal, $categoryId);
+            $this->activityService->update($name, $id, $unit, $goal, $categoryId, $isDescriptionEnabled);
 
-            return $this->redirectToRoute('category_view', [
-                'id' => $categoryId,
+            return $this->redirectToRoute('activity_view', [
+                'id' => $id,
             ]);
         }
 

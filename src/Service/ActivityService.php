@@ -22,25 +22,26 @@ final class ActivityService
         private readonly EntityManagerInterface $entityManager,
     ) {}
 
-    public function create(string $name, int $id, ActivityUnit $unit, int $goal): void
+    public function create(string $name, int $id, ActivityUnit $unit, int $goal, bool $isDescriptionEnabled): void
     {
-        $sql = "INSERT INTO activities (name, category_id, unit, goal, created_at, updated_at)
-            VALUES (:name, :categoryId, :unit, :goal, :createdAt, :updatedAt)";
+        $sql = "INSERT INTO activities (name, category_id, unit, goal, description_enabled, created_at, updated_at)
+            VALUES (:name, :categoryId, :unit, :goal, :isDescriptionEnabled, :createdAt, :updatedAt)";
 
         $this->entityManager->getConnection()->executeQuery($sql, [
             'name' => $name,
             'categoryId' => $id,
             'unit' => $unit->value,
             'goal' => $goal,
+            'isDescriptionEnabled' => (int) $isDescriptionEnabled,
             'createdAt' => new DateTimeImmutable()->format("Y-m-d H:i:s"),
             'updatedAt' => new DateTimeImmutable()->format("Y-m-d H:i:s"),
         ]);
     }
 
-    public function update(string $name, int $id, ActivityUnit $unit, int $goal, int $categoryId): void
+    public function update(string $name, int $id, ActivityUnit $unit, int $goal, int $categoryId, bool $isDescriptionEnabled): void
     {
         $sql = "UPDATE activities 
-            SET name = :name, unit = :unit, goal = :goal, category_id = :categoryId, updated_at = :updatedAt
+            SET name = :name, unit = :unit, goal = :goal, category_id = :categoryId, description_enabled = :isDescriptionEnabled, updated_at = :updatedAt
             WHERE id = :id";
 
         $this->entityManager->getConnection()->executeQuery($sql, [
@@ -49,6 +50,7 @@ final class ActivityService
             'unit' => $unit->value,
             'goal' => $goal,
             'categoryId' => $categoryId,
+            'isDescriptionEnabled' => (int) $isDescriptionEnabled,
             'updatedAt' => new DateTimeImmutable()->format("Y-m-d H:i:s"),
         ]);
     }

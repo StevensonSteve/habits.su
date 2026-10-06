@@ -4,10 +4,11 @@
 
 {% block body %}
 <section class="w-full max-w-md md:max-w-4xl mx-auto mt-0 md:mt-6 h-screen md:h-[90vh] flex flex-col overflow-hidden rounded-b-2xl md:rounded-2xl border-x border-b md:border border-line bg-card shadow-lg shadow-blue-100/80" id="screen-home">
-    
-<div class="flex-shrink-0 bg-gradient-to-r from-blue-600 to-sky-500 px-4 py-3 text-white">
-    <a class="text-xs text-white/80 hover:text-white transition-colors" href="{{ path('dashboard_index') }}" onclick="show('home');return false;">← главная</a>
-    <div class="text-lg font-semibold">Журнал</div>
+
+<div class="border-b border-line bg-card">
+    <div class="flex h-9 items-center justify-between overflow-hidden px-4">
+        <h2 class="text-lg font-semibold leading-none text-slate-800">Журнал</h2>
+    </div>
 </div>
 
 <div class="flex p-2 mb-2 mt-2 flex-wrap gap-1.5">
@@ -63,10 +64,10 @@
                     {{filter == 'all-time' 
                         ? 'font-medium bg-brand text-white' 
                         : 'text-muted hover:bg-brand-soft' }}">
-            за всё время
+            всё
         </button>
     </form>
-    <a class="rounded-full px-3 py-1.5 text-xs text-muted hover:bg-brand-soft text-center flex-1" href="#" onclick="show('custom-filter');return false;">свой</a>
+    {# <a class="rounded-full px-3 py-1.5 text-xs text-muted hover:bg-brand-soft text-center flex-1" href="#" onclick="show('custom-filter');return false;">свой</a> #}
 </div>
 
 <div class="overflow-y-auto">

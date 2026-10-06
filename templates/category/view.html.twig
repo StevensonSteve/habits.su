@@ -5,7 +5,7 @@
 {% block body %}
 <section class="w-full max-w-md md:max-w-4xl mx-auto mt-0 md:mt-6 h-screen md:h-[90vh] flex flex-col overflow-hidden rounded-b-2xl md:rounded-2xl border-x border-b md:border border-line bg-card shadow-lg shadow-blue-100/80" id="screen-home">
   
-  <div class="flex-shrink-0 border-b border-line bg-brand-soft px-4 py-3 text-xs font-medium text-brand">
+  <div class="flex-shrink-0 border-b border-line px-4 py-3 text-xs font-medium text-brand">
     <div class="flex justify-between items-center">
       <a class="text-brand transition-colors hover:text-brand-dark" href="{{ path('dashboard_index') }}" onclick="show('home');return false;">← главная</a>
       <a class="text-brand transition-colors hover:text-brand-dark" href="{{ path('activity_new', {'id': category.id}) }}" onclick="show('activity-form');return false;">+ занятие</a>
@@ -26,74 +26,86 @@
   <div class="flex-1 overflow-y-auto px-5 md:px-6 pb-4">
 
   {% if category.goalsCompleted >= category.goals and category.goals > 0 %}
-    <div class="mt-1.5 mb-4 rounded-2xl border border-line bg-flash-soft p-5 pb-2 md:p-6 md:pb-2 text-center shadow-sm">
-        <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-page border-2 border-flash text-3xl shadow-sm">
+    <div class="mt-1.5 mb-4 rounded-2xl border border-line bg-brand-soft p-5 pb-2 md:p-6 md:pb-2 text-center shadow-sm">
+        <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-page border-2 border-brand text-3xl shadow-sm">
             🎉
         </div>
         
         <h3 class="mt-4 text-xl font-bold text-slate-800">Все цели в категории на сегодня!</h3>
         
-        <p class="mt-1 text-sm font-medium text-ok">{{category.goalsCompleted}} из {{category.goals}} выполнено</p>
+        <p class="mt-1 text-sm font-medium text-brand">{{category.goalsCompleted}} из {{category.goals}} выполнено</p>
     </div>
   {% endif %}
 
-    <div class="space-y-3">
-      {% if activities is not empty %}
-          {% for activity in activities %}    
-            <article class="relative rounded-2xl border border-line bg-page p-4 transition-all hover:border-brand hover:shadow-sm">
-              <div class="flex items-start justify-between gap-2">
-                <div>
-                  <a class="font-semibold text-slate-700 focus:outline-none after:absolute after:inset-0" 
-                     href="{{ path('activity_view', {'id': activity.id}) }}" 
-                     onclick="show('activity');return false;">
-                     {{ activity.name }}
-                  </a>
-                  <p class="mt-0.5 text-xs text-muted">сегодня: {{activity.count + 0}} {{ activity.unit == 1 ? 'раз' : (activity.unit == 2 ? 'км' : (activity.unit == 3 ? 'мин' : 'стр')) }}</p>
-                  {% if activity.strike > 0 %}
-                    <p class="mt-1.5 inline-flex items-center gap-2 rounded-xl border-2 border-flash bg-flash-soft px-3 text-sm font-semibold text-ok">
-                      <span>🔥 {{activity.strike + 0}} дней подряд!</span>
-                    </p>
-                  {% endif %}
-                </div>
-                {% if activity.goal > 0 %}
-                  <span class="{{activity.goal <= activity.count ? 'border-2 border-flash bg-flash-soft text-ok' : 'ring-2 ring-line'}} mt-1.5 inline-flex items-center gap-2 rounded-xl px-3 text-sm text-brand font-semibold">{{activity.count + 0}}/{{activity.goal}}</span>
+  <div class="space-y-3">
+    {% if activities is not empty %}
+        {% for activity in activities %}    
+          <article class="relative rounded-2xl border border-line bg-page p-4 transition-all hover:border-brand hover:shadow-sm">
+            <div class="flex items-start justify-between gap-2">
+              <div>
+                <a class="font-semibold text-slate-700 focus:outline-none after:absolute after:inset-0" 
+                    href="{{ path('activity_view', {'id': activity.id}) }}" 
+                    onclick="show('activity');return false;">
+                    {{ activity.name }}
+                </a>
+                <p class="mt-0.5 text-xs text-muted">сегодня: {{activity.count + 0}} {{ activity.unit == 1 ? 'раз' : (activity.unit == 2 ? 'км' : (activity.unit == 3 ? 'мин' : 'стр')) }}</p>
+                {% if activity.strike > 0 %}
+                  <p class="mt-1.5 inline-flex items-center gap-2 rounded-xl border-2 border-brand bg-brand-soft px-3 text-sm font-semibold text-brand">
+                    <span>🔥 {{activity.strike + 0}} дней подряд!</span>
+                  </p>
                 {% endif %}
               </div>
-              
-              <div class="mt-4 flex flex-wrap gap-2 relative z-10">
-              {% if activity.popularRecords|length > 0 %}
-                {% for i in 0..(activity.popularRecords|length - 1) %}
-                  <form action="{{ path('record_new', {'id': activity.id}) }}" method="POST" class="flex-1">
-                    <input type="hidden" name="amount" value={{activity.popularRecords[i].amount + 0 }}>
-                    <button type="submit" 
-                            class="w-full min-h-11 rounded-xl bg-brand font-medium text-white shadow-md shadow-brand/10 transition-colors hover:bg-brand-dark">
-                        +{{ activity.popularRecords[i].amount + 0 }}
-                    </button>
-                  </form>
-                {% endfor %}
+              {% if activity.goal > 0 %}
+                <span class="{{activity.goal <= activity.count ? 'border-2 border-brand bg-brand-soft text-brand' : 'ring-2 ring-line'}} mt-1.5 inline-flex items-center gap-2 rounded-xl px-3 text-sm text-brand font-semibold">{{activity.count + 0}}/{{activity.goal}}</span>
               {% endif %}
-              
-                <form action="{{ path('record_new', {'id': activity.id}) }}" method="POST" class="w-full mt-2 flex gap-2">
-                  <div class="relative flex-1">
-                    {% include '_partials/_amount_input.html.twig' with {
-                        'placeholder': 'свой вариант',
-                        'input_class': 'w-full min-h-11 px-4 rounded-xl border border-line bg-transparent text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand transition-all'
-                    } %}
-                  </div>
+            </div>
+            
+            <div class="mt-4 flex flex-wrap gap-2 relative z-10">
+            {% if activity.popularRecords|length > 0 %}
+              {% for i in 0..(activity.popularRecords|length - 1) %}
+                <form action="{{ path('record_new', {'id': activity.id}) }}" method="POST" class="flex-1">
+                  <input type="hidden" name="amount" value={{activity.popularRecords[i].amount + 0 }}>
                   <button type="submit" 
-                        class="px-5 min-h-11 rounded-xl bg-brand font-medium text-white shadow-md shadow-brand/10 transition-colors hover:bg-brand-dark">
-                  ОК
+                          class="w-full min-h-11 rounded-xl bg-brand font-medium text-white shadow-md shadow-brand/10 transition-colors hover:bg-brand-dark">
+                      +{{ activity.popularRecords[i].amount + 0 }}
                   </button>
                 </form>
-              </div>
-            </article>
-          {% endfor %}
-      {% else %}
-          <div class="rounded-xl border border-dashed border-line p-5 text-center text-xs text-muted">
-              Активности в этой категории не созданы.
-          </div>
-      {% endif %}
-    </div>
+              {% endfor %}
+            {% endif %}
+            
+              <form action="{{ path('record_new', {'id': activity.id}) }}" method="POST" class="w-full mt-3 flex flex-col gap-3">
+                <div class="flex items-center gap-2">
+                    <div class="relative flex-1">
+                        {% include '_partials/_amount_input.html.twig' with {
+                            'placeholder': 'Введите количество или свой вариант',
+                            'input_class': 'w-full min-h-11 h-11 px-4 rounded-xl border border-line bg-white text-sm text-slate-700 placeholder-slate-400
+                            focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand transition-all'
+                        } %}
+                    </div>
+                    
+                    <button type="submit" 
+                            class="px-6 h-11 rounded-xl bg-brand font-medium text-white shadow-md shadow-brand/10 transition-colors hover:bg-brand-dark flex items-center justify-center shrink-0">
+                        ОК
+                    </button>
+                </div>
+                {% if activity.description_enabled === true %}
+                  <div class="flex flex-col gap-1">
+                      <textarea rows="2" 
+                                placeholder="Комментарий к записи" 
+                                name="description" 
+                                class="w-full rounded-xl border border-line bg-white px-3 py-2 text-xs text-slate-700 outline-none placeholder-slate-400 resize-none
+                                      focus:border-brand focus:ring-1 focus:ring-brand transition-all"></textarea>
+                  </div>
+                {% endif %}
+              </form>
+            </div>
+          </article>
+        {% endfor %}
+    {% else %}
+        <div class="rounded-xl border border-dashed border-line p-5 text-center text-xs text-muted">
+            Активности в этой категории не созданы.
+        </div>
+    {% endif %}
   </div>
 
 
