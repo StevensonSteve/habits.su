@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Dto\AtivityUpsertDto;
 use App\Enum\ActivityUnit;
 use App\Repository\ActivityRepository;
 use App\Repository\RecordRepository;
@@ -22,23 +23,23 @@ final class ActivityService
         private readonly EntityManagerInterface $entityManager,
     ) {}
 
-    public function create(string $name, int $id, ActivityUnit $unit, int $goal, bool $isDescriptionEnabled): void
+    public function create(AtivityUpsertDto $ativityUpsert): void
     {
         $sql = "INSERT INTO activities (name, category_id, unit, goal, description_enabled, created_at, updated_at)
             VALUES (:name, :categoryId, :unit, :goal, :isDescriptionEnabled, :createdAt, :updatedAt)";
 
         $this->entityManager->getConnection()->executeQuery($sql, [
-            'name' => $name,
-            'categoryId' => $id,
-            'unit' => $unit->value,
-            'goal' => $goal,
-            'isDescriptionEnabled' => (int) $isDescriptionEnabled,
+            'name' => $ativityUpsert->name,
+            'categoryId' => $ativityUpsert->categoryId,
+            'unit' => $ativityUpsert->unit->value,
+            'goal' => $ativityUpsert->goal,
+            'isDescriptionEnabled' => (int) $ativityUpsert->isDescriptionEnabled,
             'createdAt' => new DateTimeImmutable()->format("Y-m-d H:i:s"),
             'updatedAt' => new DateTimeImmutable()->format("Y-m-d H:i:s"),
         ]);
     }
 
-    public function update(string $name, int $id, ActivityUnit $unit, int $goal, int $categoryId, bool $isDescriptionEnabled): void
+    public function update(int $id, AtivityUpsertDto $ativityUpsert): void
     {
         $sql = "UPDATE activities 
             SET name = :name, unit = :unit, goal = :goal, category_id = :categoryId, description_enabled = :isDescriptionEnabled, updated_at = :updatedAt
@@ -46,11 +47,11 @@ final class ActivityService
 
         $this->entityManager->getConnection()->executeQuery($sql, [
             'id' => $id,
-            'name' => $name,
-            'unit' => $unit->value,
-            'goal' => $goal,
-            'categoryId' => $categoryId,
-            'isDescriptionEnabled' => (int) $isDescriptionEnabled,
+            'name' => $ativityUpsert->name,
+            'unit' => $ativityUpsert->unit->value,
+            'goal' => $ativityUpsert->goal,
+            'categoryId' => $ativityUpsert->categoryId,
+            'isDescriptionEnabled' => (int) $ativityUpsert->isDescriptionEnabled,
             'updatedAt' => new DateTimeImmutable()->format("Y-m-d H:i:s"),
         ]);
     }

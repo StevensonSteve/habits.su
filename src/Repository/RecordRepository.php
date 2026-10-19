@@ -61,6 +61,25 @@ class RecordRepository extends ServiceEntityRepository
         ])->fetchAllKeyValue();
     }
 
+    /// ToDo прокидывать дату переменной
+    public function getAllRecordSumFromYesterday(): array
+    {
+        $yesterday = new DateTimeImmutable('yesterday');
+        $sql = 'SELECT r.activity_id, SUM(r.amount) AS count
+            FROM records AS r
+            INNER JOIN activities AS a ON a.id = r.activity_id
+            INNER JOIN categories AS c ON c.id = a.category_id
+            WHERE r.created_at >= :dateFrom
+                AND r.created_at < :dateTo
+            GROUP BY r.activity_id;
+        ';
+
+        return $this->getEntityManager()->getConnection()->executeQuery($sql, [
+            'dateFrom' => $yesterday->format('Y-m-d 00:00:00'),
+            'dateTo' => $yesterday->modify('+1 day')->format('Y-m-d 00:00:00'),
+        ])->fetchAllKeyValue();
+    }
+
     public function getActivityId(int $id): mixed
     {
         $sql = 'SELECT activity_id FROM records WHERE id = :id';
@@ -107,7 +126,8 @@ class RecordRepository extends ServiceEntityRepository
         $sql = 'SELECT COUNT(*) AS count
             FROM records 
             WHERE activity_id = :activityId 
-                AND created_at >= :dateFrom;';
+                AND created_at >= :dateFrom
+                AND created_at <= :dateTo;';
 
         return $this->getEntityManager()->getConnection()->executeQuery($sql, [
             'activityId' => $activityId,
@@ -120,7 +140,9 @@ class RecordRepository extends ServiceEntityRepository
     {
         $sql = 'SELECT SUM(amount) AS sum
             FROM records 
-            WHERE activity_id = :activityId AND created_at >= :dateFrom AND created_at <= :dateTo;
+            WHERE activity_id = :activityId
+                AND created_at >= :dateFrom
+                AND created_at <= :dateTo;
         ';
         return $this->getEntityManager()->getConnection()->executeQuery($sql, [
             'activityId' => $activityId,

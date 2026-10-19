@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Dto\AtivityUpsertDto;
 use App\Enum\ActivityUnit;
 use App\Repository\ActivityRepository;
 use App\Repository\CategoryRepository;
@@ -12,6 +13,7 @@ use App\Security\ActivityVoter;
 use App\Security\CategoryVoter;
 use App\Service\ActivityService;
 use App\Service\RecordService;
+use DateTimeImmutable;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -35,9 +37,14 @@ final class ActivityController extends AbstractController
     public function view(int $id, Request $request): Response
     {
         $filter = $request->request->get('filter', RecordService::FILTER_PERIOD_TODAY);
+        if ($filter != 'own') {
+            [$dateFrom, $dateTo] = $this->recordService->getDateRange($filter);
+        } else {
+            $dateTo = new DateTimeImmutable($request->request->get('dateTo', RecordService::FILTER_PERIOD_TODAY));
+            $dateFrom = new DateTimeImmutable($request->request->get('dateFrom', RecordService::FILTER_PERIOD_TODAY));
+        }
 
         $activity = $this->activityRepository->getActivityById($id);
-        [$dateFrom, $dateTo] = $this->recordService->getDateRange($filter);
         $records = $this->recordRepository->getRecordsByActivityId($activity['id'], $dateFrom, $dateTo);
         $activityCount = $this->recordRepository->getActivityCountFromRecords($id, $dateFrom, $dateTo);
         $activitySum = $this->recordRepository->getActivitySumFromFecords($id, $dateFrom, $dateTo);
@@ -50,6 +57,8 @@ final class ActivityController extends AbstractController
             'activitySum' => $activitySum,
             'records' => $records,
             'filter' => $filter,
+            'dateTo' => $dateTo->format('Y-m-d'),
+            'dateFrom' => $dateFrom->format('Y-m-d'),
         ]);
     }
 
@@ -68,7 +77,7 @@ final class ActivityController extends AbstractController
 
     #[Route('/new/category/{id}', name: 'activity_new')]
     #[IsGranted(CategoryVoter::MANAGE, subject: 'id')]
-    public function new(int $id, Request $request): Response
+    public function new(int $categoryId, Request $request): Response
     {
         if ($request->getMethod() === 'POST') {
             $name = $request->request->get('name');
@@ -77,7 +86,15 @@ final class ActivityController extends AbstractController
             $isDescriptionEnabled = (bool) $request->request->has('description_enabled');
 
             $unit = ActivityUnit::from($unit);
-            $this->activityService->create($name, $id, $unit, $goal, $isDescriptionEnabled);
+            $this->activityService->create(
+                new AtivityUpsertDto(
+                    $name,              
+                    $categoryId,
+                    $unit, 
+                    $goal, 
+                    $isDescriptionEnabled
+                )
+            );
 
             return $this->redirectToRoute('category_view', [
                 'id' => $id,
@@ -109,7 +126,16 @@ final class ActivityController extends AbstractController
             $isDescriptionEnabled = (bool) $request->request->has('description_enabled');
 
             $unit = ActivityUnit::from($unit);
-            $this->activityService->update($name, $id, $unit, $goal, $categoryId, $isDescriptionEnabled);
+            $this->activityService->update(
+                $id,
+                new AtivityUpsertDto(
+                    $name,              
+                    $categoryId, 
+                    $unit, 
+                    $goal, 
+                    $isDescriptionEnabled
+                )
+            );
 
             return $this->redirectToRoute('activity_view', [
                 'id' => $id,

@@ -19,6 +19,14 @@ class ActivityRepository extends ServiceEntityRepository
         parent::__construct($registry, Activity::class);
     }
 
+    public function getAllActivity(): array
+    {
+        $sql = 'SELECT * FROM activities';
+
+        return $this->getEntityManager()->getConnection()->executeQuery($sql)
+            ->fetchAllAssociative();
+    }
+
     public function getActivityById(int $id): array|false
     {
         $sql = 'SELECT * FROM activities WHERE id = :id';
