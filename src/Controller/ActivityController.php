@@ -77,7 +77,7 @@ final class ActivityController extends AbstractController
 
     #[Route('/new/category/{id}', name: 'activity_new')]
     #[IsGranted(CategoryVoter::MANAGE, subject: 'id')]
-    public function new(int $categoryId, Request $request): Response
+    public function new(int $id, Request $request): Response
     {
         if ($request->getMethod() === 'POST') {
             $name = $request->request->get('name');
@@ -89,7 +89,7 @@ final class ActivityController extends AbstractController
             $this->activityService->create(
                 new AtivityUpsertDto(
                     $name,              
-                    $categoryId,
+                    $id,
                     $unit, 
                     $goal, 
                     $isDescriptionEnabled

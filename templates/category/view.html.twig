@@ -7,24 +7,23 @@
   
   <div class="flex-shrink-0 border-b border-line px-4 py-3 text-xs font-medium text-brand">
     <div class="flex justify-between items-center">
-      <a class="text-brand transition-colors hover:text-brand-dark" href="{{ path('dashboard_index') }}" onclick="show('home');return false;">← главная</a>
-      <a class="text-brand transition-colors hover:text-brand-dark" href="{{ path('activity_new', {'id': category.id}) }}" onclick="show('activity-form');return false;">+ занятие</a>
+      <h2 class="text-xl font-semibold text-slate-800">{{ category.name }}</h2>
+      <a class="text-muted hover:text-brand transition-colors py-1" href="{{ path('category_update', {'id': category.id}) }}"> 
+        <svg xmlns="http://w3.org" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-gray-600 hover:text-gray-900"> 
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.43l-1.003.767c-.29.222-.434.59-.38.954.004.032.006.064.006.096s-.002.064-.006.096c-.054.364.09.732.38.954l1.003.767a1.125 1.125 0 0 1 .26 1.43l-1.296 2.247a1.125 1.125 0 0 1-1.37.49l-1.216-.456c-.356-.133-.751-.072-1.076.124a6.57 6.57 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.43l1.004-.767c.29-.222.434-.59.38-.954a5.617 5.617 0 0 1 0-.192c.054-.364-.09-.732-.38-.954l-1.004-.767a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.49l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" /> 
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /> 
+        </svg> 
+      </a>
     </div>
   </div>
 
   {{ include('_partials/_flash_messages.html.twig') }}
 
-  <div class="flex items-center justify-between flex-shrink-0 p-5 pb-2 md:p-6 md:pb-2">
-      <h2 class="text-xl font-semibold text-slate-800">{{ category.name }}</h2>
-      <div class="flex items-center gap-3 text-xs md:text-sm shrink-0">
-          <a class="text-muted hover:text-brand transition-colors py-1" href="{{ path('category_update', {'id': category.id}) }}">
-            <svg xmlns="http://w3.org" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-gray-600 hover:text-gray-900">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.43l-1.003.767c-.29.222-.434.59-.38.954.004.032.006.064.006.096s-.002.064-.006.096c-.054.364.09.732.38.954l1.003.767a1.125 1.125 0 0 1 .26 1.43l-1.296 2.247a1.125 1.125 0 0 1-1.37.49l-1.216-.456c-.356-.133-.751-.072-1.076.124a6.57 6.57 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.43l1.004-.767c.29-.222.434-.59.38-.954a5.617 5.617 0 0 1 0-.192c.054-.364-.09-.732-.38-.954l-1.004-.767a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.49l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-            </svg>
-          </a>
-      </div>
-  </div> 
+  <div class="flex items-center justify-end flex-shrink-0 p-5 pb-2 md:p-6 md:pb-2"> 
+      <div class="flex items-center gap-3 text-xs md:text-sm shrink-0"> 
+        <a class="text-brand transition-colors hover:text-brand-dark" href="{{ path('activity_new', {'id': category.id}) }}" onclick="show('activity-form');return false;">+ занятие</a>
+      </div> 
+  </div>
     
   <div class="flex-1 overflow-y-auto px-5 md:px-6 pb-4">
 
@@ -53,13 +52,13 @@
                 </a>
                 <p class="mt-0.5 text-xs text-muted">сегодня: {{activity.count + 0}} {{ activity.unit == 1 ? 'раз' : (activity.unit == 2 ? 'км' : (activity.unit == 3 ? 'мин' : 'стр')) }}</p>
                 {% if activity.strike > 0 %}
-                  <p class="mt-1.5 inline-flex items-center gap-2 rounded-xl border-2 border-brand bg-brand-soft px-3 text-sm font-semibold text-brand">
+                  <p class="mt-1.5 inline-flex items-center gap-2 rounded-xl border-2 border-brand bg-brand/20 px-3 text-sm font-semibold text-brand">
                     <span>🔥 {{activity.strike + 0}} дней подряд!</span>
                   </p>
                 {% endif %}
               </div>
               {% if activity.goal > 0 %}
-                <span class="{{activity.goal <= activity.count ? 'border-2 border-brand bg-brand-soft text-brand' :
+                <span class="{{activity.goal <= activity.count ? 'border-2 border-brand bg-brand/20 text-brand' :
                 'ring-2 ring-line'}} mt-1.5 inline-flex items-center gap-2 rounded-xl px-3 text-sm text-brand font-semibold">{{activity.count + 0}}/{{activity.goal}}</span>
               {% endif %}
             </div>
@@ -111,14 +110,6 @@
         </div>
     {% endif %}
   </div>
-
-
-
-  <nav class="flex-shrink-0 bg-card border-t border-line p-4 shadow-[0_-4px_12px_rgba(0,0,0,0.05)] z-50 flex flex-wrap gap-x-4 gap-y-2 text-xs font-medium uppercase tracking-wider">
-    <a class="text-muted hover:text-brand transition-colors" href="{{ path('dashboard_index') }}" onclick="show('home');return false;">главная</a>
-    <a class="text-muted hover:text-brand transition-colors" href="{{ path('activity_log_index') }}" onclick="show('journal');return false;">журнал</a>
-    <a class="text-muted hover:text-brand transition-colors" href="#" onclick="show('category-history');return false;">история</a>
-  </nav>
 
 </section>
 {% endblock %}
