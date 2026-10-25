@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Dto\AtivityUpsertDto;
+use App\Dto\DateFromToDto;
 use App\Enum\ActivityUnit;
 use App\Repository\ActivityRepository;
 use App\Repository\CategoryRepository;
@@ -38,27 +39,31 @@ final class ActivityController extends AbstractController
     {
         $filter = $request->request->get('filter', RecordService::FILTER_PERIOD_TODAY);
         if ($filter != 'own') {
-            [$dateFrom, $dateTo] = $this->recordService->getDateRange($filter);
+            $filterDates = $this->recordService->getDateRange($filter);
         } else {
-            $dateTo = new DateTimeImmutable($request->request->get('dateTo', RecordService::FILTER_PERIOD_TODAY));
-            $dateFrom = new DateTimeImmutable($request->request->get('dateFrom', RecordService::FILTER_PERIOD_TODAY));
+            $filterDates = new DateFromToDto(
+                dateFrom: new DateTimeImmutable($request->request->get('dateFrom', RecordService::FILTER_PERIOD_TODAY)),
+                dateTo: new DateTimeImmutable($request->request->get('dateTo', RecordService::FILTER_PERIOD_TODAY)),
+            );
         }
 
         $activity = $this->activityRepository->getActivityById($id);
-        $records = $this->recordRepository->getRecordsByActivityId($activity['id'], $dateFrom, $dateTo);
-        $activityCount = $this->recordRepository->getActivityCountFromRecords($id, $dateFrom, $dateTo);
-        $activitySum = $this->recordRepository->getActivitySumFromFecords($id, $dateFrom, $dateTo);
+        // ToDo пределать функции ниже на контракт - DateFromToDto
+        $records = $this->recordRepository->getRecordsByActivityId($activity['id'], $filterDates->dateFrom, $filterDates->dateTo);
+        $activityCount = $this->recordRepository->getActivityCountFromRecords($id, $filterDates->dateFrom, $filterDates->dateTo);
+        $activitySum = $this->recordRepository->getActivitySumFromFecords($id, $filterDates->dateFrom, $filterDates->dateTo);
         $category = $this->categoryRepository->getCategoryById($activity['category_id']);
 
         return $this->render('activity/view.html.twig', [
+            'buttons' => RecordService::RECORD_FILTERS,
             'activity' => $activity,
             'category' => $category,
             'activityCount' => $activityCount,
             'activitySum' => $activitySum,
             'records' => $records,
             'filter' => $filter,
-            'dateTo' => $dateTo->format('Y-m-d'),
-            'dateFrom' => $dateFrom->format('Y-m-d'),
+            'dateTo' => $filterDates->dateTo->format('Y-m-d'),
+            'dateFrom' => $filterDates->dateFrom->format('Y-m-d'),
         ]);
     }
 

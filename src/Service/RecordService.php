@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Dto\DateFromToDto;
 use App\Repository\ActivityRepository;
 use App\Repository\RecordRepository;
 use DateTimeImmutable;
@@ -21,6 +22,17 @@ final class RecordService
     private const FILTER_PERIOD_MONTH = 'month';
 
     private const FILTER_PERIOD_ALL_TIME = 'all-time';
+
+    private const FILTER_PERIOD_OWN = 'own';
+
+    public const RECORD_FILTERS = [
+        self::FILTER_PERIOD_TODAY => 'Сегодня',
+        self::FILTER_PERIOD_YESTERDAY => 'Вчера',
+        self::FILTER_PERIOD_WEEK => 'Неделя',
+        self::FILTER_PERIOD_MONTH => 'С 1-го числа',
+        self::FILTER_PERIOD_ALL_TIME => 'Всё время',
+        self::FILTER_PERIOD_OWN => 'Свой',
+    ];
 
     public function __construct(
         private readonly ActivityRepository $activityRepository,
@@ -50,35 +62,26 @@ final class RecordService
         ]);
     }
 
-    public function getRecords(UserInterface $user, string $filter): array
+    public function getRecords(UserInterface $user, DateFromToDto $dates): array
     {
-        $records = [];
-        [$dateFrom, $dateTo] = $this->getDateRange($filter);
-
-        if (! in_array($filter, [self::FILTER_PERIOD_TODAY, self::FILTER_PERIOD_YESTERDAY], true)) {
-            $records = $this->recordRepository
-                ->getActivityAndAmountSum(
-                    $user->getId(),
-                    $dateFrom,
-                    $dateTo,    
-                );
-        }
-
-        return $records;
-    }
-
-    public function getRecordsSum(UserInterface $user, string $filter): array
-    {
-        [$dateFrom, $dateTo] = $this->getDateRange($filter);
-
-        return $this->activityRepository->getAmountSums(
-            $user->getId(),
-            $dateFrom,
-            $dateTo,
+        return $this->recordRepository
+            ->getActivityAndAmountSum(
+                $user->getId(),
+                $dates->dateFrom,
+                $dates->dateTo,  
         );
     }
 
-    public function getDateRange(string $filter): array
+    public function getRecordsSum(UserInterface $user, DateFromToDto $dates): array
+    {
+        return $this->activityRepository->getAmountSums(
+            $user->getId(),
+            $dates->dateFrom,
+            $dates->dateTo,
+        );
+    }
+
+    public function getDateRange(string $filter): DateFromToDto
     {
         $now = new DateTimeImmutable();
         $dateFrom = match ($filter) {
@@ -98,6 +101,9 @@ final class RecordService
             default  => $now,
         };
 
-        return [$dateFrom, $dateTo];
+        return new DateFromToDto(
+            $dateFrom, 
+            $dateTo
+        );
     }
 }
