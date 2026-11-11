@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Dto\DateFromToDto;
+use App\Dto\DatesFilterDto;
 use App\Service\RecordService;
 use DateTimeImmutable;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -27,25 +27,25 @@ final class ActivityLogController extends AbstractController
         $filter = $request->request->get('filter', RecordService::FILTER_PERIOD_TODAY);
 
         if ($filter != 'own') {
-            $filterDates = $this->recordService->getDateRange($filter);
+            $datesFilter = $this->recordService->getDateRange($filter);
         } else {
-            $filterDates = new DateFromToDto(
+            $datesFilter = new DatesFilterDto(
                 dateFrom: new DateTimeImmutable($request->request->get('dateFrom', RecordService::FILTER_PERIOD_TODAY)),
                 dateTo: new DateTimeImmutable($request->request->get('dateTo', RecordService::FILTER_PERIOD_TODAY)),
             );
         }
         
         $user = $this->getUser();
-        $records = $this->recordService->getRecords($user, $filterDates);
-        $recordSums = $this->recordService->getRecordsSum($user, $filterDates);
+        $records = $this->recordService->getRecords($user, $datesFilter);
+        $recordSums = $this->recordService->getRecordsSum($user, $datesFilter);
 
         return $this->render('activity-log/index.html.twig', [
             'buttons' => RecordService::RECORD_FILTERS,
             'recordSums' => $recordSums,
             'records' => $records,
             'filter' => $filter,
-            'dateTo' => $filterDates->dateTo->format('Y-m-d'),
-            'dateFrom' => $filterDates->dateFrom->format('Y-m-d'),
+            'dateTo' => $datesFilter->dateTo->format('Y-m-d'),
+            'dateFrom' => $datesFilter->dateFrom->format('Y-m-d'),
         ]);
     }
 }

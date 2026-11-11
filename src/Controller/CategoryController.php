@@ -9,6 +9,7 @@ use App\Repository\RecordRepository;
 use App\Security\CategoryVoter;
 use App\Service\ActivityService;
 use App\Service\CategoryService;
+use App\Service\GoalService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,6 +25,7 @@ final class CategoryController extends AbstractController
         private readonly CategoryRepository $categoryRepository,
         private readonly RecordRepository $recordRepository,
         private readonly ActivityService $activityService,
+        private readonly GoalService $goalService,
     ) {}
 
     #[Route('/new', name: 'category_new', methods: ['GET', 'POST'])]
@@ -71,6 +73,7 @@ final class CategoryController extends AbstractController
         $category = $this->categoryRepository->getCategoryById($id);
         $activities = $this->activityService->getActivitiesWithStats($category['id'], $user);
         $activityCount = $this->recordRepository->getRecordSumFromToday($user->getId());
+        // $goal = $this->goalService->getGoal($activity['id']);
 
         $category['goals'] = 0;
         $category['goalsCompleted'] = 0;
@@ -92,6 +95,7 @@ final class CategoryController extends AbstractController
         return $this->render('category/view.html.twig', [
             'category' => $category,
             'activities' => $activities,
+            // 'goal' => $goal,
         ]);
     }
 

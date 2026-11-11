@@ -29,7 +29,7 @@ final class StrikeService
                 WHERE c.user_id = :userId 
                   AND r.created_at >= :dateFrom
                   AND r.created_at <= :dateTo
-                  AND c.id = :catrgoryId
+                  AND c.id = :categoryId
                 GROUP BY r.activity_id, CAST(r.created_at AS DATE)
                 HAVING COUNT(r.created_at) > 0 AND SUM(r.amount) >= MIN(a.goal) AND MIN(a.goal) > 0
                 ORDER BY date_group DESC;
@@ -38,7 +38,7 @@ final class StrikeService
         $rawData = $this->entityManager->getConnection()->executeQuery($sql, [
             'dateFrom' => $today->modify('-1 year')->format('Y-m-d 00:00:00'),
             'dateTo' => $today->format('Y-m-d 23:59:59'),
-            'catrgoryId' => $categoryId,
+            'categoryId' => $categoryId,
             'userId' => $user->getId(),
         ])->fetchAllAssociative();
 

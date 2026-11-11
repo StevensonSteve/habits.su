@@ -6,7 +6,7 @@ namespace App\Dto;
 
 use DateTimeImmutable;
 
-final readonly class DateFromToDto
+final readonly class DatesFilterDto
 {
     public function __construct(
         public DateTimeImmutable $dateFrom,

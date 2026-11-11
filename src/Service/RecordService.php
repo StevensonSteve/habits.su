@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\Dto\DateFromToDto;
+use App\Dto\DatesFilterDto;
 use App\Repository\ActivityRepository;
 use App\Repository\RecordRepository;
 use DateTimeImmutable;
@@ -62,7 +62,7 @@ final class RecordService
         ]);
     }
 
-    public function getRecords(UserInterface $user, DateFromToDto $dates): array
+    public function getRecords(UserInterface $user, DatesFilterDto $dates): array
     {
         return $this->recordRepository
             ->getActivityAndAmountSum(
@@ -72,7 +72,7 @@ final class RecordService
         );
     }
 
-    public function getRecordsSum(UserInterface $user, DateFromToDto $dates): array
+    public function getRecordsSum(UserInterface $user, DatesFilterDto $dates): array
     {
         return $this->activityRepository->getAmountSums(
             $user->getId(),
@@ -81,7 +81,7 @@ final class RecordService
         );
     }
 
-    public function getDateRange(string $filter): DateFromToDto
+    public function getDateRange(string $filter): DatesFilterDto
     {
         $now = new DateTimeImmutable();
         $dateFrom = match ($filter) {
@@ -101,7 +101,7 @@ final class RecordService
             default  => $now,
         };
 
-        return new DateFromToDto(
+        return new DatesFilterDto(
             $dateFrom, 
             $dateTo
         );

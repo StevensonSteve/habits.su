@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Dto\DatesFilterDto;
 use App\Entity\Record;
 use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -105,7 +106,7 @@ class RecordRepository extends ServiceEntityRepository
         ])->fetchAllAssociative();
     }
 
-    public function getRecordsByActivityId(int $activityId, DateTimeImmutable $dateFrom, DateTimeImmutable $dateTo)
+    public function getRecordsByActivityId(int $activityId, DatesFilterDto $dates)
     {
         $sql = 'SELECT *
             FROM records
@@ -116,12 +117,12 @@ class RecordRepository extends ServiceEntityRepository
 
         return $this->getEntityManager()->getConnection()->executeQuery($sql, [
             'activityId' => $activityId,
-            'dateFrom' => $dateFrom->format('Y-m-d 00:00:00'),
-            'dateTo' => $dateTo->format('Y-m-d 23:59:59'),
+            'dateFrom' => $dates->dateFrom->format('Y-m-d 00:00:00'),
+            'dateTo' => $dates->dateTo->format('Y-m-d 23:59:59'),
         ])->fetchAllAssociative();
     }
 
-    public function getActivityCountFromRecords(int $activityId, DateTimeImmutable $dateFrom, DateTimeImmutable $dateTo)
+    public function getActivityCountFromRecords(int $activityId, DatesFilterDto $dates)
     {
         $sql = 'SELECT COUNT(*) AS count
             FROM records 
@@ -131,12 +132,12 @@ class RecordRepository extends ServiceEntityRepository
 
         return $this->getEntityManager()->getConnection()->executeQuery($sql, [
             'activityId' => $activityId,
-            'dateFrom' => $dateFrom->format('Y-m-d 00:00:00'),
-            'dateTo' => $dateTo->format('Y-m-d 23:59:59'),
+            'dateFrom' => $dates->dateFrom->format('Y-m-d 00:00:00'),
+            'dateTo' => $dates->dateTo->format('Y-m-d 23:59:59'),
         ])->fetchAssociative();
     }
 
-    public function getActivitySumFromFecords(int $activityId, DateTimeImmutable $dateFrom, DateTimeImmutable $dateTo)
+    public function getActivitySumFromFecords(int $activityId, DatesFilterDto $dates)
     {
         $sql = 'SELECT SUM(amount) AS sum
             FROM records 
@@ -146,8 +147,8 @@ class RecordRepository extends ServiceEntityRepository
         ';
         return $this->getEntityManager()->getConnection()->executeQuery($sql, [
             'activityId' => $activityId,
-            'dateFrom' => $dateFrom->format('Y-m-d 00:00:00'),
-            'dateTo' => $dateTo->format('Y-m-d 23:59:59'),
+            'dateFrom' => $dates->dateFrom->format('Y-m-d 00:00:00'),
+            'dateTo' => $dates->dateTo->format('Y-m-d 23:59:59'),
         ])->fetchAssociative();
     }
 }

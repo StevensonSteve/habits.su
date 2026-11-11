@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Dto\AtivityUpsertDto;
-use App\Dto\DateFromToDto;
+use App\Dto\DatesFilterDto;
 use App\Enum\ActivityUnit;
 use App\Repository\ActivityRepository;
 use App\Repository\CategoryRepository;
@@ -13,6 +13,7 @@ use App\Repository\RecordRepository;
 use App\Security\ActivityVoter;
 use App\Security\CategoryVoter;
 use App\Service\ActivityService;
+use App\Service\GoalService;
 use App\Service\RecordService;
 use DateTimeImmutable;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -29,6 +30,7 @@ final class ActivityController extends AbstractController
         private readonly CategoryRepository $categoryRepository,
         private readonly ActivityRepository $activityRepository,
         private readonly ActivityService $activityService,
+        private readonly GoalService $goalService,
         private readonly RecordRepository $recordRepository,
         private readonly RecordService $recordService,
     ) {}
@@ -39,19 +41,18 @@ final class ActivityController extends AbstractController
     {
         $filter = $request->request->get('filter', RecordService::FILTER_PERIOD_TODAY);
         if ($filter != 'own') {
-            $filterDates = $this->recordService->getDateRange($filter);
+            $datesFilter = $this->recordService->getDateRange($filter);
         } else {
-            $filterDates = new DateFromToDto(
+            $datesFilter = new DatesFilterDto(
                 dateFrom: new DateTimeImmutable($request->request->get('dateFrom', RecordService::FILTER_PERIOD_TODAY)),
                 dateTo: new DateTimeImmutable($request->request->get('dateTo', RecordService::FILTER_PERIOD_TODAY)),
             );
         }
 
         $activity = $this->activityRepository->getActivityById($id);
-        // ToDo пределать функции ниже на контракт - DateFromToDto
-        $records = $this->recordRepository->getRecordsByActivityId($activity['id'], $filterDates->dateFrom, $filterDates->dateTo);
-        $activityCount = $this->recordRepository->getActivityCountFromRecords($id, $filterDates->dateFrom, $filterDates->dateTo);
-        $activitySum = $this->recordRepository->getActivitySumFromFecords($id, $filterDates->dateFrom, $filterDates->dateTo);
+        $records = $this->recordRepository->getRecordsByActivityId($activity['id'], $datesFilter);
+        $activityCount = $this->recordRepository->getActivityCountFromRecords($id, $datesFilter);
+        $activitySum = $this->recordRepository->getActivitySumFromFecords($id, $datesFilter);
         $category = $this->categoryRepository->getCategoryById($activity['category_id']);
 
         return $this->render('activity/view.html.twig', [
@@ -62,8 +63,8 @@ final class ActivityController extends AbstractController
             'activitySum' => $activitySum,
             'records' => $records,
             'filter' => $filter,
-            'dateTo' => $filterDates->dateTo->format('Y-m-d'),
-            'dateFrom' => $filterDates->dateFrom->format('Y-m-d'),
+            'dateTo' => $datesFilter->dateTo->format('Y-m-d'),
+            'dateFrom' => $datesFilter->dateFrom->format('Y-m-d'),
         ]);
     }
 
@@ -100,6 +101,8 @@ final class ActivityController extends AbstractController
                     $isDescriptionEnabled
                 )
             );
+
+            $this->goalService->create($id, $goal);
 
             return $this->redirectToRoute('category_view', [
                 'id' => $id,
@@ -141,6 +144,8 @@ final class ActivityController extends AbstractController
                     $isDescriptionEnabled
                 )
             );
+
+            $this->goalService->create($id, $goal);
 
             return $this->redirectToRoute('activity_view', [
                 'id' => $id,
